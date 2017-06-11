@@ -10,4 +10,9 @@ target 'ViiMe' do
   pod 'Firebase/Auth’
   pod 'FacebookCore'
   pod 'FacebookLogin'
+  pod 'Firebase/Auth' 
+  pod 'TwitterKit'
+  pod 'GoogleSignIn'
+  pod 'NotificationBannerSwift'
+
 end

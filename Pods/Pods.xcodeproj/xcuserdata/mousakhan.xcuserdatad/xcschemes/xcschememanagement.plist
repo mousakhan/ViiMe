@@ -29,6 +29,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>GTMOAuth2.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>GTMSessionFetcher.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -39,7 +44,22 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>MarqueeLabel.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>NotificationBannerSwift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-ViiMe.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>SnapKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -48,6 +68,11 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>107A9565F9DF88517DFD3E28C05B2B96</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>320AD47B0C6BA014D301395D3BFC8FB6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -67,17 +92,32 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>681BE6E3D02A43F9BA63777AC435C8FD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>7335E9C9689F3B8A16F063A884748533</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A7D43BC1233B81B349BB591158B3E458</key>
+		<key>8256263BD659126970BD04265CBC57D9</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C052BEBFBD0AB5218CC64BA3450F6547</key>
+		<key>A695191D1EB477E14486587FEA2E7D34</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B1C4AAFAF49036C7007633DAA3C806AD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C6B975C8C1E8D077904F94E07550569D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
