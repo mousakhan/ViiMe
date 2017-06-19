@@ -8,101 +8,98 @@
 
 import UIKit
 import Firebase
+import FirebaseDatabase
 import FacebookLogin
 import FBSDKLoginKit
-import GoogleSignIn
 import NotificationBannerSwift
 
-class LoginViewController: UIViewController, GIDSignInUIDelegate {
+class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate{
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
-    @IBOutlet weak var errorLabel: UILabel!
-    
-    @IBOutlet weak var googleSignInButton: GIDSignInButton!
-    
+
     @IBOutlet weak var facebookSignInButton: FBSDKLoginButton!
-    
     @IBOutlet weak var signInButton: UIButton!
-    let email = ""
-    let password = ""
-    let numberOfBanners = NotificationBannerQueue.default.numberOfBanners
+    
+    var ref: DatabaseReference!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpEmailTextfield()
-        setUpPasswordTextfield()
-        createFacebookButton()
-        facebookSignInButton.layer.borderWidth = 1.0;
-        facebookSignInButton.layer.borderColor = UIColor.black.cgColor;
         
-      }
+        facebookSignInButton.delegate = self
+        ref = Database.database().reference()
+        
+        TextFieldHelper.addIconToTextField(imageName: "email.png", textfield: usernameTextField)
+        TextFieldHelper.addIconToTextField(imageName: "password.png", textfield: passwordTextField)
+        createFacebookButton()
+        
+        if ((FBSDKAccessToken.current()) != nil) {
+            // User is logged in, do work such as go to next view controller.
+        }
+        
+        usernameTextField.delegate = self
+        passwordTextField.delegate = self
+    }
     
- 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    
-
-    /**
-     Ensures email are in a valid format and the username textfield is not empty.
-     - Parameters: None
-     - Returns: Nothing
-     */
-    func validateEmail() -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
-        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-
-        if usernameTextField.text == nil || usernameTextField.text!.characters.count == 0 {
-            self.showBannerWithText(text: "Please Enter Email Address")
-            return false
-        } else if !emailTest.evaluate(with: usernameTextField.text!) {
-
-            self.showBannerWithText(text: "Please Enter Valid Email Address")
+    // IBActions
+    @IBAction func login(_ sender: Any) {
+        let email = usernameTextField.text!
+        let password = passwordTextField.text!
+        
+        if ValidationHelper.validateEmail(textfield: usernameTextField) {
+        Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
             
-            return false
+            if let error = error {
+                BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
+                return
+            } else {
+                if !(user?.isEmailVerified)! {
+                    let alertVC = UIAlertController(title: "Error", message: "Sorry. Your email address has not yet been verified. Do you want us to send another verification email to \(email)?", preferredStyle: .alert)
+                    let alertActionOkay = UIAlertAction(title: "Okay", style: .default) {
+                        (_) in
+                        user?.sendEmailVerification(completion: nil)
+                    }
+                    let alertActionCancel = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+                    
+                    alertVC.addAction(alertActionOkay)
+                    alertVC.addAction(alertActionCancel)
+                    self.present(alertVC, animated: true, completion: nil)
+                } else {
+                    BannerHelper.showBanner(title: "Succesful", type: .success)
+                }
+            }
+        }
         }
         
-        return true
     }
     
-    
-    func setUpEmailTextfield() {
-        let leftImageView = UIImageView()
-        leftImageView.image = UIImage(named: "email.png")
-        
-        let leftView = UIView()
-        leftView.addSubview(leftImageView)
-        
-        
-        leftView.frame = CGRect(x: 0, y: 0, width: 30, height: 20)
-        leftImageView.frame = CGRect(x: 10, y: 2.5, width: 15, height: 15)
-        
-        usernameTextField.leftView = leftView
-        usernameTextField.leftViewMode = UITextFieldViewMode.always
-        
-    }
-
-    func setUpPasswordTextfield() {
-        let leftImageView = UIImageView()
-        leftImageView.image = UIImage(named: "password.png")
-     
-        
-        let leftView = UIView()
-        leftView.addSubview(leftImageView)
-        
-        leftView.frame = CGRect(x: 0, y: 0, width: 30, height: 20)
-        leftImageView.frame = CGRect(x: 10, y: 2.5, width: 15, height: 15)
-        
-        passwordTextField.leftView = leftView
-        passwordTextField.leftViewMode = UITextFieldViewMode.always
-        
+    // UITextFieldDelegate Functions and functions relating to textfields
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
+    {
+        if (textField == usernameTextField) {
+            passwordTextField.becomeFirstResponder()
+        } else if (textField == passwordTextField) {
+            passwordTextField.resignFirstResponder()
+            login(self)
+        }
+        // Do not add a line break
+        return false
     }
     
+    // Specifically to remove keyboard when not interacting with textfield
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
+    // Helper Functions
     func createFacebookButton() {
+        //NOTE: This is hack-ish, might change in the future, so should be careful
+        //Remove constraint that restricts height of facebook button.
         let layoutConstraintsArr = facebookSignInButton.constraints
-        // Iterate over array and test constraints until we find the correct one:
         for lc in layoutConstraintsArr { // or attribute is NSLayoutAttributeHeight etc.
             if ( lc.constant == 28 ){
                 // Then disable it...
@@ -110,38 +107,50 @@ class LoginViewController: UIViewController, GIDSignInUIDelegate {
                 break
             }
         }
+        
         let titleText = NSAttributedString(string: "Log In with Facebook")
         facebookSignInButton.setAttributedTitle(titleText, for: .normal)
+        facebookSignInButton.layer.borderWidth = 1.0;
+        facebookSignInButton.layer.borderColor = UIColor.black.cgColor;
     }
     
-    @IBAction func forgotPasswordButtonClicked(_ sender: Any) {
-     
-        
-    }
-    
-    func showBannerWithText(text:String) {
-        let numberOfBanners = NotificationBannerQueue.default.numberOfBanners
-        let banner = NotificationBanner(title: text, style: .success)
-        if (numberOfBanners == 0) {
-            banner.show()
+    func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
+        if let error = error {
+            print(error.localizedDescription)
+            return
         }
-    }
-    
-    @IBAction func login(_ sender: Any) {
-        let email = usernameTextField.text!
-        let password = passwordTextField.text!
-        if validateEmail() {
-        Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
-            if let error = error {
-                self.showBannerWithText(text: error.localizedDescription)
+        
+        let credential = FacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
+        // ...
+        
+        Auth.auth().signIn(with: credential) { (user, error) in
+            if error != nil {
+                BannerHelper.showBanner(title: error!.localizedDescription, type: .danger)
                 return
-            } else {
-                self.showBannerWithText(text: "Success")
             }
+            
+            self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+                
+                if !(snapshot.hasChild("\(user!.uid)")){
+                    self.ref.child("users/\(user!.uid)").setValue(["name": user!.displayName, "age": "", "email": user!.email, "id": user!.uid])
+                }
+            })
+            BannerHelper.showBanner(title: "Success", type: .danger)
         }
-        }
-        
     }
 
+    
+            // User is signed in
+            // ...
+        
+    
+    func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
+        print("User Logged Out")
+    }
+    
+
 }
+    
+
+
 

@@ -6,4 +6,25 @@
 //  Copyright © 2017 Venture Lifestyles. All rights reserved.
 //
 
-import Foundation
+import UIKit
+import NotificationBannerSwift
+
+class BannerHelper {
+
+    static func showBanner(title: String, type: BannerStyle) {
+        
+        let numberOfBanners = NotificationBannerQueue.default.numberOfBanners
+        
+        if (numberOfBanners == 0) {
+            var icon = UIImage(named:"error.png")
+            icon = icon?.withRenderingMode(.alwaysTemplate)
+            let leftView = UIImageView(image: icon)
+            leftView.tintColor = UIColor.white
+            let banner = NotificationBanner(title: title, leftView: leftView, style: type)
+            banner.show() 
+        }
+    }
+
+    
+    
+}

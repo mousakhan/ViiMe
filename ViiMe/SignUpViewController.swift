@@ -9,38 +9,67 @@
 import UIKit
 import FirebaseAuth
 import NotificationBannerSwift
+import FirebaseDatabase
 
 class SignUpViewController: UIViewController, UITextFieldDelegate {
     
+    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
+    @IBOutlet weak var scrollView: UIScrollView!
     
+    @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var ageTextField: UITextField!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     
     @IBOutlet weak var passwordTextField: UITextField!
     
+    var ref: DatabaseReference!
     
+    
+    
+    @IBOutlet weak var cancelButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         
-   
+        let origImage = UIImage(named: "cancel.png")
+        let tintedImage = origImage?.withRenderingMode(.alwaysTemplate)
+        cancelButton.setImage(tintedImage, for: .normal)
+        cancelButton.tintColor = UIColor.white
+        
+        
+        
+        ref = Database.database().reference()
+        nameTextField.delegate = self
+        TextFieldHelper.addIconToTextField(imageName: "name.png", textfield: nameTextField)
+        TextFieldHelper.addIconToTextField(imageName: "age.png", textfield: ageTextField)
+        TextFieldHelper.addIconToTextField(imageName: "email.png", textfield: emailTextField)
+        TextFieldHelper.addIconToTextField(imageName: "password.png", textfield: passwordTextField)
         ageTextField.delegate = self
+        emailTextField.delegate = self
+        passwordTextField.delegate = self
+        
+        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(hideKeyboard(sender:)))
+        
+        tapGesture.cancelsTouchesInView = false
+        scrollView.addGestureRecognizer(tapGesture)
+        
      
     }
     
-    func containsSwearWord(text: String, swearWords: [String]) -> Bool {
-        return swearWords
-            .reduce(false) { $0 || text.contains($1.lowercased()) }
+ 
+    // MARK: TextField Delegate
+    func hideKeyboard(sender: AnyObject) {
+        nameTextField.resignFirstResponder()
+        ageTextField.resignFirstResponder()
+        emailTextField.resignFirstResponder()
+        passwordTextField.resignFirstResponder()
     }
-    
-
-    
     
     
     // MARK: TextField Delegate
     func datePickerChanged(sender: UIDatePicker) {
         let formatter = DateFormatter()
-        formatter.dateStyle = .long
+        formatter.dateStyle = .short
         ageTextField.text = formatter.string(from: sender.date)
     }
     
@@ -53,77 +82,48 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
+    // UITextFieldDelegate Functions and functions relating to textfields
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
+    {
+        if (textField == nameTextField) {
+            ageTextField.becomeFirstResponder()
+        } else if (textField == ageTextField) {
+            ageTextField.becomeFirstResponder()
+        } else if (textField == emailTextField) {
+            emailTextField.becomeFirstResponder()
+        } else if (textField == passwordTextField) {
+            signUp(self)
+        }
+        // Do not add a line break
+        return false
     }
     
-    
 
-    
+
     @IBAction func signUp(_ sender: Any) {
         let email = emailTextField.text!
         let password = passwordTextField.text!
         
-        
-        
-        if validateName() && validateEmail() {
+        if ValidationHelper.validateName(textfield: nameTextField) && ValidationHelper.validateEmail(textfield: emailTextField) {
             Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
                 if let error = error {
-                    let banner = NotificationBanner(title: error.localizedDescription, subtitle: "Please try again", style: .danger)
-                    banner.show()
+                    BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
                     return
                 } else {
                     Auth.auth().currentUser?.sendEmailVerification { (error) in
-                        
+                        if error != nil {
+                            BannerHelper.showBanner(title: error!.localizedDescription, type: .danger)
+                        } else {
+                            BannerHelper.showBanner(title: "Email Verification Sent.", type: .success)
+                            self.ref.child("users/(user.uid)").setValue(["name": self.nameTextField.text!, "age": self.ageTextField.text!, "email": self.emailTextField.text!, "id": user?.uid])
+                            self.dismiss(animated: true, completion: {
+                            })
+                        }
                     }
                 }
             }
         }
     }
     
-    
-    func validateName() -> Bool {
-        if nameTextField.text == nil || nameTextField.text!.characters.count == 0 {
-            let banner = NotificationBanner(title:"Please enter your name.", subtitle: "Please try again", style: .danger)
-            banner.show()
-            return false
-        } else if numbersInString(textField: nameTextField) {
-            let banner = NotificationBanner(title:"Please enter a valid name with no special characters.", subtitle: "Please try again", style: .danger)
-            banner.show()
-            return false
-        }
-        
-        return true
-    }
-    
-    func numbersInString(textField: UITextField) -> Bool {
-        let characterset = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        if textField.text!.rangeOfCharacter(from: characterset.inverted) != nil {
-            return true
-        }
-        return false
-    }
-    
-    func validateEmail() -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
-        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        
-        if emailTextField.text == nil || emailTextField.text!.characters.count == 0 {
-            let banner = NotificationBanner(title:"Please enter an email address.", subtitle: "Please try again", style: .danger)
-            banner.dismiss()
-            banner.show()
-            return false
-        } else if !emailTest.evaluate(with: emailTextField.text!) {
-            
-            let banner = NotificationBanner(title:"Please enter a valid email address.", subtitle: "Please try again", style: .danger)
-            banner.dismiss()
-            banner.show()
-            
-            return false
-        }
-        
-        return true
-    }
     
 }

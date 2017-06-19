@@ -14,5 +14,6 @@ target 'ViiMe' do
   pod 'TwitterKit'
   pod 'GoogleSignIn'
   pod 'NotificationBannerSwift'
+  pod 'Firebase/Database'
 
 end

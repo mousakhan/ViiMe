@@ -10,46 +10,55 @@ import UIKit
 import FirebaseAuth
 import NotificationBannerSwift
 
-class ForgotPasswordViewController: UIViewController {
+class ForgotPasswordViewController: UIViewController, UITextFieldDelegate {
 
 
     @IBOutlet weak var emailTextField: UITextField!
     
+    @IBOutlet weak var cancelButton: UIButton!
+    
+   
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let origImage = UIImage(named: "cancel.png")
+        let tintedImage = origImage?.withRenderingMode(.alwaysTemplate)
+        cancelButton.setImage(tintedImage, for: .normal)
+        cancelButton.tintColor = UIColor.white
+        
+        
+        emailTextField.delegate = self
+        TextFieldHelper.addIconToTextField(imageName: "email.png", textfield: emailTextField)
+    }
+    
+    
     @IBAction func resetPassword(_ sender: Any) {
         let email = emailTextField.text!
         
-        if validateEmail() {
+        if ValidationHelper.validateEmail(textfield: emailTextField) {
         Auth.auth().sendPasswordReset(withEmail: email) { (error) in
             if let error = error {
-                let banner = NotificationBanner(title:error.localizedDescription, subtitle: "Please try again", style: .danger)
-                banner.show()
+                BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
             } else {
                 self.dismiss(animated: true, completion: nil)
-                let banner = NotificationBanner(title:"Password Reset Email Sent", subtitle: "Please check your inbox", style: .success)
-                banner.show()
+                BannerHelper.showBanner(title: "Password Reset Email Sent", type: .success)
             }
             }
         }
         
     }
     
-    func validateEmail() -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
-        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+    // UITextFieldDelegate Functions and functions relating to textfields
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        emailTextField.resignFirstResponder()
+        resetPassword(self)
+        return false
+    }
+    
+    // Specifically to remove keyboard when not interacting with textfield
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
         
-        if emailTextField.text == nil || emailTextField.text!.characters.count == 0 {
-            let banner = NotificationBanner(title:"Please enter an email address.", subtitle: "Please try again", style: .danger)
-            banner.show()
-            return false
-        } else if !emailTest.evaluate(with: emailTextField.text!) {
-            
-            let banner = NotificationBanner(title:"Please enter a valid email address.", subtitle: "Please try again", style: .danger)
-            banner.show()
-            
-            return false
-        }
-        
-        return true
     }
     
 }
