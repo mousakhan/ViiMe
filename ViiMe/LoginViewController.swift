@@ -50,30 +50,32 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         let email = usernameTextField.text!
         let password = passwordTextField.text!
         
-        if ValidationHelper.validateEmail(textfield: usernameTextField) {
-        Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
-            
-            if let error = error {
-                BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
-                return
-            } else {
-                if !(user?.isEmailVerified)! {
-                    let alertVC = UIAlertController(title: "Error", message: "Sorry. Your email address has not yet been verified. Do you want us to send another verification email to \(email)?", preferredStyle: .alert)
-                    let alertActionOkay = UIAlertAction(title: "Okay", style: .default) {
-                        (_) in
-                        user?.sendEmailVerification(completion: nil)
-                    }
-                    let alertActionCancel = UIAlertAction(title: "Cancel", style: .default, handler: nil)
-                    
-                    alertVC.addAction(alertActionOkay)
-                    alertVC.addAction(alertActionCancel)
-                    self.present(alertVC, animated: true, completion: nil)
-                } else {
-                    BannerHelper.showBanner(title: "Succesful", type: .success)
-                }
-            }
-        }
-        }
+//        if ValidationHelper.validateEmail(textfield: usernameTextField) {
+//        Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
+//            
+//            if let error = error {
+//                BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
+//                return
+//            } else {
+//                if !(user?.isEmailVerified)! {
+//                    let alertVC = UIAlertController(title: "Error", message: "Sorry. Your email address has not yet been verified. Do you want us to send another verification email to \(email)?", preferredStyle: .alert)
+//                    let alertActionOkay = UIAlertAction(title: "Okay", style: .default) {
+//                        (_) in
+//                        user?.sendEmailVerification(completion: nil)
+//                    }
+//                    let alertActionCancel = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+//                    
+//                    alertVC.addAction(alertActionOkay)
+//                    alertVC.addAction(alertActionCancel)
+//                    self.present(alertVC, animated: true, completion: nil)
+//                } else {
+                    let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+                    let nextViewController = storyBoard.instantiateViewController(withIdentifier: "VenuesNavigation") as! UINavigationController
+                    self.present(nextViewController, animated:true, completion:nil)
+//                }
+//            }
+//        }
+//        }
         
     }
     
@@ -135,7 +137,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     self.ref.child("users/\(user!.uid)").setValue(["name": user!.displayName, "age": "", "email": user!.email, "id": user!.uid])
                 }
             })
-            BannerHelper.showBanner(title: "Success", type: .danger)
+            
+        
+            
         }
     }
 

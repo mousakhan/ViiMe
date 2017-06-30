@@ -11,9 +11,7 @@ target 'ViiMe' do
   pod 'FacebookCore'
   pod 'FacebookLogin'
   pod 'Firebase/Auth' 
-  pod 'TwitterKit'
-  pod 'GoogleSignIn'
   pod 'NotificationBannerSwift'
   pod 'Firebase/Database'
-
+  pod 'ChameleonFramework/Swift', :git => 'https://github.com/ViccAlexander/Chameleon.git'
 end
