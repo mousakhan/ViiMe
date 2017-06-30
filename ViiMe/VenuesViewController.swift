@@ -8,7 +8,7 @@
 
 import UIKit
 
-class VenuesViewController: UIViewController {
+class VenuesTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
