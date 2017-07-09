@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C0EBA171EF1D1BD00AE5603 /* VenuesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C0EBA161EF1D1BD00AE5603 /* VenuesViewController.swift */; };
+		4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */; };
 		4C7DB2941EEEA55E00765D3A /* TextFieldHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DB2931EEEA55E00765D3A /* TextFieldHelper.swift */; };
 		4C7DB2961EEEA62C00765D3A /* ValidationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DB2951EEEA62C00765D3A /* ValidationHelper.swift */; };
 		4C7DB2981EEED0B400765D3A /* BannerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DB2971EEED0B400765D3A /* BannerHelper.swift */; };
@@ -23,7 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4C0EBA161EF1D1BD00AE5603 /* VenuesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenuesViewController.swift; sourceTree = "<group>"; };
+		4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenuesCollectionViewController.swift; sourceTree = "<group>"; };
 		4C7DB2931EEEA55E00765D3A /* TextFieldHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldHelper.swift; sourceTree = "<group>"; };
 		4C7DB2951EEEA62C00765D3A /* ValidationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationHelper.swift; sourceTree = "<group>"; };
 		4C7DB2971EEED0B400765D3A /* BannerHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannerHelper.swift; sourceTree = "<group>"; };
@@ -92,7 +92,7 @@
 				4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */,
 				4CFA46CC1EEBD2EE008BDF8F /* ForgotPasswordController.swift */,
 				4C7EDE041EEB01BD001A9B81 /* Main.storyboard */,
-				4C0EBA161EF1D1BD00AE5603 /* VenuesViewController.swift */,
+				4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */,
 				4C7EDE071EEB01BD001A9B81 /* Assets.xcassets */,
 				4C7EDE091EEB01BD001A9B81 /* LaunchScreen.storyboard */,
 				4C7EDE0C1EEB01BD001A9B81 /* Info.plist */,
@@ -243,8 +243,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C7DB2981EEED0B400765D3A /* BannerHelper.swift in Sources */,
+				4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */,
 				4C7EDE031EEB01BD001A9B81 /* LoginViewController.swift in Sources */,
-				4C0EBA171EF1D1BD00AE5603 /* VenuesViewController.swift in Sources */,
 				4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */,
 				4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */,
 				4C7EDE011EEB01BD001A9B81 /* AppDelegate.swift in Sources */,
