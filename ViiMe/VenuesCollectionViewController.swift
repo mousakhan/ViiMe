@@ -10,14 +10,13 @@ import UIKit
 import ChameleonFramework
 
 private let reuseIdentifier = "VenueCell"
-private let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0)
+private let sectionInsets = UIEdgeInsets(top: 25.0, left: 10.0, bottom: 25.0, right: 10.0)
 
 class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print("SWAG")
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -76,18 +75,74 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         logo.backgroundColor = FlatGray()
         logo.layer.masksToBounds = true
         
+        
+        let middle = cell.frame.size.width/2.0;
+        
+        
+        
         let bar = UIView(frame: CGRect(x: 0, y: cell.frame.size.height - cell.frame.size.height/7.0, width: cell.frame.size.width, height: cell.frame.size.height/7.0))
         bar.backgroundColor = UIColor(red: 63.0/255, green: 38.0/255, blue: 130.0/255, alpha: 1.0)
         cell.addSubview(logo)
         
+
+        let priceIconFrame = CGRect(x: middle - 30, y: cell.frame.size.height - bar.frame.size.height * 3.0, width: 12, height: 12)
+        let priceIcon = addIconToCard(name: "price", frame: priceIconFrame)
+        let priceIconLabelFrame = CGRect(x: priceIconFrame.origin.x + priceIconFrame.size.width + 5, y: cell.frame.size.height - bar.frame.size.height * 3.0, width: 40, height: 15)
+        let priceLabel = UILabel(frame: priceIconLabelFrame)
+
+        priceLabel.font = priceLabel.font.withSize(11)
+        priceLabel.textColor = FlatWhite()
+        priceLabel.text = "TesTESTS"
+        priceLabel.numberOfLines = 1
+        priceLabel.adjustsFontSizeToFitWidth = true
+        
+     
+        
+        cell.addSubview(priceLabel)
+        
+       
+        let distanceIconFrame = CGRect(x: middle +  10, y: cell.frame.size.height - bar.frame.size.height * 3.0, width: 12, height: 12)
+        let distanceIcon = addIconToCard(name: "distance", frame: distanceIconFrame)
+        
+        
+        let distanceIconLabelFrame = CGRect(x: distanceIconFrame.origin.x + distanceIconFrame.size.width + 5, y: cell.frame.size.height - bar.frame.size.height * 3.0, width: 40, height: 15)
+        let distanceLabel = UILabel(frame: distanceIconLabelFrame)
+        
+        
+        
+        distanceLabel.font = priceLabel.font.withSize(11)
+        distanceLabel.textColor = FlatWhite()
+        distanceLabel.text = "1000km"
+        distanceLabel.numberOfLines = 1
+        distanceLabel.adjustsFontSizeToFitWidth = true
+        
+     
+        
+        
+
+        cell.addSubview(distanceLabel)
         
         cell.addSubview(bar)
+        
+        cell.addSubview(priceIcon)
+        cell.addSubview(distanceIcon)
         cell.backgroundColor = FlatBlackDark()
+        cell.layer.borderWidth = 0.5
+        cell.layer.borderColor = FlatGrayDark().cgColor
         // Configure the cell
     
         return cell
     }
     
+    
+    func addIconToCard(name: String, frame: CGRect) -> UIImageView {
+        let priceIcon = UIImageView(frame: frame)
+        let tintedImage = (UIImage(named:name))?.withRenderingMode(.alwaysTemplate)
+        priceIcon.image = tintedImage
+        priceIcon.tintColor = FlatWhiteDark()
+        priceIcon.layer.masksToBounds = true
+        return priceIcon
+    }
     
 
     // MARK: UICollectionViewDelegate
