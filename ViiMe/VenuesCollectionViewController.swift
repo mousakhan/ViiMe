@@ -62,9 +62,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             return venue.name.lowercased().contains(searchText.lowercased())
         }
         
- 
-        
- 
     }
     
     
@@ -93,7 +90,13 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil
         self.navigationItem.titleView = searchController.searchBar
+        self.searchController.becomeFirstResponder()
         self.searchController.isActive = true
+    }
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        self.navigationItem.titleView = nil
+        self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
+        self.navigationItem.leftBarButtonItem = self.profileBarButtonItem
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -104,6 +107,11 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     
     
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print(indexPath.row)
+    }
+    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
