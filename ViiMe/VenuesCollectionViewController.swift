@@ -11,21 +11,69 @@ import ChameleonFramework
 
 private let reuseIdentifier = "VenueCell"
 private let sectionInsets = UIEdgeInsets(top: 25.0, left: 10.0, bottom: 25.0, right: 10.0)
+private let iconSize = CGFloat(12.0)
+private let offset = CGFloat(5.0)
+private let labelWidth = CGFloat(35.0)
 
-class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
+class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate  {
+    
+
+    @IBOutlet var searchBarButtonItem: UIBarButtonItem!
+    @IBOutlet var profileBarButtonItem: UIBarButtonItem!
+    var searchController : UISearchController!
+    
+    // This will be with VENUE objects in the future when implemented with backend.
+    var filteredVenues = [Venue]()
+    var venues = [Venue]()
+    let venue1 = Venue(name: "The Whiskey Bar", numberOfDeals: 5, price: 20.0, cuisine: "Viet", type: "Bar", distance: 58)
+
+    let venue2 = Venue(name: "The  Bar", numberOfDeals: 10, price: 27.0, cuisine: "Chinese", type: "Club", distance: 161)
+
+    let venue3 = Venue(name: "The Student Bar", numberOfDeals: 6, price: 10.0, cuisine: "Iranian", type: "Pub", distance: 161)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
 
+        venues.append(venue1)
+        venues.append(venue2)
+        venues.append(venue3)
+     
+        self.searchController = UISearchController(searchResultsController:  nil)
+        
+        self.searchController.searchResultsUpdater = self
+        self.searchController.delegate = self
+        self.searchController.searchBar.delegate = self
+        
+        self.searchController.hidesNavigationBarDuringPresentation = false
+        self.searchController.dimsBackgroundDuringPresentation = true
+        self.definesPresentationContext = true
+        UIBarButtonItem.appearance(whenContainedInInstancesOf:[UISearchBar.self]).tintColor = FlatWhite()
+       
+    
         // Register cell classes
-        self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        self.collectionView!.register(VenueCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
 
         // Do any additional setup after loading the view.
     }
-
+    
+    func filterContentForSearchText(searchText: String, scope: String = "All") {
+        filteredVenues = venues.filter { venue in
+            return venue.name.lowercased().contains(searchText.lowercased())
+        }
+        
+ 
+        
+ 
+    }
+    
+    
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        filterContentForSearchText(searchText: searchController.searchBar.text!)
+        collectionView?.reloadData()
+    }
+    
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -37,8 +85,24 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             + flowLayout.sectionInset.right
             + (flowLayout.minimumInteritemSpacing * CGFloat(numberOfItemsPerRow - 1))
         let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(numberOfItemsPerRow))
+        
         return CGSize(width: size, height: size + 25)
     }
+    
+    @IBAction func searchBarButtonClicked(_ sender: Any) {
+        self.navigationItem.rightBarButtonItem = nil
+        self.navigationItem.leftBarButtonItem = nil
+        self.navigationItem.titleView = searchController.searchBar
+        self.searchController.isActive = true
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.navigationItem.titleView = nil
+        self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
+        self.navigationItem.leftBarButtonItem = self.profileBarButtonItem
+    }
+    
+    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -65,84 +129,41 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warnig Incomplete implementation, return the number of items
-        return 15
+        if searchController.isActive && searchController.searchBar.text != "" {
+            return filteredVenues.count
+        }
+        
+        return venues.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-        let logo = UIImageView(frame: CGRect(x: cell.bounds.size.width/2.0 - cell.frame.size.width/4.0, y: 15, width: cell.frame.size.width/2.0, height: cell.frame.size.width/2.0))
-        logo.layer.cornerRadius = cell.frame.size.width/4.0
-        logo.backgroundColor = FlatGray()
-        logo.layer.masksToBounds = true
-        
-        
-        let middle = cell.frame.size.width/2.0;
         
         
         
-        let bar = UIView(frame: CGRect(x: 0, y: cell.frame.size.height - cell.frame.size.height/7.0, width: cell.frame.size.width, height: cell.frame.size.height/7.0))
-        bar.backgroundColor = UIColor(red: 63.0/255, green: 38.0/255, blue: 130.0/255, alpha: 1.0)
-        cell.addSubview(logo)
-        
-
-        let priceIconFrame = CGRect(x: middle - 30, y: cell.frame.size.height - bar.frame.size.height * 3.0, width: 12, height: 12)
-        let priceIcon = addIconToCard(name: "price", frame: priceIconFrame)
-        let priceIconLabelFrame = CGRect(x: priceIconFrame.origin.x + priceIconFrame.size.width + 5, y: cell.frame.size.height - bar.frame.size.height * 3.0, width: 40, height: 15)
-        let priceLabel = UILabel(frame: priceIconLabelFrame)
-
-        priceLabel.font = priceLabel.font.withSize(11)
-        priceLabel.textColor = FlatWhite()
-        priceLabel.text = "TesTESTS"
-        priceLabel.numberOfLines = 1
-        priceLabel.adjustsFontSizeToFitWidth = true
-        
-     
-        
-        cell.addSubview(priceLabel)
-        
-       
-        let distanceIconFrame = CGRect(x: middle +  10, y: cell.frame.size.height - bar.frame.size.height * 3.0, width: 12, height: 12)
-        let distanceIcon = addIconToCard(name: "distance", frame: distanceIconFrame)
-        
-        
-        let distanceIconLabelFrame = CGRect(x: distanceIconFrame.origin.x + distanceIconFrame.size.width + 5, y: cell.frame.size.height - bar.frame.size.height * 3.0, width: 40, height: 15)
-        let distanceLabel = UILabel(frame: distanceIconLabelFrame)
-        
-        
-        
-        distanceLabel.font = priceLabel.font.withSize(11)
-        distanceLabel.textColor = FlatWhite()
-        distanceLabel.text = "1000km"
-        distanceLabel.numberOfLines = 1
-        distanceLabel.adjustsFontSizeToFitWidth = true
-        
-     
-        
-        
-
-        cell.addSubview(distanceLabel)
-        
-        cell.addSubview(bar)
-        
-        cell.addSubview(priceIcon)
-        cell.addSubview(distanceIcon)
-        cell.backgroundColor = FlatBlackDark()
-        cell.layer.borderWidth = 0.5
-        cell.layer.borderColor = FlatGrayDark().cgColor
-        // Configure the cell
+        // Cell set up
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VenueCollectionViewCell
     
+        
+        var venue = Venue(name: "", numberOfDeals: 5, price: 20, cuisine: "Vietnamese", type: "Bar", distance: 58)
+
+        if searchController.isActive && searchController.searchBar.text != "" {
+            venue = filteredVenues[indexPath.row]
+        } else {
+            venue = venues[indexPath.row]
+        }
+        
+    
+        cell.nameLabel.text = venue.name
+        cell.numberOfDealsLabel.text = String(venue.numberOfDeals) + " Deals"
+        cell.priceLabel.text = "$" + String(venue.price)
+        cell.cuisineLabel.text = venue.cuisine
+        cell.distanceLabel.text = String(venue.distance)
+        cell.venueTypeLabel.text = venue.type
+      
         return cell
     }
     
-    
-    func addIconToCard(name: String, frame: CGRect) -> UIImageView {
-        let priceIcon = UIImageView(frame: frame)
-        let tintedImage = (UIImage(named:name))?.withRenderingMode(.alwaysTemplate)
-        priceIcon.image = tintedImage
-        priceIcon.tintColor = FlatWhiteDark()
-        priceIcon.layer.masksToBounds = true
-        return priceIcon
-    }
+
     
 
     // MARK: UICollectionViewDelegate
