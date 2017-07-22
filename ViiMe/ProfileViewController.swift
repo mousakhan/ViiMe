@@ -8,21 +8,58 @@
 
 import UIKit
 import ChameleonFramework
+import Firebase
 
-class ProfileViewController: UIViewController {
+class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
 
+  
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var profilePicture: UIImageView!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var genderTextField: UITextField!
-    @IBOutlet weak var birthdayTextField: UITextField!
+
     @IBOutlet weak var benefitsTableView: UITableView!
     
+    @IBOutlet weak var ageTextField: UITextField!
     @IBOutlet weak var couponsTableView: UITableView!
+    
+    var ref: DatabaseReference!
+    var user: User!
+    let genders = ["", "Male", "Female"]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
         self.view.backgroundColor = FlatBlack()
+    
+        
+        user = Auth.auth().currentUser
+        ref = Database.database().reference()
+        
+        // Check back end to see if it exists
+        let productRef = ref.child("users/\(user!.uid)")
+        productRef.observe(DataEventType.value, with: { (snapshot) in
+            let postDict = snapshot.value as? [String : AnyObject] ?? [:]
+            
+            if ((postDict["name"]) != nil) {
+                self.nameTextField.text = postDict["name"] as? String
+            }
+       
+            if ((postDict["email"]) != nil) {
+                self.emailTextField.text = postDict["email"] as? String
+                print("Change")
+            }
+            
+            if ((postDict["age"]) != nil) {
+                print("Here")
+                self.ageTextField.text = postDict["age"] as? String
+            }
+            
+            if ((postDict["gender"]) != nil) {
+                self.genderTextField.text = postDict["gender"] as? String
+            }
+            
+        })
         
         //Profile Image
         profilePicture.layer.cornerRadius = profilePicture.frame.size.width/2.0
@@ -32,19 +69,91 @@ class ProfileViewController: UIViewController {
         // Textfield setup
         setupTextField(textfield: nameTextField)
         setupTextField(textfield: emailTextField)
-        setupTextField(textfield: birthdayTextField)
+        setupTextField(textfield: ageTextField)
         setupTextField(textfield: genderTextField)
         
         // Tableview set up
         setupTableview(tableView: benefitsTableView)
         setupTableview(tableView: couponsTableView)
+        
+        // Keyboard Set up
+        let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(hideKeyboard(sender:)))
+        tapGesture.cancelsTouchesInView = false
+        scrollView.addGestureRecognizer(tapGesture)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
+        
+        
     }
+    
+    
+    // MARK: TextField Delegate
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if (textField === self.ageTextField) {
+            let datePicker = UIDatePicker()
+            datePicker.datePickerMode = .date
+            textField.inputView = datePicker
+            if (self.ageTextField.text != nil) {
+                datePicker.setDate(getDateFromString(date: self.ageTextField.text!), animated: true)
+            }
+            datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
+        } else if (textField === self.genderTextField) {
+            let picker = UIPickerView()
+            picker.delegate = self
+            picker.dataSource = self
+            textField.inputView = picker
+            
+            if (self.genderTextField.text != nil) {
+                let index = genders.index(of: self.genderTextField.text!)
+                print(index!)
+                if (index != nil) {
+                    picker.selectRow(index!, inComponent:0, animated:true)
+                }
+            }
+         
+ 
+        
+        }
+    }
+    
+    func hideKeyboard(sender: AnyObject) {
+        nameTextField.resignFirstResponder()
+        ageTextField.resignFirstResponder()
+        emailTextField.resignFirstResponder()
+        genderTextField.resignFirstResponder()
+    }
+    
+    
+    func datePickerChanged(sender: UIDatePicker) {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        ageTextField.text = formatter.string(from: sender.date)
+    }
+    
+    
+    // UITextFieldDelegate Functions and functions relating to textfields
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
+    {
+        if (textField == nameTextField) {
+            emailTextField.becomeFirstResponder()
+        } else if (textField == emailTextField) {
+            ageTextField.becomeFirstResponder()
+        } else if (textField == ageTextField) {
+            genderTextField.becomeFirstResponder()
+        }
+        // Do not add a line break
+        return false
+    }
+    
+
   
     func setupTextField(textfield: UITextField) {
         textfield.backgroundColor = FlatBlackDark()
         textfield.layer.borderColor = FlatGrayDark().cgColor
         textfield.layer.borderWidth = 0.5
         textfield.layer.masksToBounds = true
+        textfield.delegate = self
     }
     
     func setupTableview(tableView: UITableView) {
@@ -55,10 +164,11 @@ class ProfileViewController: UIViewController {
         tableView.layer.masksToBounds = true
     }
 
-    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        
+    }
 
     @IBAction func dismissProfilePage(_ sender: Any) {
-        
         self.dismiss(animated: true) { 
             
         }
@@ -67,8 +177,59 @@ class ProfileViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    func keyboardWillShow(notification:NSNotification){
+        //give room at the bottom of the scroll view, so it doesn't cover up anything the user needs to tap
+        var userInfo = notification.userInfo!
+        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+        
+        var contentInset:UIEdgeInsets = self.scrollView.contentInset
+        contentInset.bottom = keyboardFrame.size.height
+        scrollView.contentInset = contentInset
+    }
     
+    func keyboardWillHide(notification:NSNotification){
+        let contentInset:UIEdgeInsets = UIEdgeInsets.zero
+        scrollView.contentInset = contentInset
+    }
+    
+    
+    @IBAction func saveProfileInformation(_ sender: Any) {
+        let name =  nameTextField.text
+        let age = ageTextField.text
+        let email = emailTextField.text
+        let gender = genderTextField.text
+        
+        self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            self.ref.child("users/\(self.user!.uid)").setValue(["name": name, "age": age, "email": email, "gender": gender, "id": self.user!.uid])
+        })
+    
+    }
+    
+    func getDateFromString(date: String)-> Date {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        return formatter.date(from: date)!
+    }
 
+    
+    // Picker View
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return genders.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return genders[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.genderTextField.text = genders[row]
+    }
     /*
     // MARK: - Navigation
 

@@ -20,10 +20,10 @@ class ValidationHelper {
         let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
         
         if textfield.text == nil || textfield.text!.characters.count == 0 {
-            BannerHelper.showBanner(title: "Please Enter an Email Address", type: .danger)
+            BannerHelper.showBanner(title: "Please enter an email address", type: .danger)
             return false
         } else if !emailTest.evaluate(with: textfield.text!) {
-            BannerHelper.showBanner(title: "Please Enter an Valid Email Address", type: .danger)
+            BannerHelper.showBanner(title: "Please enter a valid email address", type: .danger)
             return false
         }
         
@@ -38,11 +38,11 @@ class ValidationHelper {
         }
         
         if textfield.text == nil || textfield.text!.characters.count == 0 {
-            let banner = NotificationBanner(title:"Please enter your name.", subtitle: "Please try again", style: .danger)
+            let banner = NotificationBanner(title:"Please enter your name", subtitle: "Please try again", style: .danger)
             banner.show()
             return false
         } else if isValidName {
-            let banner = NotificationBanner(title:"Please enter a valid name with no special characters.", subtitle: "Please try again", style: .danger)
+            let banner = NotificationBanner(title:"Please enter a valid name with no special characters", subtitle: "Please try again", style: .danger)
             banner.show()
             return false
         }
