@@ -10,6 +10,7 @@
 		4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */; };
 		4C5502131F16A5B80073A405 /* Venue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5502121F16A5B80073A405 /* Venue.swift */; };
 		4C5502151F16B2780073A405 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5502141F16B2780073A405 /* ProfileViewController.swift */; };
+		4C612E311F2387670043EF5E /* DealsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C612E301F2387670043EF5E /* DealsViewController.swift */; };
 		4C7DB2941EEEA55E00765D3A /* TextFieldHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DB2931EEEA55E00765D3A /* TextFieldHelper.swift */; };
 		4C7DB2961EEEA62C00765D3A /* ValidationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DB2951EEEA62C00765D3A /* ValidationHelper.swift */; };
 		4C7DB2981EEED0B400765D3A /* BannerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DB2971EEED0B400765D3A /* BannerHelper.swift */; };
@@ -18,6 +19,8 @@
 		4C7EDE061EEB01BD001A9B81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7EDE041EEB01BD001A9B81 /* Main.storyboard */; };
 		4C7EDE081EEB01BD001A9B81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C7EDE071EEB01BD001A9B81 /* Assets.xcassets */; };
 		4C7EDE0B1EEB01BD001A9B81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7EDE091EEB01BD001A9B81 /* LaunchScreen.storyboard */; };
+		4CB6AD5B1F24CB7D004EB393 /* DealTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD591F24CB7D004EB393 /* DealTableViewCell.swift */; };
+		4CB6AD5E1F293D33004EB393 /* UIImageView+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD5D1F293D32004EB393 /* UIImageView+Download.swift */; };
 		4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */; };
 		4CD8E1CF1EEB661B009C3FD0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */; };
 		4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */; };
@@ -29,6 +32,7 @@
 		4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenuesCollectionViewController.swift; sourceTree = "<group>"; };
 		4C5502121F16A5B80073A405 /* Venue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Venue.swift; sourceTree = "<group>"; };
 		4C5502141F16B2780073A405 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		4C612E301F2387670043EF5E /* DealsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DealsViewController.swift; sourceTree = "<group>"; };
 		4C7DB2931EEEA55E00765D3A /* TextFieldHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldHelper.swift; sourceTree = "<group>"; };
 		4C7DB2951EEEA62C00765D3A /* ValidationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationHelper.swift; sourceTree = "<group>"; };
 		4C7DB2971EEED0B400765D3A /* BannerHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannerHelper.swift; sourceTree = "<group>"; };
@@ -39,6 +43,8 @@
 		4C7EDE071EEB01BD001A9B81 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4C7EDE0A1EEB01BD001A9B81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C7EDE0C1EEB01BD001A9B81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4CB6AD591F24CB7D004EB393 /* DealTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DealTableViewCell.swift; sourceTree = "<group>"; };
+		4CB6AD5D1F293D32004EB393 /* UIImageView+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+Download.swift"; sourceTree = "<group>"; };
 		4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -60,6 +66,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4C0172FF1F23A1440097051E /* Deals */ = {
+			isa = PBXGroup;
+			children = (
+				4C612E301F2387670043EF5E /* DealsViewController.swift */,
+				4CB6AD591F24CB7D004EB393 /* DealTableViewCell.swift */,
+			);
+			name = Deals;
+			sourceTree = "<group>";
+		};
 		4C02DE2E1F1EA052002AA78C /* Login & Signup  */ = {
 			isa = PBXGroup;
 			children = (
@@ -91,6 +106,7 @@
 		4C7DB2991EEED5F400765D3A /* Helper Classes */ = {
 			isa = PBXGroup;
 			children = (
+				4CB6AD5D1F293D32004EB393 /* UIImageView+Download.swift */,
 				4C7DB2931EEEA55E00765D3A /* TextFieldHelper.swift */,
 				4C7DB2951EEEA62C00765D3A /* ValidationHelper.swift */,
 				4C7DB2971EEED0B400765D3A /* BannerHelper.swift */,
@@ -126,6 +142,7 @@
 				4C02DE2E1F1EA052002AA78C /* Login & Signup  */,
 				4C02DE301F1EA08B002AA78C /* Profile */,
 				4C7EDE041EEB01BD001A9B81 /* Main.storyboard */,
+				4C0172FF1F23A1440097051E /* Deals */,
 				4C7EDE071EEB01BD001A9B81 /* Assets.xcassets */,
 				4C7EDE091EEB01BD001A9B81 /* LaunchScreen.storyboard */,
 				4C7EDE0C1EEB01BD001A9B81 /* Info.plist */,
@@ -283,9 +300,12 @@
 				4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */,
 				4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */,
 				4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */,
+				4C612E311F2387670043EF5E /* DealsViewController.swift in Sources */,
 				4C7EDE011EEB01BD001A9B81 /* AppDelegate.swift in Sources */,
 				4C7DB2961EEEA62C00765D3A /* ValidationHelper.swift in Sources */,
 				4C7DB2941EEEA55E00765D3A /* TextFieldHelper.swift in Sources */,
+				4CB6AD5E1F293D33004EB393 /* UIImageView+Download.swift in Sources */,
+				4CB6AD5B1F24CB7D004EB393 /* DealTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

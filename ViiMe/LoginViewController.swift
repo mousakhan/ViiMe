@@ -26,11 +26,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         super.viewDidLoad()
         
         facebookSignInButton.delegate = self
-     
-
-        
-  
-        
         TextFieldHelper.addIconToTextField(imageName: "email.png", textfield: usernameTextField)
         TextFieldHelper.addIconToTextField(imageName: "password.png", textfield: passwordTextField)
         createFacebookButton()
@@ -39,6 +34,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         if ((FBSDKAccessToken.current()) != nil) {
             // User is logged in, do work such as go to next view controller.
+            self.performSegue(withIdentifier: "VenuesView", sender: nil)
         }
         
         usernameTextField.delegate = self
@@ -147,6 +143,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     }
     
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
+        
+        
+        if result.isCancelled {
+            return
+        }
+        
         if let error = error {
             print(error.localizedDescription)
             return
@@ -161,10 +163,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 return
             }
             
+            
             self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                 
                 if !(snapshot.hasChild("\(user!.uid)")){
-                    self.ref.child("users/\(user!.uid)").setValue(["name": user!.displayName, "age": "", "email": user!.email, "id": user!.uid])
+                    
+                    self.ref.child("users/\(user!.uid)").setValue(["name": user!.displayName ?? "", "age": "", "email": user!.email ?? "", "id": user!.uid, "profile": user!.photoURL?.absoluteString ?? "" ])
                 }
             })
             
@@ -174,9 +178,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     }
 
     
-            // User is signed in
-            // ...
-        
     
     func loginButtonDidLogOut(_ loginButton: FBSDKLoginButton!) {
         print("User Logged Out")

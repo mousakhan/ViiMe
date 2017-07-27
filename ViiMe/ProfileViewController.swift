@@ -9,6 +9,7 @@
 import UIKit
 import ChameleonFramework
 import Firebase
+import FBSDKLoginKit
 
 class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
 
@@ -24,10 +25,31 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     @IBOutlet weak var ageTextField: UITextField!
     @IBOutlet weak var couponsTableView: UITableView!
     
+   
+ 
+ 
     var ref: DatabaseReference!
     var user: User!
     let genders = ["", "Male", "Female"]
+    var profileURL = ""
     
+    @IBAction func logout(_ sender: Any) {
+        try! Auth.auth().signOut()
+        
+        if ((FBSDKAccessToken.current()) != nil) {
+            let loginManager = FBSDKLoginManager()
+            loginManager.logOut()
+        }
+        
+     
+        let presentingViewController = self.presentingViewController
+        self.dismiss(animated: false, completion: {
+            presentingViewController!.dismiss(animated: true, completion: {})
+        })
+        
+       
+        
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = FlatBlack()
@@ -35,7 +57,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         user = Auth.auth().currentUser
         ref = Database.database().reference()
-        
+    
+
         // Check back end to see if it exists
         let productRef = ref.child("users/\(user!.uid)")
         productRef.observe(DataEventType.value, with: { (snapshot) in
@@ -44,6 +67,12 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             if ((postDict["name"]) != nil) {
                 self.nameTextField.text = postDict["name"] as? String
             }
+            
+            if ((postDict["profile"]) != nil) {
+                self.profileURL = postDict["profile"]! as! String
+                self.profilePicture.downloadedFrom(link: (postDict["profile"] as? String)!)
+            }
+            
        
             if ((postDict["email"]) != nil) {
                 self.emailTextField.text = postDict["email"] as? String
@@ -83,8 +112,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
         
-        
-        
+     
     }
     
     
@@ -146,6 +174,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         return false
     }
     
+  
 
   
     func setupTextField(textfield: UITextField) {
@@ -165,7 +194,17 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
+        let name =  nameTextField.text
+        let age = ageTextField.text
+        let email = emailTextField.text
+        let gender = genderTextField.text
         
+        print ("Test1")
+        self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            self.ref.child("users/\(self.user!.uid)").setValue(["name": name, "age": age, "email": email, "gender": gender, "id": self.user!.uid, "profile": self.profileURL])
+        })
+        
+        print("test2")
     }
 
     @IBAction func dismissProfilePage(_ sender: Any) {
@@ -193,22 +232,16 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         scrollView.contentInset = contentInset
     }
     
+ 
     
-    @IBAction func saveProfileInformation(_ sender: Any) {
-        let name =  nameTextField.text
-        let age = ageTextField.text
-        let email = emailTextField.text
-        let gender = genderTextField.text
-        
-        self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-            self.ref.child("users/\(self.user!.uid)").setValue(["name": name, "age": age, "email": email, "gender": gender, "id": self.user!.uid])
-        })
-    
-    }
     
     func getDateFromString(date: String)-> Date {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
+        if date == "" {
+           let date = Date()
+           return formatter.date(from: formatter.string(from: date))!
+        }
         return formatter.date(from: date)!
     }
 
