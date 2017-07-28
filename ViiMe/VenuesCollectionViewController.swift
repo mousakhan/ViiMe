@@ -10,6 +10,7 @@ import UIKit
 import ChameleonFramework
 
 
+//TODO: Fix searching function
 class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate  {
     
     @IBOutlet var searchBarButtonItem: UIBarButtonItem!
