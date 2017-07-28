@@ -25,6 +25,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     // View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+
         TextFieldHelper.addIconToTextField(imageName: "email.png", textfield: usernameTextField)
         TextFieldHelper.addIconToTextField(imageName: "password.png", textfield: passwordTextField)
         createFacebookButton()
@@ -112,7 +113,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
 
     //MARK: FB Delegate Functions
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
-
+        
+        
         if result.isCancelled {
             return
         }
@@ -130,7 +132,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 return
             }
             
-            // Create user in Firebase Database
+
             self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                 if !(snapshot.hasChild("\(user!.uid)")){
                     self.ref.child("users/\(user!.uid)").setValue(["name": user!.displayName ?? "", "age": "", "email": user!.email ?? "", "id": user!.uid, "profile": user!.photoURL?.absoluteString ?? "" ])

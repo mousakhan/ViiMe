@@ -16,24 +16,24 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     var deal = "With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries."
     var venue : Venue?
     
-    @IBOutlet weak var tableView: UITableView!
+
+    @IBOutlet weak var groupBarButtonItem: UIBarButtonItem!
     
-    //MARK: View Lifecycle
+    
+    
+    
+    @IBOutlet weak var tableView: UITableView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         print(venue!)
-        
+     
         self.view.backgroundColor = FlatBlack()
         self.tableView.layer.borderColor = FlatWhiteDark().cgColor
         self.tableView.layer.borderWidth = 0.5
+       
+   
     }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     
     //MARK: UITableView DataSource
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -44,11 +44,11 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         return 2
     }
     
-    //MARK: UITableView DataSource
+    //MARK: UITableView Delegate
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as? DealTableViewCell
-        
+     
         cell?.backgroundColor = FlatBlackDark()
         
         cell?.dealDescriptionLabel.textColor = FlatWhite()
@@ -61,6 +61,29 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         cell?.dealActionLabel.font = cell?.dealActionLabel.font.withSize(12)
         cell?.dealActionLabel.textColor = FlatWhite()
         
+
         return cell!
     }
+
+        let bgColorView = UIView()
+        bgColorView.backgroundColor = FlatPurpleDark()
+        cell?.selectedBackgroundView = bgColorView
+      
+        return cell!
+        
+    }
+    
+  
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+
 }

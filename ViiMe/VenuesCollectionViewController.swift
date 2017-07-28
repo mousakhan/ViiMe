@@ -9,15 +9,16 @@
 import UIKit
 import ChameleonFramework
 
-private let reuseIdentifier = "VenueCell"
-private let sectionInsets = UIEdgeInsets(top: 25.0, left: 10.0, bottom: 25.0, right: 10.0)
-private let iconSize = CGFloat(12.0)
-private let offset = CGFloat(5.0)
-private let labelWidth = CGFloat(35.0)
-
 
 class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate  {
     
+    private let reuseIdentifier = "VenueCell"
+    private let sectionInsets = UIEdgeInsets(top: 25.0, left: 10.0, bottom: 25.0, right: 10.0)
+    private let iconSize = CGFloat(12.0)
+    private let offset = CGFloat(5.0)
+    private let labelWidth = CGFloat(35.0)
+    
+
 
     @IBOutlet var searchBarButtonItem: UIBarButtonItem!
     @IBOutlet var profileBarButtonItem: UIBarButtonItem!
@@ -111,6 +112,27 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         self.performSegue(withIdentifier: "DealViewControllerSegue", sender: nil)
     }
     
+
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
+    
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "Deal") {
+            let destVC = segue.destination as! DealsViewController
+            if let indexPath = collectionView?.indexPathsForSelectedItems?[0][1] {
+                destVC.venue = venues[indexPath]
+            }
+        }
+    }
+ 
+
     // MARK: UICollectionViewDataSource
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
