@@ -18,19 +18,19 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="64" width="414" height="672"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" alpha="0.90000000000000002" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Nightlife" translatesAutoresizingMaskIntoConstraints="NO" id="0sw-4i-6gd">
-                                <rect key="frame" x="4" y="-20" width="406" height="692"/>
+                                <rect key="frame" x="4" y="0.0" width="406" height="736"/>
                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </imageView>
                             <view alpha="0.69999999999999996" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bvw-K8-jOj">
-                                <rect key="frame" x="0.0" y="-10" width="414" height="692"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                             <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="tdc-k1-MCc">
-                                <rect key="frame" x="35" y="61" width="344" height="400"/>
+                                <rect key="frame" x="35" y="93" width="344" height="400"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="2Cq-1f-FwP">
                                         <rect key="frame" x="0.0" y="0.0" width="344" height="400"/>
@@ -120,19 +120,19 @@
                                 </subviews>
                             </stackView>
                             <view contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="zkc-2r-Oi3" userLabel="Facebook Sign In Button" customClass="FBSDKLoginButton">
-                                <rect key="frame" x="35" y="569" width="344" height="40"/>
+                                <rect key="frame" x="35" y="623" width="344" height="40"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="mpO-YP-zVM"/>
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Nc-yc-B8u">
-                                <rect key="frame" x="106" y="642" width="203" height="30"/>
+                                <rect key="frame" x="106" y="696" width="203" height="30"/>
                                 <state key="normal" title="Not a member? Sign Up Now!">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="J5Z-Oc-1zO" kind="show" identifier="Login" id="aQH-IV-kJa"/>
+                                    <segue destination="J5Z-Oc-1zO" kind="presentation" id="aQH-IV-kJa"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -508,9 +508,7 @@
                             <inset key="imageInsets" minX="12" minY="12" maxX="12" maxY="12"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
-
                                 <segue destination="53V-0r-zPo" kind="presentation" id="PCv-mm-nno"/>
-
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="w3s-Ul-uoe">
@@ -523,9 +521,7 @@
                     <connections>
                         <outlet property="profileBarButtonItem" destination="8tx-Z1-3cG" id="gZp-vB-Ita"/>
                         <outlet property="searchBarButtonItem" destination="w3s-Ul-uoe" id="3A7-Nk-ZDN"/>
-
                         <segue destination="vQ5-nF-ICX" kind="show" identifier="DealViewControllerSegue" id="BUK-J3-X73"/>
-
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ff3-X3-0jY" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -572,7 +568,6 @@
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="DiF-SD-cGG">
                                                 <rect key="frame" x="0.0" y="168" width="374" height="183"/>
-
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="fac-Ky-SJA">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="50"/>
@@ -711,7 +706,6 @@
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="uzv-oC-Iev">
                                                 <rect key="frame" x="0.0" y="707.66666666666663" width="374" height="50"/>
-
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MwA-c0-S5b">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="50"/>
@@ -735,7 +729,6 @@
                                             </stackView>
                                         </subviews>
                                         <constraints>
-                                            <constraint firstItem="uzv-oC-Iev" firstAttribute="width" secondItem="0UZ-FB-LMa" secondAttribute="width" id="8vk-M8-mXi"/>
                                             <constraint firstItem="0UZ-FB-LMa" firstAttribute="width" secondItem="DiF-SD-cGG" secondAttribute="width" id="J6m-97-zh6"/>
                                             <constraint firstItem="DiF-SD-cGG" firstAttribute="width" secondItem="VSh-GF-PK6" secondAttribute="width" id="Zfc-Ff-CE4"/>
                                             <constraint firstItem="uzv-oC-Iev" firstAttribute="width" secondItem="0UZ-FB-LMa" secondAttribute="width" id="uSX-lc-TcC"/>
@@ -828,7 +821,7 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                           <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Ctb-aW-8VI">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Ctb-aW-8VI">
                                                     <rect key="frame" x="296" y="8" width="65" height="43.666666666666664"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="42" id="O4h-R2-oAe"/>
@@ -877,7 +870,6 @@
                     </navigationItem>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
-                        <outlet property="groupBarButtonItem" destination="sOf-A5-OmK" id="PKJ-SL-LBO"/>
                         <outlet property="tableView" destination="WN2-nn-uGf" id="nK8-BN-SLc"/>
                     </connections>
                 </viewController>
@@ -1028,7 +1020,6 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="FIg-Ff-FUy">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="barTintColor" red="0.2470588235" green="0.14901960780000001" blue="0.50980392159999999" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1070,12 +1061,11 @@
     <resources>
         <image name="Nightlife" width="500" height="750"/>
         <image name="ViiMe" width="1280" height="980"/>
-        <image name="camera" width="48" height="48"/>
         <image name="cancel" width="50" height="50"/>
         <image name="group" width="50" height="50"/>
         <image name="profile" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="f9y-2c-uLS"/>
+        <segue reference="aO0-DF-dPH"/>
     </inferredMetricsTieBreakers>
 </document>

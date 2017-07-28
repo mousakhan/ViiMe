@@ -34,23 +34,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     let screenSize = UIScreen.main.bounds
 
     
-    @IBAction func logout(_ sender: Any) {
-        try! Auth.auth().signOut()
-        
-        if ((FBSDKAccessToken.current()) != nil) {
-            let loginManager = FBSDKLoginManager()
-            loginManager.logOut()
-        }
-        
-     
-        let presentingViewController = self.presentingViewController
-        self.dismiss(animated: false, completion: {
-            presentingViewController!.dismiss(animated: true, completion: {})
-        })
-        
-       
-        
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = FlatBlack()

@@ -65,13 +65,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         return cell!
     }
 
-        let bgColorView = UIView()
-        bgColorView.backgroundColor = FlatPurpleDark()
-        cell?.selectedBackgroundView = bgColorView
-      
-        return cell!
-        
-    }
     
   
 
