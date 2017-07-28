@@ -16,7 +16,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     var deal = "With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries."
     var venue : Venue?
     
-    
+
     @IBOutlet weak var groupBarButtonItem: UIBarButtonItem!
     
     
@@ -35,29 +35,16 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
    
     }
     
- 
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        self.groupBarButtonItem.customView?.frame = CGRect(x: (self.groupBarButtonItem.customView?.frame.origin.x)! - 15, y: (self.groupBarButtonItem.customView?.frame.origin.y)!, width: (self.groupBarButtonItem.customView?.frame.width)!, height: (self.groupBarButtonItem.customView?.frame.height)!)
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    
+    //MARK: UITableView DataSource
     func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
     
-   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 2
     }
     
+    //MARK: UITableView Delegate
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as? DealTableViewCell
@@ -74,13 +61,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         cell?.dealActionLabel.font = cell?.dealActionLabel.font.withSize(12)
         cell?.dealActionLabel.textColor = FlatWhite()
         
-        let bgColorView = UIView()
-        bgColorView.backgroundColor = FlatPurpleDark()
-        cell?.selectedBackgroundView = bgColorView
-      
+
         return cell!
-        
     }
+
     
   
 
@@ -93,5 +77,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         // Pass the selected object to the new view controller.
     }
     */
+
 
 }

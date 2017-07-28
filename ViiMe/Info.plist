@@ -63,5 +63,11 @@
         <string>fbauth2</string>
         <string>fbshareextension</string>
     </array>
+    <key>NSCameraUsageDescription</key>
+    <string>This app will use camera.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>You can select photos to attach to reports.</string>
+    <key>NSContactsUsageDescription</key>
+    <string>$(PRODUCT_NAME) contact use</string>
 </dict>
 </plist>

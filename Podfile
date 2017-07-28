@@ -6,6 +6,8 @@ target 'ViiMe' do
   use_frameworks!
 
   # Pods for ViiMe
+  pod 'Firebase/Storage'
+  pod 'ImagePicker'
   pod 'Firebase/Core'
   pod 'Firebase/Auth’
   pod 'FacebookCore'

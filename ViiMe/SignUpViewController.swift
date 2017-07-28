@@ -15,74 +15,44 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
-    
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var ageTextField: UITextField!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
-    
     @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var cancelButton: UIButton!
     
     var ref: DatabaseReference!
     
-    
-    
-    @IBOutlet weak var cancelButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        ref = Database.database().reference()
+        
+        // Change color of icon button, could probably make this into it's own helper function
         let origImage = UIImage(named: "cancel.png")
         let tintedImage = origImage?.withRenderingMode(.alwaysTemplate)
         cancelButton.setImage(tintedImage, for: .normal)
         cancelButton.tintColor = UIColor.white
         
-        
-        
-        ref = Database.database().reference()
-        nameTextField.delegate = self
         TextFieldHelper.addIconToTextField(imageName: "name.png", textfield: nameTextField)
         TextFieldHelper.addIconToTextField(imageName: "age.png", textfield: ageTextField)
         TextFieldHelper.addIconToTextField(imageName: "email.png", textfield: emailTextField)
         TextFieldHelper.addIconToTextField(imageName: "password.png", textfield: passwordTextField)
+        
+        nameTextField.delegate = self
         ageTextField.delegate = self
         emailTextField.delegate = self
         passwordTextField.delegate = self
         
+        // If click anywhere outside the texfields, hide keyboard
         let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(hideKeyboard(sender:)))
-        
         tapGesture.cancelsTouchesInView = false
         scrollView.addGestureRecognizer(tapGesture)
-        
-     
     }
     
- 
-    // MARK: TextField Delegate
-    func hideKeyboard(sender: AnyObject) {
-        nameTextField.resignFirstResponder()
-        ageTextField.resignFirstResponder()
-        emailTextField.resignFirstResponder()
-        passwordTextField.resignFirstResponder()
-    }
-    
-    
-    // MARK: TextField Delegate
-    func datePickerChanged(sender: UIDatePicker) {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        ageTextField.text = formatter.string(from: sender.date)
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if (textField === self.ageTextField) {
-            let datePicker = UIDatePicker()
-            datePicker.datePickerMode = .date
-            textField.inputView = datePicker
-            datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
-        }
-    }
-    
-    // UITextFieldDelegate Functions and functions relating to textfields
+
+    // MARK: UITextFieldDelegate Functions
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
         if (textField == nameTextField) {
@@ -94,12 +64,20 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         } else if (textField == passwordTextField) {
             signUp(self)
         }
-        // Do not add a line break
+  
         return false
     }
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if (textField === self.ageTextField) {
+            let datePicker = UIDatePicker()
+            datePicker.datePickerMode = .date
+            textField.inputView = datePicker
+            datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
+        }
+    }
     
-
-
+    // MARK: IBActions
     @IBAction func signUp(_ sender: Any) {
         let email = emailTextField.text!
         let password = passwordTextField.text!
@@ -125,5 +103,17 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    // MARK: Helper Functions
+    func hideKeyboard(sender: AnyObject) {
+        nameTextField.resignFirstResponder()
+        ageTextField.resignFirstResponder()
+        emailTextField.resignFirstResponder()
+        passwordTextField.resignFirstResponder()
+    }
     
+    func datePickerChanged(sender: UIDatePicker) {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        ageTextField.text = formatter.string(from: sender.date)
+    }
 }

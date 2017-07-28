@@ -11,19 +11,17 @@ import ChameleonFramework
 import Firebase
 import FBSDKLoginKit
 
-class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
-
-  
+class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var profilePicture: UIImageView!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var genderTextField: UITextField!
-
-    @IBOutlet weak var benefitsTableView: UITableView!
-    
     @IBOutlet weak var ageTextField: UITextField!
     @IBOutlet weak var couponsTableView: UITableView!
+    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var benefitsTableView: UITableView!
     
    
  
@@ -32,24 +30,10 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     var user: User!
     let genders = ["", "Male", "Female"]
     var profileURL = ""
+    var imagePicker: UIImagePickerController!
+    let screenSize = UIScreen.main.bounds
+
     
-    @IBAction func logout(_ sender: Any) {
-        try! Auth.auth().signOut()
-        
-        if ((FBSDKAccessToken.current()) != nil) {
-            let loginManager = FBSDKLoginManager()
-            loginManager.logOut()
-        }
-        
-     
-        let presentingViewController = self.presentingViewController
-        self.dismiss(animated: false, completion: {
-            presentingViewController!.dismiss(animated: true, completion: {})
-        })
-        
-       
-        
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = FlatBlack()
@@ -58,8 +42,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         user = Auth.auth().currentUser
         ref = Database.database().reference()
     
-
-        // Check back end to see if it exists
+        // Check back end to see if user exists
         let productRef = ref.child("users/\(user!.uid)")
         productRef.observe(DataEventType.value, with: { (snapshot) in
             let postDict = snapshot.value as? [String : AnyObject] ?? [:]
@@ -67,13 +50,12 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             if ((postDict["name"]) != nil) {
                 self.nameTextField.text = postDict["name"] as? String
             }
-            
+
             if ((postDict["profile"]) != nil) {
                 self.profileURL = postDict["profile"]! as! String
                 self.profilePicture.downloadedFrom(link: (postDict["profile"] as? String)!)
             }
             
-       
             if ((postDict["email"]) != nil) {
                 self.emailTextField.text = postDict["email"] as? String
                 print("Change")
@@ -92,9 +74,21 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         //Profile Image
         profilePicture.layer.cornerRadius = profilePicture.frame.size.width/2.0
-        profilePicture.backgroundColor = FlatGray()
+        profilePicture.layer.borderWidth = 1.0
+        profilePicture.layer.borderColor = FlatGray().cgColor
         profilePicture.layer.masksToBounds = true
-
+      
+        
+        let photoTapGesture = UITapGestureRecognizer(target: self, action: #selector(takePhoto))
+        profilePicture.addGestureRecognizer(photoTapGesture)
+        
+        
+        let cameraIcon = UIImage(named: "camera.png")
+        let tintedImage = cameraIcon?.withRenderingMode(.alwaysTemplate)
+        imageView.image = tintedImage
+        imageView.tintColor = FlatWhite()
+        
+     
         // Textfield setup
         setupTextField(textfield: nameTextField)
         setupTextField(textfield: emailTextField)
@@ -115,6 +109,86 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
      
     }
     
+    
+    func takePhoto()
+    {
+        
+        imagePicker =  UIImagePickerController()
+        imagePicker.delegate = self
+        
+        let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
+            self.openCamera()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+            self.openGallary()
+        }))
+        
+        alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func openCamera()
+    {
+        if(UIImagePickerController .isSourceTypeAvailable(UIImagePickerControllerSourceType.camera))
+        {
+            imagePicker.sourceType = UIImagePickerControllerSourceType.camera
+            imagePicker.allowsEditing = true
+            self.present(imagePicker, animated: true, completion: nil)
+        }
+        else
+        {
+            let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+    
+    func openGallary()
+    {
+        imagePicker.sourceType = UIImagePickerControllerSourceType.photoLibrary
+        imagePicker.allowsEditing = true
+        self.present(imagePicker, animated: true, completion: nil)
+    }
+    
+    //MARK: - Done image capture here
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        imagePicker.dismiss(animated: true, completion: nil)
+        
+        if let image = info[UIImagePickerControllerEditedImage] as? UIImage {
+            profilePicture.image = image
+        } else if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
+            profilePicture.image = image
+        } else {
+            profilePicture.image = nil
+        }
+        
+        if (profilePicture.image != nil) {
+            // Points to the root reference
+            let storageRef = Storage.storage().reference()
+            
+            // Points to "images"
+            let imagesRef = storageRef.child("images")
+            
+            // Points to "images/space.jpg"
+            // Note that you can use variables to create child values
+            let fileName = user.uid + ".jpg"
+            let imageRef = imagesRef.child(fileName)
+            
+         
+            var data = Data()
+            data = UIImageJPEGRepresentation(profilePicture.image!, 0.8)!
+            // set upload path
+            let filePath = "\(Auth.auth().currentUser!.uid)/\("userPhoto")"
+            let metaData = StorageMetadata()
+            metaData.contentType = "image/jpg"
+
+            
+        }
+        
+    }
     
     // MARK: TextField Delegate
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -247,7 +321,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
 
     
     // Picker View
-    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
@@ -263,6 +336,24 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         self.genderTextField.text = genders[row]
     }
+    
+    // IB Actions
+    @IBAction func logout(_ sender: Any) {
+        try! Auth.auth().signOut()
+        
+        if ((FBSDKAccessToken.current()) != nil) {
+            let loginManager = FBSDKLoginManager()
+            loginManager.logOut()
+        }
+        
+        
+        let presentingViewController = self.presentingViewController
+        self.dismiss(animated: false, completion: {
+            presentingViewController!.dismiss(animated: true, completion: {})
+        })
+        
+    }
+    
     /*
     // MARK: - Navigation
 
