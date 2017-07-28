@@ -9,100 +9,36 @@
 import UIKit
 import ChameleonFramework
 
-
 class FriendsTableViewController: UITableViewController {
   
-    let screenSize = UIScreen.main.bounds
-    var friends = ["Sunny", "Arian"]
-    
-    
     @IBOutlet weak var friendsButton: UIButton!
     @IBOutlet weak var contactsButton: UIButton!
- 
-    
-    @IBAction func friendsButtonClicked(_ sender: Any) {
-       
-        self.tableView.reloadData()
-    }
-    
-    @IBAction func contactButtonClicked(_ sender: Any) {
-        
-    }
-  
     @IBOutlet weak var searchBar: UISearchBar!
     
-    func changeSearchBarIcon() {
-        let width = 20
-        let height = 20
-        
-        let topView: UIView = searchBar.subviews[0] as UIView
-        var textField:UITextField!
-        for subView in topView.subviews {
-            if subView is UITextField {
-                textField = subView as! UITextField
-                break
-            }
-        }
-        
-        if ((textField) != nil) {
-            let leftview = textField.leftView as! UIImageView
-            let magnifyimage = leftview.image
-            let imageView  = UIImageView(frame: CGRect(x: Int(searchBar.frame.origin.x) + 15 , y:  10, width: width, height: height ) )
-            imageView.image = magnifyimage
-            textField.leftView = UIView(frame: CGRect(x: 0 , y: 0, width: Int(width), height: height) )
-            textField.leftViewMode = .always
-            textField.superview?.addSubview(imageView)
-            textField.superview?.layer.borderColor = FlatGray().cgColor
-            textField.superview?.layer.borderWidth = 0.5
-        }
-    }
+    var friends = ["Sunny", "Arian"]
     
-    
+    //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
-
-       
-        
-        
-        
         self.navigationController?.navigationBar.tintColor = FlatWhite()
-        self.navigationItem.backBarButtonItem?.title = ""
-        
-     
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
-    
-    
-   
- 
-   
-    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
- 
+    
+    //MARK: UITableView Data Source
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-     
         return self.friends.count
-        
-        
     }
 
-    
+    //MARK: UITableView Delegate
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "FriendCell", for: indexPath)
@@ -111,14 +47,9 @@ class FriendsTableViewController: UITableViewController {
         cell.textLabel?.textColor = FlatWhite()
         cell.detailTextLabel?.textColor = FlatWhite()
       
-         
         cell.textLabel?.text = self.friends[indexPath.row]
         cell.detailTextLabel?.text = ""
-            
         
-        
-        // Configure the cell...
-
         return cell
     }
  

@@ -15,9 +15,6 @@ private let labelWidth = CGFloat(35.0)
 
 class VenueCollectionViewCell: UICollectionViewCell {
     
-   
-    // TODO: Clean up these numbers for the label frames
-    
     var nameLabel = UILabel()
     var logo = UIImageView()
     var numberOfDealsLabel = UILabel()
@@ -34,6 +31,8 @@ class VenueCollectionViewCell: UICollectionViewCell {
         self.contentView.layer.borderColor = FlatGrayDark().cgColor
 
         
+        
+        // TODO: Clean up these magic numbers for the label frames
         // Venue Name
         nameLabel = UILabel(frame: CGRect(x: 0, y: offset * 2.0, width: self.contentView.frame.size.width, height: 15))
         nameLabel.textAlignment = .center
@@ -41,7 +40,6 @@ class VenueCollectionViewCell: UICollectionViewCell {
         nameLabel.textColor = FlatWhite()
         self.contentView.addSubview(nameLabel)
         
-    
         // Venue Logo
         logo = UIImageView(frame: CGRect(x: self.contentView.frame.size.width * 0.3, y: 25 + offset, width: self.contentView.frame.size.width/2.5, height:self.contentView.frame.size.width/2.5))
         logo.layer.cornerRadius = self.frame.size.width/5
@@ -67,7 +65,6 @@ class VenueCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(bar)
         
         let middle = self.contentView.frame.size.width/2.0
-        
         
         // Price Icon and Label
         let priceIconLabelFrame = CGRect(x: middle - labelWidth, y: self.contentView.frame.size.height - bar.frame.size.height * 3.0, width: labelWidth, height: 15)
@@ -125,9 +122,10 @@ class VenueCollectionViewCell: UICollectionViewCell {
         
     }
     
+
     
-    // Helper Function
     
+    //MARK: Helper Function
     func addIconToCard(name: String, frame: CGRect) -> UIImageView {
         let icon = UIImageView(frame: frame)
         let tintedImage = (UIImage(named:name))?.withRenderingMode(.alwaysTemplate)
@@ -137,10 +135,8 @@ class VenueCollectionViewCell: UICollectionViewCell {
         return icon
     }
     
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
 }

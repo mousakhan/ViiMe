@@ -12,15 +12,15 @@ import NotificationBannerSwift
 
 class ForgotPasswordViewController: UIViewController, UITextFieldDelegate {
 
-
     @IBOutlet weak var emailTextField: UITextField!
-    
     @IBOutlet weak var cancelButton: UIButton!
     
-   
+    
+    //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        // Change color of icon button, could probably make this into it's own helper function
         let origImage = UIImage(named: "cancel.png")
         let tintedImage = origImage?.withRenderingMode(.alwaysTemplate)
         cancelButton.setImage(tintedImage, for: .normal)
@@ -32,9 +32,9 @@ class ForgotPasswordViewController: UIViewController, UITextFieldDelegate {
     }
     
     
+    //MARK: IBActions
     @IBAction func resetPassword(_ sender: Any) {
         let email = emailTextField.text!
-        
         if ValidationHelper.validateEmail(textfield: emailTextField) {
         Auth.auth().sendPasswordReset(withEmail: email) { (error) in
             if let error = error {
@@ -48,7 +48,7 @@ class ForgotPasswordViewController: UIViewController, UITextFieldDelegate {
         
     }
     
-    // UITextFieldDelegate Functions and functions relating to textfields
+    //MARK: UITextFieldDelegate
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         emailTextField.resignFirstResponder()
         resetPassword(self)

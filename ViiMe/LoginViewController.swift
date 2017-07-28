@@ -132,7 +132,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 return
             }
             
-
             self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                 if !(snapshot.hasChild("\(user!.uid)")){
                     self.ref.child("users/\(user!.uid)").setValue(["name": user!.displayName ?? "", "age": "", "email": user!.email ?? "", "id": user!.uid, "profile": user!.photoURL?.absoluteString ?? "" ])
@@ -146,10 +145,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         print("User Logged Out")
     }
     
-    // Helper Functions
+    // MARK: Helper Functions
     func createFacebookButton() {
         //NOTE: This is hack-ish, might change in the future, so should be careful.
-        
         //Remove constraint that restricts height of facebook button.
         let layoutConstraintsArr = facebookSignInButton.constraints
         for lc in layoutConstraintsArr { // or attribute is NSLayoutAttributeHeight etc.

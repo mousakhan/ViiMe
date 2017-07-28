@@ -13,21 +13,19 @@ import ChameleonFramework
 class DealsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     let reuseIdentifier = "DealCell"
+    
+    // This will be an array of all the venues deals in the future
     var deal = "With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries."
     var venue : Venue?
     
 
     @IBOutlet weak var groupBarButtonItem: UIBarButtonItem!
-    
-    
-    
-    
     @IBOutlet weak var tableView: UITableView!
+    
+    
+    //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        print(venue!)
-     
         self.view.backgroundColor = FlatBlack()
         self.tableView.layer.borderColor = FlatWhiteDark().cgColor
         self.tableView.layer.borderWidth = 0.5
@@ -61,7 +59,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         cell?.dealActionLabel.font = cell?.dealActionLabel.font.withSize(12)
         cell?.dealActionLabel.textColor = FlatWhite()
         
-
         return cell!
     }
 

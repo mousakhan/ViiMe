@@ -12,27 +12,27 @@ import ChameleonFramework
 
 class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate  {
     
-    private let reuseIdentifier = "VenueCell"
-    private let sectionInsets = UIEdgeInsets(top: 25.0, left: 10.0, bottom: 25.0, right: 10.0)
-    private let iconSize = CGFloat(12.0)
-    private let offset = CGFloat(5.0)
-    private let labelWidth = CGFloat(35.0)
-    
-
-
     @IBOutlet var searchBarButtonItem: UIBarButtonItem!
     @IBOutlet var profileBarButtonItem: UIBarButtonItem!
     var searchController : UISearchController!
     
-    // This will be with VENUE objects in the future when implemented with backend.
+    let reuseIdentifier = "VenueCell"
+    let sectionInsets = UIEdgeInsets(top: 25.0, left: 10.0, bottom: 25.0, right: 10.0)
+    let iconSize = CGFloat(12.0)
+    let offset = CGFloat(5.0)
+    let labelWidth = CGFloat(35.0)
+    
     var filteredVenues = [Venue]()
     var venues = [Venue]()
+    
+    // Fake Data
     let venue1 = Venue(name: "The Whiskey Bar", numberOfDeals: 5, price: 20.0, cuisine: "Viet", type: "Bar", distance: 58)
 
     let venue2 = Venue(name: "The  Bar", numberOfDeals: 10, price: 27.0, cuisine: "Chinese", type: "Club", distance: 161)
 
     let venue3 = Venue(name: "The Student Bar", numberOfDeals: 6, price: 10.0, cuisine: "Iranian", type: "Pub", distance: 161)
     
+    //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -40,6 +40,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         venues.append(venue2)
         venues.append(venue3)
      
+        // Search Controller setup
         self.searchController = UISearchController(searchResultsController:  nil)
         
         self.searchController.searchResultsUpdater = self
@@ -54,75 +55,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
         // Register cell classes
         self.collectionView!.register(VenueCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-
-        // Do any additional setup after loading the view.
     }
     
-    func filterContentForSearchText(searchText: String, scope: String = "All") {
-        filteredVenues = venues.filter { venue in
-            return venue.name.lowercased().contains(searchText.lowercased())
-        }
-        
-    }
-    
-    
-    
-    func updateSearchResults(for searchController: UISearchController) {
-        filterContentForSearchText(searchText: searchController.searchBar.text!)
-        collectionView?.reloadData()
-    }
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
-        flowLayout.sectionInset = sectionInsets
-        let numberOfItemsPerRow = 2
-        let totalSpace = flowLayout.sectionInset.left
-            + flowLayout.sectionInset.right
-            + (flowLayout.minimumInteritemSpacing * CGFloat(numberOfItemsPerRow - 1))
-        let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(numberOfItemsPerRow))
-        
-        return CGSize(width: size, height: size + 25)
-    }
-    
-    @IBAction func searchBarButtonClicked(_ sender: Any) {
-        self.navigationItem.rightBarButtonItem = nil
-        self.navigationItem.leftBarButtonItem = nil
-        self.navigationItem.titleView = searchController.searchBar
-        self.searchController.becomeFirstResponder()
-        self.searchController.isActive = true
-    }
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        self.navigationItem.titleView = nil
-        self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
-        self.navigationItem.leftBarButtonItem = self.profileBarButtonItem
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        self.navigationItem.titleView = nil
-        self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
-        self.navigationItem.leftBarButtonItem = self.profileBarButtonItem
-    }
-    
-    
-    
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: "DealViewControllerSegue", sender: nil)
-    }
-    
-
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-    
-    // MARK: - Navigation
-
-
     // MARK: UICollectionViewDataSource
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
@@ -138,7 +72,23 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
         return venues.count
     }
-
+    
+    // MARK: UICollectionViewDelegate
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
+        flowLayout.sectionInset = sectionInsets
+        let numberOfItemsPerRow = 2
+        let totalSpace = flowLayout.sectionInset.left
+            + flowLayout.sectionInset.right
+            + (flowLayout.minimumInteritemSpacing * CGFloat(numberOfItemsPerRow - 1))
+        let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(numberOfItemsPerRow))
+        
+        return CGSize(width: size, height: size + 25)
+    }
+    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VenueCollectionViewCell
@@ -163,8 +113,44 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         return cell
     }
     
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.performSegue(withIdentifier: "DealViewControllerSegue", sender: nil)
+    }
+    
 
-   
+    //MARK: UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate
+    func filterContentForSearchText(searchText: String, scope: String = "All") {
+        filteredVenues = venues.filter { venue in
+            return venue.name.lowercased().contains(searchText.lowercased())
+        }
+        
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        filterContentForSearchText(searchText: searchController.searchBar.text!)
+        collectionView?.reloadData()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        self.navigationItem.titleView = nil
+        self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
+        self.navigationItem.leftBarButtonItem = self.profileBarButtonItem
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.navigationItem.titleView = nil
+        self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
+        self.navigationItem.leftBarButtonItem = self.profileBarButtonItem
+    }
+    
+    //MARK: IBActions
+    @IBAction func searchBarButtonClicked(_ sender: Any) {
+        self.navigationItem.rightBarButtonItem = nil
+        self.navigationItem.leftBarButtonItem = nil
+        self.navigationItem.titleView = searchController.searchBar
+        self.searchController.becomeFirstResponder()
+        self.searchController.isActive = true
+    }
     
     // MARK: Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -176,6 +162,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             }
         }
     }
+    
     
     
 

@@ -10,6 +10,7 @@ import UIKit
 import ChameleonFramework
 import Firebase
 import FBSDKLoginKit
+import FirebaseStorage
 
 class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -24,20 +25,17 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     @IBOutlet weak var benefitsTableView: UITableView!
     
    
- 
- 
     var ref: DatabaseReference!
     var user: User!
     let genders = ["", "Male", "Female"]
     var profileURL = ""
     var imagePicker: UIImagePickerController!
-    let screenSize = UIScreen.main.bounds
 
-    
+    //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.view.backgroundColor = FlatBlack()
-    
         
         user = Auth.auth().currentUser
         ref = Database.database().reference()
@@ -69,26 +67,18 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             if ((postDict["gender"]) != nil) {
                 self.genderTextField.text = postDict["gender"] as? String
             }
-            
+
         })
         
-        //Profile Image
+        //Profile Image Setup
         profilePicture.layer.cornerRadius = profilePicture.frame.size.width/2.0
         profilePicture.layer.borderWidth = 1.0
         profilePicture.layer.borderColor = FlatGray().cgColor
         profilePicture.layer.masksToBounds = true
-      
-        
         let photoTapGesture = UITapGestureRecognizer(target: self, action: #selector(takePhoto))
         profilePicture.addGestureRecognizer(photoTapGesture)
         
-        
-        let cameraIcon = UIImage(named: "camera.png")
-        let tintedImage = cameraIcon?.withRenderingMode(.alwaysTemplate)
-        imageView.image = tintedImage
-        imageView.tintColor = FlatWhite()
-        
-     
+  
         // Textfield setup
         setupTextField(textfield: nameTextField)
         setupTextField(textfield: emailTextField)
@@ -109,10 +99,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
      
     }
     
-    
-    func takePhoto()
-    {
-        
+    //MARK: Image Picker
+    func takePhoto() {
         imagePicker =  UIImagePickerController()
         imagePicker.delegate = self
         
@@ -130,30 +118,24 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         self.present(alert, animated: true, completion: nil)
     }
     
-    func openCamera()
-    {
-        if(UIImagePickerController .isSourceTypeAvailable(UIImagePickerControllerSourceType.camera))
-        {
+    func openCamera() {
+        if (UIImagePickerController .isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)) {
             imagePicker.sourceType = UIImagePickerControllerSourceType.camera
             imagePicker.allowsEditing = true
             self.present(imagePicker, animated: true, completion: nil)
-        }
-        else
-        {
-            let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
+        } else {
+            let alert  = UIAlertController(title: "Warning", message: "You don't have a camera", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
     }
     
-    func openGallary()
-    {
+    func openGallary() {
         imagePicker.sourceType = UIImagePickerControllerSourceType.photoLibrary
         imagePicker.allowsEditing = true
         self.present(imagePicker, animated: true, completion: nil)
     }
     
-    //MARK: - Done image capture here
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         imagePicker.dismiss(animated: true, completion: nil)
         
@@ -165,6 +147,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             profilePicture.image = nil
         }
         
+        
+        //TODO: need to figure out best way to store images
         if (profilePicture.image != nil) {
             // Points to the root reference
             let storageRef = Storage.storage().reference()
@@ -184,11 +168,10 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             let filePath = "\(Auth.auth().currentUser!.uid)/\("userPhoto")"
             let metaData = StorageMetadata()
             metaData.contentType = "image/jpg"
-
-            
         }
         
     }
+    
     
     // MARK: TextField Delegate
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -205,20 +188,41 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             picker.delegate = self
             picker.dataSource = self
             textField.inputView = picker
-            
             if (self.genderTextField.text != nil) {
                 let index = genders.index(of: self.genderTextField.text!)
-                print(index!)
                 if (index != nil) {
                     picker.selectRow(index!, inComponent:0, animated:true)
                 }
             }
-         
- 
-        
         }
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
+    {
+        if (textField == nameTextField) {
+            emailTextField.becomeFirstResponder()
+        } else if (textField == emailTextField) {
+            ageTextField.becomeFirstResponder()
+        } else if (textField == ageTextField) {
+            genderTextField.becomeFirstResponder()
+        }
+        // Do not add a line break
+        return false
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        let name =  nameTextField.text
+        let age = ageTextField.text
+        let email = emailTextField.text
+        let gender = genderTextField.text
+        
+        self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            self.ref.child("users/\(self.user!.uid)").setValue(["name": name, "age": age, "email": email, "gender": gender, "id": self.user!.uid, "profile": self.profileURL])
+        })
+        
+    }
+    
+    //MARK: Helper Functions
     func hideKeyboard(sender: AnyObject) {
         nameTextField.resignFirstResponder()
         ageTextField.resignFirstResponder()
@@ -233,23 +237,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         ageTextField.text = formatter.string(from: sender.date)
     }
     
-    
-    // UITextFieldDelegate Functions and functions relating to textfields
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool
-    {
-        if (textField == nameTextField) {
-            emailTextField.becomeFirstResponder()
-        } else if (textField == emailTextField) {
-            ageTextField.becomeFirstResponder()
-        } else if (textField == ageTextField) {
-            genderTextField.becomeFirstResponder()
-        }
-        // Do not add a line break
-        return false
-    }
-    
-  
-
   
     func setupTextField(textfield: UITextField) {
         textfield.backgroundColor = FlatBlackDark()
@@ -267,29 +254,17 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         tableView.layer.masksToBounds = true
     }
 
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        let name =  nameTextField.text
-        let age = ageTextField.text
-        let email = emailTextField.text
-        let gender = genderTextField.text
-        
-        print ("Test1")
-        self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-            self.ref.child("users/\(self.user!.uid)").setValue(["name": name, "age": age, "email": email, "gender": gender, "id": self.user!.uid, "profile": self.profileURL])
-        })
-        
-        print("test2")
+    
+    func getDateFromString(date: String)-> Date {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        if date == "" {
+            let date = Date()
+            return formatter.date(from: formatter.string(from: date))!
+        }
+        return formatter.date(from: date)!
     }
 
-    @IBAction func dismissProfilePage(_ sender: Any) {
-        self.dismiss(animated: true) { 
-            
-        }
-    }
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     func keyboardWillShow(notification:NSNotification){
         //give room at the bottom of the scroll view, so it doesn't cover up anything the user needs to tap
         var userInfo = notification.userInfo!
@@ -306,21 +281,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         scrollView.contentInset = contentInset
     }
     
- 
-    
-    
-    func getDateFromString(date: String)-> Date {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        if date == "" {
-           let date = Date()
-           return formatter.date(from: formatter.string(from: date))!
-        }
-        return formatter.date(from: date)!
-    }
-
-    
-    // Picker View
+    //MARK: Picker View Delegate & Data Source
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
@@ -337,7 +298,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         self.genderTextField.text = genders[row]
     }
     
-    // IB Actions
+    //MARK: IBActions
     @IBAction func logout(_ sender: Any) {
         try! Auth.auth().signOut()
         
@@ -354,6 +315,11 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
     }
     
+    @IBAction func dismissProfilePage(_ sender: Any) {
+        self.dismiss(animated: true) {
+            
+        }
+    }
     /*
     // MARK: - Navigation
 

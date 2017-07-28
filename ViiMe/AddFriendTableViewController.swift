@@ -15,25 +15,19 @@ class AddFriendTableViewController: UITableViewController, MFMessageComposeViewC
 
     var contacts = [Dictionary<String, Any>]()
     
+    //MARK: View Lifecycles
     override func viewDidLoad() {
         super.viewDidLoad()
-
         initContacts()
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
     
     
+    //MARK: MFMessageComposeViewControllerDelegate
     func sendSmsClick(recipient: String) {
         let messageVC = MFMessageComposeViewController()
         messageVC.body = "Download ViiMe to join me on this exclusive offer! https://itunes.apple.com/ca/app/viime/id1144678737?mt=8";
         messageVC.recipients = [recipient]
         messageVC.messageComposeDelegate = self;
-        
         self.present(messageVC, animated: false, completion: nil)
     }
     
@@ -53,17 +47,9 @@ class AddFriendTableViewController: UITableViewController, MFMessageComposeViewC
         }
     }
 
-    
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-    // MARK: - Table view data source
-
+    //MARK: UITableView Datasource
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
@@ -72,10 +58,13 @@ class AddFriendTableViewController: UITableViewController, MFMessageComposeViewC
         return self.contacts.count
     }
 
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60.0
+    }
+    //MARK: UITableView Delegate
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AddFriendCell", for: indexPath)
-
         cell.backgroundColor = FlatBlack()
         cell.textLabel?.textColor = FlatWhite()
         cell.detailTextLabel?.textColor = FlatWhite()
@@ -83,9 +72,7 @@ class AddFriendTableViewController: UITableViewController, MFMessageComposeViewC
         let currentContact = self.contacts[indexPath.row]
         cell.textLabel?.text = currentContact["name"] as? String
         cell.detailTextLabel?.text = currentContact["number"] as? String
-            
-            
-       
+        
         return cell
     }
 
@@ -94,7 +81,7 @@ class AddFriendTableViewController: UITableViewController, MFMessageComposeViewC
         
     }
     
-    
+    //MARK: Helper Functions
     func initContacts() {
         let store = CNContactStore()
         
@@ -122,7 +109,6 @@ class AddFriendTableViewController: UITableViewController, MFMessageComposeViewC
                         if let number = phoneNumber.value as? CNPhoneNumber,
                             let label = phoneNumber.label {
                             let localizedLabel = CNLabeledValue<CNPhoneNumber>.localizedString(forLabel: label)
-                            
                             if (number.stringValue != "" && contact.givenName != "") {
                                 self.contacts.append(["name": contact.givenName + " " + contact.familyName, "number": number.stringValue])
                             }
@@ -144,10 +130,6 @@ class AddFriendTableViewController: UITableViewController, MFMessageComposeViewC
                 self.tableView.reloadData()
             }
         })
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60.0
     }
     
 

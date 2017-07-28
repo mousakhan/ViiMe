@@ -10,7 +10,6 @@
 		4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */; };
 		4C5502131F16A5B80073A405 /* Venue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5502121F16A5B80073A405 /* Venue.swift */; };
 		4C5502151F16B2780073A405 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5502141F16B2780073A405 /* ProfileViewController.swift */; };
-		4C612E311F2387670043EF5E /* DealsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C612E301F2387670043EF5E /* DealsViewController.swift */; };
 		4C7DB2941EEEA55E00765D3A /* TextFieldHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DB2931EEEA55E00765D3A /* TextFieldHelper.swift */; };
 		4C7DB2961EEEA62C00765D3A /* ValidationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DB2951EEEA62C00765D3A /* ValidationHelper.swift */; };
 		4C7DB2981EEED0B400765D3A /* BannerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7DB2971EEED0B400765D3A /* BannerHelper.swift */; };
@@ -24,6 +23,7 @@
 		4CB6AD641F2A7C65004EB393 /* AddFriendTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD631F2A7C65004EB393 /* AddFriendTableViewController.swift */; };
 		4CB6AD6B1F2BB9CA004EB393 /* DealTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6A1F2BB9CA004EB393 /* DealTableViewCell.swift */; };
 		4CB6AD6D1F2BBA05004EB393 /* UIImageView+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6C1F2BBA05004EB393 /* UIImageView+Download.swift */; };
+		4CB6AD701F2BC779004EB393 /* DealsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6F1F2BC779004EB393 /* DealsViewController.swift */; };
 		4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */; };
 		4CD8E1CF1EEB661B009C3FD0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */; };
 		4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */; };
@@ -35,7 +35,6 @@
 		4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenuesCollectionViewController.swift; sourceTree = "<group>"; };
 		4C5502121F16A5B80073A405 /* Venue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Venue.swift; sourceTree = "<group>"; };
 		4C5502141F16B2780073A405 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
-		4C612E301F2387670043EF5E /* DealsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DealsViewController.swift; sourceTree = "<group>"; };
 		4C7DB2931EEEA55E00765D3A /* TextFieldHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldHelper.swift; sourceTree = "<group>"; };
 		4C7DB2951EEEA62C00765D3A /* ValidationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValidationHelper.swift; sourceTree = "<group>"; };
 		4C7DB2971EEED0B400765D3A /* BannerHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannerHelper.swift; sourceTree = "<group>"; };
@@ -49,9 +48,9 @@
 		4CB6AD5F1F2A3F91004EB393 /* FriendsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendsTableViewController.swift; sourceTree = "<group>"; };
 		4CB6AD611F2A6D22004EB393 /* UITextField+Border.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Border.swift"; sourceTree = "<group>"; };
 		4CB6AD631F2A7C65004EB393 /* AddFriendTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFriendTableViewController.swift; sourceTree = "<group>"; };
-		4CB6AD661F2BB8AA004EB393 /* DealsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DealsViewController.swift; sourceTree = "<group>"; };
 		4CB6AD6A1F2BB9CA004EB393 /* DealTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealTableViewCell.swift; sourceTree = "<group>"; };
 		4CB6AD6C1F2BBA05004EB393 /* UIImageView+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIImageView+Download.swift"; path = "../UIImageView+Download.swift"; sourceTree = "<group>"; };
+		4CB6AD6F1F2BC779004EB393 /* DealsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DealsViewController.swift; sourceTree = "<group>"; };
 		4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -73,14 +72,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		4C0172FF1F23A1440097051E /* Deals */ = {
-			isa = PBXGroup;
-			children = (
-				4C612E301F2387670043EF5E /* DealsViewController.swift */,
-			);
-			name = Deals;
-			sourceTree = "<group>";
-		};
 		4C02DE2E1F1EA052002AA78C /* Login & Signup  */ = {
 			isa = PBXGroup;
 			children = (
@@ -151,7 +142,6 @@
 				4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */,
 				4C7EDE001EEB01BD001A9B81 /* AppDelegate.swift */,
 				4C7EDE041EEB01BD001A9B81 /* Main.storyboard */,
-				4C0172FF1F23A1440097051E /* Deals */,
 				4C7EDE071EEB01BD001A9B81 /* Assets.xcassets */,
 				4C7EDE091EEB01BD001A9B81 /* LaunchScreen.storyboard */,
 				4C7EDE0C1EEB01BD001A9B81 /* Info.plist */,
@@ -171,8 +161,8 @@
 		4CB6AD6E1F2BBDD7004EB393 /* Deals */ = {
 			isa = PBXGroup;
 			children = (
+				4CB6AD6F1F2BC779004EB393 /* DealsViewController.swift */,
 				4CB6AD6A1F2BB9CA004EB393 /* DealTableViewCell.swift */,
-				4CB6AD661F2BB8AA004EB393 /* DealsViewController.swift */,
 			);
 			name = Deals;
 			sourceTree = "<group>";
@@ -330,11 +320,11 @@
 				4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */,
 				4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */,
 				4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */,
-				4C612E311F2387670043EF5E /* DealsViewController.swift in Sources */,
 				4C7EDE011EEB01BD001A9B81 /* AppDelegate.swift in Sources */,
 				4C7DB2961EEEA62C00765D3A /* ValidationHelper.swift in Sources */,
 				4C7DB2941EEEA55E00765D3A /* TextFieldHelper.swift in Sources */,
 				4CB6AD641F2A7C65004EB393 /* AddFriendTableViewController.swift in Sources */,
+				4CB6AD701F2BC779004EB393 /* DealsViewController.swift in Sources */,
 				4CB6AD601F2A3F91004EB393 /* FriendsTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
