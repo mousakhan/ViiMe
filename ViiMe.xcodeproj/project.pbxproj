@@ -18,6 +18,12 @@
 		4C7EDE061EEB01BD001A9B81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7EDE041EEB01BD001A9B81 /* Main.storyboard */; };
 		4C7EDE081EEB01BD001A9B81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C7EDE071EEB01BD001A9B81 /* Assets.xcassets */; };
 		4C7EDE0B1EEB01BD001A9B81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7EDE091EEB01BD001A9B81 /* LaunchScreen.storyboard */; };
+		4CB6AD601F2A3F91004EB393 /* FriendsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD5F1F2A3F91004EB393 /* FriendsTableViewController.swift */; };
+		4CB6AD621F2A6D22004EB393 /* UITextField+Border.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD611F2A6D22004EB393 /* UITextField+Border.swift */; };
+		4CB6AD641F2A7C65004EB393 /* AddFriendTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD631F2A7C65004EB393 /* AddFriendTableViewController.swift */; };
+		4CB6AD681F2BB8AA004EB393 /* DealsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD661F2BB8AA004EB393 /* DealsViewController.swift */; };
+		4CB6AD6B1F2BB9CA004EB393 /* DealTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6A1F2BB9CA004EB393 /* DealTableViewCell.swift */; };
+		4CB6AD6D1F2BBA05004EB393 /* UIImageView+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6C1F2BBA05004EB393 /* UIImageView+Download.swift */; };
 		4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */; };
 		4CD8E1CF1EEB661B009C3FD0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */; };
 		4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */; };
@@ -39,6 +45,12 @@
 		4C7EDE071EEB01BD001A9B81 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4C7EDE0A1EEB01BD001A9B81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C7EDE0C1EEB01BD001A9B81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4CB6AD5F1F2A3F91004EB393 /* FriendsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendsTableViewController.swift; sourceTree = "<group>"; };
+		4CB6AD611F2A6D22004EB393 /* UITextField+Border.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Border.swift"; sourceTree = "<group>"; };
+		4CB6AD631F2A7C65004EB393 /* AddFriendTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFriendTableViewController.swift; sourceTree = "<group>"; };
+		4CB6AD661F2BB8AA004EB393 /* DealsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DealsViewController.swift; sourceTree = "<group>"; };
+		4CB6AD6A1F2BB9CA004EB393 /* DealTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DealTableViewCell.swift; path = ViiMe/DealTableViewCell.swift; sourceTree = "<group>"; };
+		4CB6AD6C1F2BBA05004EB393 /* UIImageView+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+Download.swift"; sourceTree = "<group>"; };
 		4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -94,6 +106,7 @@
 				4C7DB2931EEEA55E00765D3A /* TextFieldHelper.swift */,
 				4C7DB2951EEEA62C00765D3A /* ValidationHelper.swift */,
 				4C7DB2971EEED0B400765D3A /* BannerHelper.swift */,
+				4CB6AD611F2A6D22004EB393 /* UITextField+Border.swift */,
 			);
 			name = "Helper Classes";
 			sourceTree = "<group>";
@@ -101,6 +114,8 @@
 		4C7EDDF41EEB01BD001A9B81 = {
 			isa = PBXGroup;
 			children = (
+				4CB6AD6C1F2BBA05004EB393 /* UIImageView+Download.swift */,
+				4CB6AD6A1F2BB9CA004EB393 /* DealTableViewCell.swift */,
 				4C7EDDFF1EEB01BD001A9B81 /* ViiMe */,
 				4C7EDDFE1EEB01BD001A9B81 /* Products */,
 				9783D0D447BB3A1AAB31FF6F /* Pods */,
@@ -122,15 +137,26 @@
 				4C7DB2991EEED5F400765D3A /* Helper Classes */,
 				4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */,
 				4C7EDE001EEB01BD001A9B81 /* AppDelegate.swift */,
+				4CB6AD661F2BB8AA004EB393 /* DealsViewController.swift */,
 				4C02DE2F1F1EA06E002AA78C /* Venue  */,
 				4C02DE2E1F1EA052002AA78C /* Login & Signup  */,
 				4C02DE301F1EA08B002AA78C /* Profile */,
 				4C7EDE041EEB01BD001A9B81 /* Main.storyboard */,
+				4CB6AD651F2BA5CE004EB393 /* Friends */,
 				4C7EDE071EEB01BD001A9B81 /* Assets.xcassets */,
 				4C7EDE091EEB01BD001A9B81 /* LaunchScreen.storyboard */,
 				4C7EDE0C1EEB01BD001A9B81 /* Info.plist */,
 			);
 			path = ViiMe;
+			sourceTree = "<group>";
+		};
+		4CB6AD651F2BA5CE004EB393 /* Friends */ = {
+			isa = PBXGroup;
+			children = (
+				4CB6AD5F1F2A3F91004EB393 /* FriendsTableViewController.swift */,
+				4CB6AD631F2A7C65004EB393 /* AddFriendTableViewController.swift */,
+			);
+			name = Friends;
 			sourceTree = "<group>";
 		};
 		9783D0D447BB3A1AAB31FF6F /* Pods */ = {
@@ -275,9 +301,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CB6AD6D1F2BBA05004EB393 /* UIImageView+Download.swift in Sources */,
+				4CB6AD6B1F2BB9CA004EB393 /* DealTableViewCell.swift in Sources */,
 				4C7DB2981EEED0B400765D3A /* BannerHelper.swift in Sources */,
 				4C5502131F16A5B80073A405 /* Venue.swift in Sources */,
 				4C5502151F16B2780073A405 /* ProfileViewController.swift in Sources */,
+				4CB6AD621F2A6D22004EB393 /* UITextField+Border.swift in Sources */,
 				4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */,
 				4C7EDE031EEB01BD001A9B81 /* LoginViewController.swift in Sources */,
 				4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */,
@@ -286,6 +315,9 @@
 				4C7EDE011EEB01BD001A9B81 /* AppDelegate.swift in Sources */,
 				4C7DB2961EEEA62C00765D3A /* ValidationHelper.swift in Sources */,
 				4C7DB2941EEEA55E00765D3A /* TextFieldHelper.swift in Sources */,
+				4CB6AD641F2A7C65004EB393 /* AddFriendTableViewController.swift in Sources */,
+				4CB6AD681F2BB8AA004EB393 /* DealsViewController.swift in Sources */,
+				4CB6AD601F2A3F91004EB393 /* FriendsTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
