@@ -108,7 +108,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath.row)
+        self.performSegue(withIdentifier: "DealViewControllerSegue", sender: nil)
     }
     
     // MARK: UICollectionViewDataSource
@@ -161,7 +161,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     // MARK: Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "Deal") {
+        if (segue.identifier == "DealViewControllerSegue") {
             let destVC = segue.destination as! DealsViewController
             if let indexPath = collectionView?.indexPathsForSelectedItems?[0][1] {
                 destVC.venue = venues[indexPath]

@@ -508,7 +508,7 @@
                             <inset key="imageInsets" minX="12" minY="12" maxX="12" maxY="12"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
-                                <segue destination="nMK-oK-2pX" kind="presentation" id="1tc-lM-nwV"/>
+                                <segue destination="53V-0r-zPo" kind="presentation" id="PCv-mm-nno"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="w3s-Ul-uoe">
@@ -521,6 +521,7 @@
                     <connections>
                         <outlet property="profileBarButtonItem" destination="8tx-Z1-3cG" id="gZp-vB-Ita"/>
                         <outlet property="searchBarButtonItem" destination="w3s-Ul-uoe" id="3A7-Nk-ZDN"/>
+                        <segue destination="vQ5-nF-ICX" kind="show" identifier="DealViewControllerSegue" id="BUK-J3-X73"/>
                     </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ff3-X3-0jY" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -542,20 +543,8 @@
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="duA-tZ-4U9">
                                 <rect key="frame" x="20" y="0.0" width="394" height="672"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Aqv-y9-fTY">
-                                        <rect key="frame" x="0.0" y="40" width="25" height="25"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="25" id="EkK-Jy-1X8"/>
-                                            <constraint firstAttribute="width" constant="25" id="UFQ-j5-R1U"/>
-                                        </constraints>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <state key="normal" image="cancel"/>
-                                        <connections>
-                                            <action selector="dismissProfilePage:" destination="nMK-oK-2pX" eventType="touchUpInside" id="y4g-SS-ntb"/>
-                                        </connections>
-                                    </button>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="VSh-GF-PK6">
-                                        <rect key="frame" x="0.0" y="80" width="374" height="757.66666666666663"/>
+                                        <rect key="frame" x="0.0" y="15" width="374" height="757.66666666666663"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="fMl-Pt-b4p">
                                                 <rect key="frame" x="123" y="0.0" width="128.33333333333331" height="148"/>
@@ -584,13 +573,13 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="50"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F3c-Ro-j5S">
-                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="20.333333333333314"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="374" height="20.333333333333343"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FOd-Gh-yKX">
-                                                                <rect key="frame" x="0.0" y="20.333333333333314" width="374" height="29.666666666666686"/>
+                                                                <rect key="frame" x="0.0" y="20.333333333333343" width="374" height="29.666666666666657"/>
                                                                 <color key="backgroundColor" red="0.11181893199682236" green="0.1118365004658699" blue="0.1118125319480896" alpha="1" colorSpace="calibratedRGB"/>
                                                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -716,10 +705,10 @@
                                                 </constraints>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="uzv-oC-Iev">
-                                                <rect key="frame" x="150" y="707.66666666666663" width="74" height="50"/>
+                                                <rect key="frame" x="0.0" y="707.66666666666663" width="374" height="50"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MwA-c0-S5b">
-                                                        <rect key="frame" x="0.0" y="0.0" width="74" height="50"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="374" height="50"/>
                                                         <color key="backgroundColor" red="0.85043728351593018" green="0.21816034615039825" blue="0.15920260548591614" alpha="1" colorSpace="calibratedRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="50" id="eDD-AE-7kG"/>
@@ -742,30 +731,17 @@
                                         <constraints>
                                             <constraint firstItem="0UZ-FB-LMa" firstAttribute="width" secondItem="DiF-SD-cGG" secondAttribute="width" id="J6m-97-zh6"/>
                                             <constraint firstItem="DiF-SD-cGG" firstAttribute="width" secondItem="VSh-GF-PK6" secondAttribute="width" id="Zfc-Ff-CE4"/>
+                                            <constraint firstItem="uzv-oC-Iev" firstAttribute="width" secondItem="0UZ-FB-LMa" secondAttribute="width" id="uSX-lc-TcC"/>
                                             <constraint firstItem="Oxd-EQ-dUA" firstAttribute="width" secondItem="DiF-SD-cGG" secondAttribute="width" id="zWZ-v0-nIV"/>
                                         </constraints>
                                     </stackView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JUu-gt-abN">
-                                        <rect key="frame" x="330" y="36" width="44" height="34"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                        <state key="normal" title="SAVE">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="saveProfileInformation:" destination="nMK-oK-2pX" eventType="touchUpInside" id="zin-C7-CRg"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="Aqv-y9-fTY" firstAttribute="top" secondItem="duA-tZ-4U9" secondAttribute="top" constant="40" id="6qb-dB-87v"/>
-                                    <constraint firstItem="Aqv-y9-fTY" firstAttribute="leading" secondItem="duA-tZ-4U9" secondAttribute="leading" id="71V-vj-sid"/>
                                     <constraint firstAttribute="trailing" secondItem="VSh-GF-PK6" secondAttribute="trailing" constant="20" id="7DH-Ir-Ioq"/>
                                     <constraint firstItem="VSh-GF-PK6" firstAttribute="leading" secondItem="duA-tZ-4U9" secondAttribute="leading" id="7tJ-UZ-iGO"/>
-                                    <constraint firstItem="VSh-GF-PK6" firstAttribute="top" secondItem="Aqv-y9-fTY" secondAttribute="bottom" constant="15" id="GSd-rz-edt"/>
-                                    <constraint firstItem="SGp-X2-J0V" firstAttribute="top" secondItem="JUu-gt-abN" secondAttribute="bottom" constant="10" id="Hk9-dT-Jqq"/>
+                                    <constraint firstItem="VSh-GF-PK6" firstAttribute="top" secondItem="duA-tZ-4U9" secondAttribute="top" constant="15" id="O5i-hr-kub"/>
                                     <constraint firstItem="VSh-GF-PK6" firstAttribute="centerX" secondItem="duA-tZ-4U9" secondAttribute="centerX" constant="-10" id="gQx-U0-0WF"/>
                                     <constraint firstAttribute="bottom" secondItem="VSh-GF-PK6" secondAttribute="bottom" constant="3.3333333333333712" id="sHK-aw-1H0"/>
-                                    <constraint firstAttribute="trailing" secondItem="JUu-gt-abN" secondAttribute="trailing" constant="20" id="vRg-GH-DAr"/>
                                 </constraints>
                             </scrollView>
                         </subviews>
@@ -819,11 +795,11 @@
                         <viewControllerLayoutGuide type="bottom" id="9oX-86-IBz"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="w6O-yZ-Zru">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="64" width="414" height="672"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="WN2-nn-uGf">
-                                <rect key="frame" x="20" y="45" width="374" height="646"/>
+                                <rect key="frame" x="20" y="25" width="374" height="622"/>
                                 <color key="backgroundColor" red="0.111818932" green="0.11183650050000001" blue="0.1118125319" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="separatorColor" red="0.68888300660000001" green="0.71366006140000005" blue="0.73448425530000006" alpha="1" colorSpace="calibratedRGB"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -1061,6 +1037,7 @@
         <!--Profile-->
         <scene sceneID="24x-RM-iBW">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nbp-5g-hBh" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController title="Profile" automaticallyAdjustsScrollViewInsets="NO" id="53V-0r-zPo" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="uIy-bT-bp3">
@@ -1077,7 +1054,6 @@
                         <segue destination="nMK-oK-2pX" kind="relationship" relationship="rootViewController" id="Uq1-Ly-mUS"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="nbp-5g-hBh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="5459.420289855073" y="166.30434782608697"/>
         </scene>
@@ -1086,11 +1062,10 @@
         <image name="Nightlife" width="500" height="750"/>
         <image name="ViiMe" width="1280" height="980"/>
         <image name="cancel" width="50" height="50"/>
-        <image name="group" width="16" height="16"/>
+        <image name="group" width="50" height="50"/>
         <image name="profile" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Uq1-Ly-mUS"/>
         <segue reference="aO0-DF-dPH"/>
     </inferredMetricsTieBreakers>
 </document>
