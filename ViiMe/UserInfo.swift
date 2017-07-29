@@ -15,5 +15,7 @@ struct UserInfo {
     var email : String
     var gender : String
     var profile : String
-    var friends: Array<Any>
+    var friends: Array<UserInfo>
+    var deals: Array<Deal>
+    
 }

@@ -476,7 +476,6 @@
         <!--Venues-->
         <scene sceneID="r37-pI-2nE">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ff3-X3-0jY" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <collectionViewController id="KuU-BT-XkD" customClass="VenuesCollectionViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Lzg-LF-ygt">
                         <rect key="frame" x="0.0" y="64" width="414" height="672"/>
@@ -526,6 +525,7 @@
                         <segue destination="vQ5-nF-ICX" kind="show" identifier="DealViewControllerSegue" id="BUK-J3-X73"/>
                     </connections>
                 </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ff3-X3-0jY" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4657.971014492754" y="147.55434782608697"/>
         </scene>
@@ -864,6 +864,7 @@
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
                         <outlet property="tableView" destination="WN2-nn-uGf" id="nK8-BN-SLc"/>
+                        <segue destination="85Y-Ls-T1t" kind="modal" identifier="RedemptionViewControllerSegue" id="LHG-oP-XQ7"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VeC-pz-lsV" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1041,10 +1042,30 @@
             </objects>
             <point key="canvasLocation" x="8653" y="254"/>
         </scene>
+        <!--Redemption View Controller-->
+        <scene sceneID="Txi-f1-Ci7">
+            <objects>
+                <viewController id="85Y-Ls-T1t" customClass="RedemptionViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="vGS-WG-mcg"/>
+                        <viewControllerLayoutGuide type="bottom" id="zrg-W8-8ao"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Wer-ot-OWu">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="2LK-EI-UZF">
+                        <barButtonItem key="backBarButtonItem" title=" " id="GXz-MN-Tao"/>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HUN-5w-xLs" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="9373.9130434782619" y="248.64130434782609"/>
+        </scene>
         <!--VenuesNavigation-->
         <scene sceneID="Rel-gp-3St">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="aL0-Kk-Ryc" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController storyboardIdentifier="VenuesNavigation" title="VenuesNavigation" automaticallyAdjustsScrollViewInsets="NO" id="OfP-AE-a5O" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="FIg-Ff-FUy">
@@ -1060,6 +1081,7 @@
                         <segue destination="KuU-BT-XkD" kind="relationship" relationship="rootViewController" id="Hfw-ET-1jr"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aL0-Kk-Ryc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3750.7246376811595" y="147.55434782608697"/>
         </scene>

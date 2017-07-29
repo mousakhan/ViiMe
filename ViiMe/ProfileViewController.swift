@@ -264,7 +264,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             let gender = postDict["gender"] as? String ?? ""
             let email = postDict["email"] as? String ?? ""
             let profile = postDict["profile"] as? String ?? ""
-            let friends = postDict["friends"] as? Array ?? []
+            let friends = postDict["friends"] as? Array<UserInfo> ?? []
             
             if (name != "") {
                 self.nameTextField.text = postDict["name"] as? String
@@ -287,7 +287,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 self.genderTextField.text = postDict["gender"] as? String
             }
             
-            self.userInfo = UserInfo(name: name, id: self.user.uid, age: age, email: email, gender: gender, profile: profile, friends: friends)
+            self.userInfo = UserInfo(name: name, id: self.user.uid, age: age, email: email, gender: gender, profile: profile, friends: friends, deals: [])
             
         })
     }

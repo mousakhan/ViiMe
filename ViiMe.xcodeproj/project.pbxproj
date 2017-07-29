@@ -26,6 +26,8 @@
 		4CB6AD741F2CB692004EB393 /* FriendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD731F2CB692004EB393 /* FriendTableViewCell.swift */; };
 		4CB6AD761F2CC2CF004EB393 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD751F2CC2CF004EB393 /* UserInfo.swift */; };
 		4CB6AD791F2CCCB8004EB393 /* UIImageView+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD781F2CCCB8004EB393 /* UIImageView+Download.swift */; };
+		4CB6AD7B1F2CFB08004EB393 /* RedemptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD7A1F2CFB08004EB393 /* RedemptionViewController.swift */; };
+		4CB6AD7E1F2D4F8E004EB393 /* Deal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD7D1F2D4F8E004EB393 /* Deal.swift */; };
 		4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */; };
 		4CD8E1CF1EEB661B009C3FD0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */; };
 		4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */; };
@@ -55,6 +57,8 @@
 		4CB6AD731F2CB692004EB393 /* FriendTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendTableViewCell.swift; sourceTree = "<group>"; };
 		4CB6AD751F2CC2CF004EB393 /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		4CB6AD781F2CCCB8004EB393 /* UIImageView+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+Download.swift"; sourceTree = "<group>"; };
+		4CB6AD7A1F2CFB08004EB393 /* RedemptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RedemptionViewController.swift; sourceTree = "<group>"; };
+		4CB6AD7D1F2D4F8E004EB393 /* Deal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deal.swift; sourceTree = "<group>"; };
 		4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -142,6 +146,7 @@
 				4CB6AD651F2BA5CE004EB393 /* Friends */,
 				4C02DE2F1F1EA06E002AA78C /* Venue  */,
 				4CB6AD6E1F2BBDD7004EB393 /* Deals */,
+				4CB6AD7C1F2CFF64004EB393 /* Redemption */,
 				4C7DB2991EEED5F400765D3A /* Helper Classes */,
 				4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */,
 				4C7EDE001EEB01BD001A9B81 /* AppDelegate.swift */,
@@ -176,9 +181,19 @@
 			isa = PBXGroup;
 			children = (
 				4CB6AD751F2CC2CF004EB393 /* UserInfo.swift */,
+				4CB6AD7D1F2D4F8E004EB393 /* Deal.swift */,
 				4C5502121F16A5B80073A405 /* Venue.swift */,
 			);
 			name = "Data Model";
+			sourceTree = "<group>";
+		};
+		4CB6AD7C1F2CFF64004EB393 /* Redemption */ = {
+			isa = PBXGroup;
+			children = (
+				4CB6AD7A1F2CFB08004EB393 /* RedemptionViewController.swift */,
+			);
+			name = Redemption;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		9783D0D447BB3A1AAB31FF6F /* Pods */ = {
@@ -329,7 +344,9 @@
 				4C5502151F16B2780073A405 /* ProfileViewController.swift in Sources */,
 				4CB6AD621F2A6D22004EB393 /* UITextField+Border.swift in Sources */,
 				4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */,
+				4CB6AD7E1F2D4F8E004EB393 /* Deal.swift in Sources */,
 				4C7EDE031EEB01BD001A9B81 /* LoginViewController.swift in Sources */,
+				4CB6AD7B1F2CFB08004EB393 /* RedemptionViewController.swift in Sources */,
 				4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */,
 				4CB6AD741F2CB692004EB393 /* FriendTableViewCell.swift in Sources */,
 				4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */,
