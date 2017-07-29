@@ -14,8 +14,6 @@ import FirebaseStorage
 
 class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    
-    // BUG WHEN U CANCEL, CANT CLICK PROFILE
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var profilePicture: UIImageView!
     @IBOutlet weak var nameTextField: UITextField!
@@ -329,9 +327,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     }
     
     @IBAction func dismissProfilePage(_ sender: Any) {
-        self.dismiss(animated: true) {
-            
-        }
+        self.navigationController?.popViewController(animated: true)
     }
     
     // MARK: Navigation

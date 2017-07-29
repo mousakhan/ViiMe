@@ -119,7 +119,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.performSegue(withIdentifier: "DealViewControllerSegue", sender: nil)
-        searchBarCancelButtonClicked(self.searchController.searchBar)
     }
     
 
