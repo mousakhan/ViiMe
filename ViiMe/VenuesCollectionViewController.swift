@@ -49,8 +49,10 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         self.searchController.searchBar.delegate = self
         
         self.searchController.hidesNavigationBarDuringPresentation = false
-        self.searchController.dimsBackgroundDuringPresentation = true
-        self.definesPresentationContext = true
+        self.searchController.dimsBackgroundDuringPresentation = false
+        self.searchController.searchBar.returnKeyType = UIReturnKeyType.done
+        self.searchController.searchBar.enablesReturnKeyAutomatically = false
+        
         UIBarButtonItem.appearance(whenContainedInInstancesOf:[UISearchBar.self]).tintColor = FlatWhite()
        
     
@@ -116,6 +118,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.performSegue(withIdentifier: "DealViewControllerSegue", sender: nil)
+        searchBarCancelButtonClicked(self.searchController.searchBar)
     }
     
 
@@ -125,17 +128,19 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             return venue.name.lowercased().contains(searchText.lowercased())
         }
         
+        collectionView?.reloadData()
     }
     
     func updateSearchResults(for searchController: UISearchController) {
         filterContentForSearchText(searchText: searchController.searchBar.text!)
-        collectionView?.reloadData()
+        
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         self.navigationItem.titleView = nil
         self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
         self.navigationItem.leftBarButtonItem = self.profileBarButtonItem
+        searchController.searchBar.text = ""
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -144,13 +149,15 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         self.navigationItem.leftBarButtonItem = self.profileBarButtonItem
     }
     
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
     //MARK: IBActions
     @IBAction func searchBarButtonClicked(_ sender: Any) {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil
         self.navigationItem.titleView = searchController.searchBar
-        self.searchController.becomeFirstResponder()
-        self.searchController.isActive = true
+        self.searchController.searchBar.becomeFirstResponder()
     }
     
     // MARK: Navigation
@@ -163,8 +170,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             }
         }
     }
-    
-    
     
 
     // MARK: UICollectionViewDelegate

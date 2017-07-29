@@ -869,7 +869,7 @@
             </objects>
             <point key="canvasLocation" x="7118.8405797101459" y="172.82608695652175"/>
         </scene>
-        <!--My Friends-->
+        <!--Friends List-->
         <scene sceneID="IYL-G3-ftb">
             <objects>
                 <tableViewController id="6VD-eB-E3J" customClass="FriendsTableViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
@@ -911,7 +911,7 @@
                             <outlet property="delegate" destination="6VD-eB-E3J" id="3nZ-vc-eJC"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="My Friends" id="bjQ-lE-qHH">
+                    <navigationItem key="navigationItem" title="Friends List" id="bjQ-lE-qHH">
                         <barButtonItem key="backBarButtonItem" title=" " id="99v-sA-gCD"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="Kmr-U3-hZS">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

@@ -139,9 +139,11 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         view.tintColor = FlatBlackDark()
         let headerTitle = view as? UITableViewHeaderFooterView
-        headerTitle?.textLabel?.textColor = FlatWhiteDark()
+        headerTitle?.textLabel?.textColor = FlatWhite()
     }
-    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40.0
+    }
     //MARK: MFMessageComposeViewControllerDelegate
     func sendSmsClick(recipient: String) {
         let messageVC = MFMessageComposeViewController()
