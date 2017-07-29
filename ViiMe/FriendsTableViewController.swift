@@ -10,14 +10,14 @@ import UIKit
 import ChameleonFramework
 import Contacts
 import MessageUI
+import Firebase
 
 class FriendsTableViewController: UITableViewController, MFMessageComposeViewControllerDelegate {
   
     @IBOutlet weak var searchBar: UISearchBar!
     
-    var friends = ["Sunny", "Arian"]
+    var user : UserInfo? = nil
     var contacts = [Dictionary<String, Any>]()
- 
     
     //MARK: View Lifecycle
     override func viewDidLoad() {
@@ -39,7 +39,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (section == 0) {
-            return self.friends.count
+            return self.user!.friends.count
         }
         return self.contacts.count
     }
@@ -51,23 +51,40 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     //MARK: UITableView Delegate
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "FriendCell", for: indexPath)
-
-        cell.backgroundColor = FlatBlack()
-        cell.textLabel?.textColor = FlatWhite()
-        cell.detailTextLabel?.textColor = FlatWhite()
-      
         if (indexPath.section == 0) {
-            cell.textLabel?.text = self.friends[indexPath.row]
-            cell.detailTextLabel?.text = ""
+            let cell = tableView.dequeueReusableCell(withIdentifier: "FriendCell", for: indexPath) as! FriendTableViewCell
+            cell.nameLabel?.text = self.user!.friends[indexPath.row] as? String
             cell.isUserInteractionEnabled = false
-        } else if (indexPath.section == 1) {
-            //TODO: Customize cell to show "INVITE" button on right.
+            cell.backgroundColor = FlatBlack()
+            cell.textLabel?.textColor = FlatWhite()
+            cell.detailTextLabel?.textColor = FlatWhite()
+            
+            cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
+            cell.profilePicture.layer.borderWidth = 1.0
+            cell.profilePicture.layer.borderColor = FlatGray().cgColor
+            cell.profilePicture.layer.masksToBounds = true
+            
+            let bgColorView = UIView()
+            bgColorView.backgroundColor = FlatPurpleDark()
+            cell.selectedBackgroundView = bgColorView
+            
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ContactCell", for: indexPath)
             cell.textLabel?.text = self.contacts[indexPath.row]["name"] as? String
             cell.detailTextLabel?.text = self.contacts[indexPath.row]["number"] as? String
+            cell.backgroundColor = FlatBlack()
+            cell.textLabel?.textColor = FlatWhite()
+            cell.detailTextLabel?.textColor = FlatWhite()
+
+            let bgColorView = UIView()
+            bgColorView.backgroundColor = FlatPurpleDark()
+            cell.selectedBackgroundView = bgColorView
+            
+            return cell
         }
         
-        return cell
+
     }
  
     
@@ -138,12 +155,20 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         view.tintColor = FlatBlackDark()
-        let headerTitle = view as? UITableViewHeaderFooterView
+        var headerTitle = view as? UITableViewHeaderFooterView
         headerTitle?.textLabel?.textColor = FlatWhite()
+        
+        if (section == 0 &&  (self.user?.friends.count)! < 1) {
+            headerTitle = nil
+        } else if (section == 1 &&  self.contacts.count < 1) {
+            headerTitle = nil
+        }
     }
+    
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 40.0
     }
+    
     //MARK: MFMessageComposeViewControllerDelegate
     func sendSmsClick(recipient: String) {
         let messageVC = MFMessageComposeViewController()
@@ -169,13 +194,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         }
     }
 
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
 
     /*
     // Override to support editing the table view.

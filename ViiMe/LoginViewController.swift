@@ -137,7 +137,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     self.ref.child("users/\(user!.uid)").setValue(["name": user!.displayName ?? "", "age": "", "email": user!.email ?? "", "id": user!.uid, "profile": user!.photoURL?.absoluteString ?? "" ])
                 }
             })
-            
         }
     }
     

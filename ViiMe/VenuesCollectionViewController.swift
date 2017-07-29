@@ -50,8 +50,9 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
         self.searchController.hidesNavigationBarDuringPresentation = false
         self.searchController.dimsBackgroundDuringPresentation = false
-        self.searchController.searchBar.returnKeyType = UIReturnKeyType.done
+        self.searchController.searchBar.returnKeyType = .done
         self.searchController.searchBar.enablesReturnKeyAutomatically = false
+        self.searchController.searchBar.keyboardAppearance = .dark
         
         UIBarButtonItem.appearance(whenContainedInInstancesOf:[UISearchBar.self]).tintColor = FlatWhite()
        

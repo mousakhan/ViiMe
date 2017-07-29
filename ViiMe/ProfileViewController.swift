@@ -14,6 +14,8 @@ import FirebaseStorage
 
 class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
+    
+    // BUG WHEN U CANCEL, CANT CLICK PROFILE
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var profilePicture: UIImageView!
     @IBOutlet weak var nameTextField: UITextField!
@@ -27,6 +29,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
    
     var ref: DatabaseReference!
     var user: User!
+    var userInfo : UserInfo!
+    
     let genders = ["", "Male", "Female"]
     var profileURL = ""
     var imagePicker: UIImagePickerController!
@@ -40,35 +44,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         user = Auth.auth().currentUser
         ref = Database.database().reference()
     
-        // Check back end to see if user exists
-        let productRef = ref.child("users/\(user!.uid)")
-        productRef.observe(DataEventType.value, with: { (snapshot) in
-            let postDict = snapshot.value as? [String : AnyObject] ?? [:]
-            
-            if ((postDict["name"]) != nil) {
-                self.nameTextField.text = postDict["name"] as? String
-            }
-
-            if ((postDict["profile"]) != nil) {
-                self.profileURL = postDict["profile"]! as! String
-                self.profilePicture.downloadedFrom(link: (postDict["profile"] as? String)!)
-            }
-            
-            if ((postDict["email"]) != nil) {
-                self.emailTextField.text = postDict["email"] as? String
-                print("Change")
-            }
-            
-            if ((postDict["age"]) != nil) {
-                print("Here")
-                self.ageTextField.text = postDict["age"] as? String
-            }
-            
-            if ((postDict["gender"]) != nil) {
-                self.genderTextField.text = postDict["gender"] as? String
-            }
-
-        })
+        setupData()
         
         //Profile Image Setup
         profilePicture.layer.cornerRadius = profilePicture.frame.size.width/2.0
@@ -95,8 +71,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         scrollView.addGestureRecognizer(tapGesture)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
-        
-     
     }
     
     //MARK: Image Picker
@@ -217,7 +191,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         let gender = genderTextField.text
         
         self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-            self.ref.child("users/\(self.user!.uid)").setValue(["name": name, "age": age, "email": email, "gender": gender, "id": self.user!.uid, "profile": self.profileURL])
+            self.ref.child("users/\(self.user!.uid)").setValue(["name": name, "age": age, "email": email, "gender": gender, "id": self.userInfo.id, "profile": self.userInfo.profile])
         })
         
     }
@@ -268,7 +242,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     func keyboardWillShow(notification:NSNotification){
         //give room at the bottom of the scroll view, so it doesn't cover up anything the user needs to tap
         var userInfo = notification.userInfo!
-        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as? NSValue)!.cgRectValue
         keyboardFrame = self.view.convert(keyboardFrame, from: nil)
         
         var contentInset:UIEdgeInsets = self.scrollView.contentInset
@@ -279,6 +253,45 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     func keyboardWillHide(notification:NSNotification){
         let contentInset:UIEdgeInsets = UIEdgeInsets.zero
         scrollView.contentInset = contentInset
+    }
+    
+    func setupData() {
+        // Check back end to see if user exists
+        let productRef = ref.child("users/\(user!.uid)")
+        productRef.observe(DataEventType.value, with: { (snapshot) in
+            let postDict = snapshot.value as? [String : AnyObject] ?? [:]
+            
+            let name = postDict["name"] as? String ?? ""
+            let age = postDict["age"] as? String ?? ""
+            let gender = postDict["gender"] as? String ?? ""
+            let email = postDict["email"] as? String ?? ""
+            let profile = postDict["profile"] as? String ?? ""
+            let friends = postDict["friends"] as? Array ?? []
+            
+            if (name != "") {
+                self.nameTextField.text = postDict["name"] as? String
+            }
+            
+            if (profile != "") {
+                self.profileURL = profile
+                self.profilePicture.downloadedFrom(link: (postDict["profile"] as? String)!)
+            }
+            
+            if (email != "") {
+                self.emailTextField.text = postDict["email"] as? String
+            }
+            
+            if (age != "") {
+                self.ageTextField.text = postDict["age"] as? String
+            }
+            
+            if (gender != "") {
+                self.genderTextField.text = postDict["gender"] as? String
+            }
+            
+            self.userInfo = UserInfo(name: name, id: self.user.uid, age: age, email: email, gender: gender, profile: profile, friends: friends)
+            
+        })
     }
     
     //MARK: Picker View Delegate & Data Source
@@ -320,14 +333,14 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             
         }
     }
-    /*
-    // MARK: - Navigation
-
+    
+    // MARK: Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if (segue.identifier == "FriendsTableViewControllerSegue") {
+            let destVC = segue.destination as? FriendsTableViewController
+            destVC?.user = self.userInfo
+        }
     }
-    */
 
 }

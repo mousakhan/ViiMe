@@ -24,6 +24,8 @@
 		4CB6AD6B1F2BB9CA004EB393 /* DealTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6A1F2BB9CA004EB393 /* DealTableViewCell.swift */; };
 		4CB6AD6D1F2BBA05004EB393 /* UIImageView+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6C1F2BBA05004EB393 /* UIImageView+Download.swift */; };
 		4CB6AD701F2BC779004EB393 /* DealsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6F1F2BC779004EB393 /* DealsViewController.swift */; };
+		4CB6AD741F2CB692004EB393 /* FriendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD731F2CB692004EB393 /* FriendTableViewCell.swift */; };
+		4CB6AD761F2CC2CF004EB393 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD751F2CC2CF004EB393 /* UserInfo.swift */; };
 		4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */; };
 		4CD8E1CF1EEB661B009C3FD0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */; };
 		4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */; };
@@ -51,6 +53,8 @@
 		4CB6AD6A1F2BB9CA004EB393 /* DealTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealTableViewCell.swift; sourceTree = "<group>"; };
 		4CB6AD6C1F2BBA05004EB393 /* UIImageView+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIImageView+Download.swift"; path = "../UIImageView+Download.swift"; sourceTree = "<group>"; };
 		4CB6AD6F1F2BC779004EB393 /* DealsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DealsViewController.swift; sourceTree = "<group>"; };
+		4CB6AD731F2CB692004EB393 /* FriendTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendTableViewCell.swift; sourceTree = "<group>"; };
+		4CB6AD751F2CC2CF004EB393 /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -85,7 +89,6 @@
 		4C02DE2F1F1EA06E002AA78C /* Venue  */ = {
 			isa = PBXGroup;
 			children = (
-				4C5502121F16A5B80073A405 /* Venue.swift */,
 				4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */,
 				4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */,
 			);
@@ -133,6 +136,7 @@
 		4C7EDDFF1EEB01BD001A9B81 /* ViiMe */ = {
 			isa = PBXGroup;
 			children = (
+				4CB6AD771F2CC573004EB393 /* Data Model */,
 				4C02DE2E1F1EA052002AA78C /* Login & Signup  */,
 				4C02DE301F1EA08B002AA78C /* Profile */,
 				4CB6AD651F2BA5CE004EB393 /* Friends */,
@@ -154,6 +158,7 @@
 			children = (
 				4CB6AD5F1F2A3F91004EB393 /* FriendsTableViewController.swift */,
 				4CB6AD631F2A7C65004EB393 /* AddFriendTableViewController.swift */,
+				4CB6AD731F2CB692004EB393 /* FriendTableViewCell.swift */,
 			);
 			name = Friends;
 			sourceTree = "<group>";
@@ -165,6 +170,15 @@
 				4CB6AD6A1F2BB9CA004EB393 /* DealTableViewCell.swift */,
 			);
 			name = Deals;
+			sourceTree = "<group>";
+		};
+		4CB6AD771F2CC573004EB393 /* Data Model */ = {
+			isa = PBXGroup;
+			children = (
+				4CB6AD751F2CC2CF004EB393 /* UserInfo.swift */,
+				4C5502121F16A5B80073A405 /* Venue.swift */,
+			);
+			name = "Data Model";
 			sourceTree = "<group>";
 		};
 		9783D0D447BB3A1AAB31FF6F /* Pods */ = {
@@ -318,6 +332,7 @@
 				4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */,
 				4C7EDE031EEB01BD001A9B81 /* LoginViewController.swift in Sources */,
 				4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */,
+				4CB6AD741F2CB692004EB393 /* FriendTableViewCell.swift in Sources */,
 				4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */,
 				4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */,
 				4C7EDE011EEB01BD001A9B81 /* AppDelegate.swift in Sources */,
@@ -326,6 +341,7 @@
 				4CB6AD641F2A7C65004EB393 /* AddFriendTableViewController.swift in Sources */,
 				4CB6AD701F2BC779004EB393 /* DealsViewController.swift in Sources */,
 				4CB6AD601F2A3F91004EB393 /* FriendsTableViewController.swift in Sources */,
+				4CB6AD761F2CC2CF004EB393 /* UserInfo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

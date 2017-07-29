@@ -8,7 +8,6 @@
 
 import UIKit
 import ChameleonFramework
-
 class AddFriendTableViewController: UITableViewController {
 
     //MARK: View Lifecycles
@@ -29,9 +28,9 @@ class AddFriendTableViewController: UITableViewController {
         return 60.0
     }
     
+    
     //MARK: UITableView Delegate
     //MARK: Helper Functions
-    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
