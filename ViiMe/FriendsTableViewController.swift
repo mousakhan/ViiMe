@@ -104,7 +104,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             granted, error in
             
             guard granted else {
-                let alert = UIAlertController(title: "Can't access contact", message: "Please go to Settings -> MyApp to enable contact permission", preferredStyle: .alert)
+                let alert = UIAlertController(title: "Can't Access Contacts", message: "Please go to Settings -> ViiMe to enable contact permission.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
                 return
