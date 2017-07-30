@@ -189,10 +189,11 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 let venue = Venue(name: name as! String, price: price as! String, cuisine: cuisine as! String, type: type as! String, address: address as! String, description: description as! String, profileUrl: profile as! String)
                 print (venue)
                 self.venues.append(venue)
+                self.collectionView?.reloadData()
             }
         })
         
-        self.collectionView?.reloadData()
+        
         getDeals()
     }
     
