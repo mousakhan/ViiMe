@@ -25,7 +25,6 @@
 		4CB6AD701F2BC779004EB393 /* DealsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6F1F2BC779004EB393 /* DealsViewController.swift */; };
 		4CB6AD741F2CB692004EB393 /* FriendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD731F2CB692004EB393 /* FriendTableViewCell.swift */; };
 		4CB6AD761F2CC2CF004EB393 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD751F2CC2CF004EB393 /* UserInfo.swift */; };
-		4CB6AD791F2CCCB8004EB393 /* UIImageView+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD781F2CCCB8004EB393 /* UIImageView+Download.swift */; };
 		4CB6AD7B1F2CFB08004EB393 /* RedemptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD7A1F2CFB08004EB393 /* RedemptionViewController.swift */; };
 		4CB6AD7E1F2D4F8E004EB393 /* Deal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD7D1F2D4F8E004EB393 /* Deal.swift */; };
 		4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */; };
@@ -56,7 +55,6 @@
 		4CB6AD6F1F2BC779004EB393 /* DealsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DealsViewController.swift; sourceTree = "<group>"; };
 		4CB6AD731F2CB692004EB393 /* FriendTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendTableViewCell.swift; sourceTree = "<group>"; };
 		4CB6AD751F2CC2CF004EB393 /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
-		4CB6AD781F2CCCB8004EB393 /* UIImageView+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+Download.swift"; sourceTree = "<group>"; };
 		4CB6AD7A1F2CFB08004EB393 /* RedemptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RedemptionViewController.swift; sourceTree = "<group>"; };
 		4CB6AD7D1F2D4F8E004EB393 /* Deal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deal.swift; sourceTree = "<group>"; };
 		4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
@@ -110,7 +108,6 @@
 		4C7DB2991EEED5F400765D3A /* Helper Classes */ = {
 			isa = PBXGroup;
 			children = (
-				4CB6AD781F2CCCB8004EB393 /* UIImageView+Download.swift */,
 				4C7DB2931EEEA55E00765D3A /* TextFieldHelper.swift */,
 				4C7DB2951EEEA62C00765D3A /* ValidationHelper.swift */,
 				4C7DB2971EEED0B400765D3A /* BannerHelper.swift */,
@@ -353,7 +350,6 @@
 				4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */,
 				4C7EDE011EEB01BD001A9B81 /* AppDelegate.swift in Sources */,
 				4C7DB2961EEEA62C00765D3A /* ValidationHelper.swift in Sources */,
-				4CB6AD791F2CCCB8004EB393 /* UIImageView+Download.swift in Sources */,
 				4C7DB2941EEEA55E00765D3A /* TextFieldHelper.swift in Sources */,
 				4CB6AD641F2A7C65004EB393 /* AddFriendTableViewController.swift in Sources */,
 				4CB6AD701F2BC779004EB393 /* DealsViewController.swift in Sources */,

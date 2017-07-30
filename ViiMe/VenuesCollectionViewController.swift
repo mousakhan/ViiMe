@@ -8,9 +8,11 @@
 
 import UIKit
 import ChameleonFramework
+import Firebase
+import FirebaseDatabase
+import Kingfisher
 
 
-//TODO: Fix searching function
 class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate  {
     
     @IBOutlet var searchBarButtonItem: UIBarButtonItem!
@@ -26,21 +28,12 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     var filteredVenues = [Venue]()
     var venues = [Venue]()
     
-    // Fake Data
-    let venue1 = Venue(name: "The Whiskey Bar", numberOfDeals: 5, price: 20.0, cuisine: "Viet", type: "Bar", distance: 58)
-
-    let venue2 = Venue(name: "The  Bar", numberOfDeals: 10, price: 27.0, cuisine: "Chinese", type: "Club", distance: 161)
-
-    let venue3 = Venue(name: "The Student Bar", numberOfDeals: 6, price: 10.0, cuisine: "Iranian", type: "Pub", distance: 161)
-    
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        venues.append(venue1)
-        venues.append(venue2)
-        venues.append(venue3)
-     
+        initVenues()
+        
         // Search Controller setup
         self.searchController = UISearchController(searchResultsController:  nil)
         
@@ -98,8 +91,9 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VenueCollectionViewCell
     
         
-        var venue = Venue(name: "", numberOfDeals: 5, price: 20, cuisine: "Vietnamese", type: "Bar", distance: 58)
-
+    
+        var venue = Venue(name: "", price: "", cuisine: "", type: "", address: "", description: "", profileUrl: "")
+        
         if searchController.isActive && searchController.searchBar.text != "" {
             venue = filteredVenues[indexPath.row]
         } else {
@@ -108,12 +102,15 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
     
         cell.nameLabel.text = venue.name
-        cell.numberOfDealsLabel.text = String(venue.numberOfDeals) + " Deals"
-        cell.priceLabel.text = "$" + String(venue.price)
+        cell.numberOfDealsLabel.text = "2"
+        cell.priceLabel.text = "" + venue.price
         cell.cuisineLabel.text = venue.cuisine
-        cell.distanceLabel.text = String(venue.distance)
+        cell.distanceLabel.text = venue.address
         cell.venueTypeLabel.text = venue.type
-      
+        
+        let url = URL(string: venue.profileUrl)
+        cell.logo.kf.setImage(with: url)
+        
         return cell
     }
     
@@ -169,6 +166,47 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 destVC.venue = venues[indexPath]
             }
         }
+    }
+    
+    //MARK: Helpers
+    
+    func initVenues () {
+        let ref = Database.database().reference().child("venue/")
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+            print(snapshot.childrenCount) // I got the expected number of items
+            let enumerator = snapshot.children
+            while let rest = enumerator.nextObject() as? DataSnapshot {
+                let value = rest.value as? NSDictionary
+                let name = value?["name"]
+                let cuisine = value?["cuisine"] ?? ""
+                let description = value?["description"] ?? ""
+                let price = value?["price"] ?? ""
+                let address = value?["address"] ?? ""
+                let type = value?["type"] ?? ""
+                let deals = value?["deals"] ?? []
+                let profile = value?["profileUrl"] ?? ""
+                
+                let venue = Venue(name: name as! String, price: price as! String, cuisine: cuisine as! String, type: type as! String, address: address as! String, description: description as! String, profileUrl: profile as! String)
+                print (venue)
+                self.venues.append(venue)
+            }
+        })
+        
+        self.collectionView?.reloadData()
+        getDeals()
+    }
+    
+    func getDeals() {
+        let ref = Database.database().reference().child("deal/")
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+            print(snapshot.childrenCount) // I got the expected number of items
+            let enumerator = snapshot.children
+            while let rest = enumerator.nextObject() as? DataSnapshot {
+                print(rest)
+                print ("Deal")
+            }
+        })
+        
     }
     
 

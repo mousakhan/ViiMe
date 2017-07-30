@@ -272,7 +272,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             
             if (profile != "") {
                 self.profileURL = profile
-                self.profilePicture.downloadedFrom(link: (postDict["profile"] as? String)!)
+                
+                let url = URL(string: profile)
+                self.profilePicture.kf.setImage(with: url)
             }
             
             if (email != "") {

@@ -16,4 +16,5 @@ target 'ViiMe' do
   pod 'NotificationBannerSwift'
   pod 'Firebase/Database'
   pod 'ChameleonFramework/Swift', :git => 'https://github.com/ViccAlexander/Chameleon.git'
+  pod 'Kingfisher', '~> 3.0'	
 end
