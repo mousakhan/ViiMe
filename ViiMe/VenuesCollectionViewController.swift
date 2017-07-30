@@ -102,7 +102,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
     
         cell.nameLabel.text = venue.name
-        cell.numberOfDealsLabel.text = "2"
+        cell.numberOfDealsLabel.text = "2 Deals"
         cell.priceLabel.text = "" + venue.price
         cell.cuisineLabel.text = venue.cuisine
         cell.distanceLabel.text = venue.address
