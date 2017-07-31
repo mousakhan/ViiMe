@@ -120,26 +120,36 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         }
         
         
-        //TODO: need to figure out best way to store images
+
         if (profilePicture.image != nil) {
-            // Points to the root reference
-            let storageRef = Storage.storage().reference()
             
-            // Points to "images"
-            let imagesRef = storageRef.child("images")
+            let storageRef = Storage.storage().reference().child("profile/ " + userInfo.id + ".png")
+    
             
-            // Points to "images/space.jpg"
-            // Note that you can use variables to create child values
-            let fileName = user.uid + ".jpg"
-            let imageRef = imagesRef.child(fileName)
+            storageRef.delete { error in
+                if let error = error {
+                    print(error)
+                    // Uh-oh, an error occurred!
+                } else {
+                    print("Deleted!")
+                    // File deleted successfully
+                }
+            }
             
-         
-            var data = Data()
-            data = UIImageJPEGRepresentation(profilePicture.image!, 0.8)!
-            // set upload path
-            let filePath = "\(Auth.auth().currentUser!.uid)/\("userPhoto")"
-            let metaData = StorageMetadata()
-            metaData.contentType = "image/jpg"
+            
+            if let uploadData = UIImagePNGRepresentation(profilePicture.image!) {
+                storageRef.putData(uploadData, metadata: nil, completion: { (metadata, error) in
+                    if error != nil {
+                        print(error!)
+                        return
+                    }
+                    
+                    // Update Profile Url
+                    Database.database().reference().root.child("users").child(self.userInfo.id).updateChildValues(["profile": metadata?.downloadURL()?.absoluteString ?? ""])
+                    
+                })
+            }
+            
         }
         
     }
