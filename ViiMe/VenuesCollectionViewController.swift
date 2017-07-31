@@ -28,12 +28,12 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     var currCoordinate = CLLocation(latitude: 5.0, longitude: 5.0)
     var filteredVenues = [Venue]()
     var venues = [Venue]()
-    var d = ""
+    var locationEnabled = false
     
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         initVenues()
         
         // Ask for Authorisation from the User.
@@ -46,6 +46,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             locationManager.startUpdatingLocation()
+            locationEnabled = true
         }
         
         // Search Controller setup
@@ -62,8 +63,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         self.searchController.searchBar.keyboardAppearance = .dark
         
         UIBarButtonItem.appearance(whenContainedInInstancesOf:[UISearchBar.self]).tintColor = FlatWhite()
-       
-    
+        
+        
         // Register cell classes
         self.collectionView!.register(VenueCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
     }
@@ -73,8 +74,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
-
-
+    
+    
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warnig Incomplete implementation, return the number of items
         if searchController.isActive && searchController.searchBar.text != "" {
@@ -103,9 +104,9 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VenueCollectionViewCell
-    
         
-    
+        
+        
         var venue = Venue(name: "", price: "", cuisine: "", type: "", address: "", description: "", profileUrl: "")
         
         if searchController.isActive && searchController.searchBar.text != "" {
@@ -114,7 +115,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             venue = venues[indexPath.row]
         }
         
-    
+        
         cell.nameLabel.text = venue.name
         cell.numberOfDealsLabel.text = "2 Deals"
         cell.priceLabel.text = "" + venue.price
@@ -132,7 +133,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         self.performSegue(withIdentifier: "DealViewControllerSegue", sender: nil)
     }
     
-
+    
     //MARK: UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredVenues = venues.filter { venue in
@@ -235,61 +236,67 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     }
     
     func setDistance(address : String, label: UILabel){
-        let geocoder = CLGeocoder()
-        var coordinate : CLLocation? = nil
-        geocoder.geocodeAddressString(address) {
-            placemarks, error in
-            let placemark = placemarks?.first
-            let lat = placemark?.location?.coordinate.latitude
-            let lon = placemark?.location?.coordinate.longitude
-            coordinate = CLLocation(latitude: lat!, longitude: lon!)
-            print(self.currCoordinate)
-            print(coordinate!)
-            
-            let distanceInMeters = Int(self.currCoordinate.distance(from: coordinate!))
-            
-            if (distanceInMeters > 1000) {
-                label.text = String(distanceInMeters/100) + "km"
-            } else {
-                label.text = String(distanceInMeters) + "m"
+        
+        if (locationEnabled) {
+            let geocoder = CLGeocoder()
+            var coordinate : CLLocation? = nil
+            geocoder.geocodeAddressString(address) {
+                placemarks, error in
+                let placemark = placemarks?.first
+                let lat = placemark?.location?.coordinate.latitude
+                let lon = placemark?.location?.coordinate.longitude
+                coordinate = CLLocation(latitude: lat!, longitude: lon!)
+                print(self.currCoordinate)
+                print(coordinate!)
+                
+                let distanceInMeters = Int(self.currCoordinate.distance(from: coordinate!))
+                
+                if (distanceInMeters > 1000) {
+                    label.text = String(distanceInMeters/100) + "km"
+                } else {
+                    label.text = String(distanceInMeters) + "m"
+                }
+                
             }
             
+        } else {
+            label.text = "?"
         }
         
         
-       
+        
     }
     
-
+    
     // MARK: UICollectionViewDelegate
-
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
     
-    }
-    */
-
+    /*
+     // Uncomment this method to specify if the specified item should be highlighted during tracking
+     override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
+     return true
+     }
+     */
+    
+    /*
+     // Uncomment this method to specify if the specified item should be selected
+     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+     return true
+     }
+     */
+    
+    /*
+     // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
+     override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
+     return false
+     }
+     
+     override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
+     return false
+     }
+     
+     override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
+     
+     }
+     */
+    
 }
