@@ -69,5 +69,7 @@
     <string>You can select photos to attach to reports.</string>
     <key>NSContactsUsageDescription</key>
     <string>$(PRODUCT_NAME) contact use</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app will use location to calculate difference between you and the venue. </string>
 </dict>
 </plist>

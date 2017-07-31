@@ -125,7 +125,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             
             let storageRef = Storage.storage().reference().child("profile/ " + userInfo.id + ".png")
     
-            
             storageRef.delete { error in
                 if let error = error {
                     print(error)
@@ -144,8 +143,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                         return
                     }
                     
-                    // Update Profile Url
+                    
                     Database.database().reference().root.child("users").child(self.userInfo.id).updateChildValues(["profile": metadata?.downloadURL()?.absoluteString ?? ""])
+                    
                     
                 })
             }

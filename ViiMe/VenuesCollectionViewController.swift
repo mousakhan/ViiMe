@@ -11,9 +11,9 @@ import ChameleonFramework
 import Firebase
 import FirebaseDatabase
 import Kingfisher
+import CoreLocation
 
-
-class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate  {
+class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate, CLLocationManagerDelegate  {
     
     @IBOutlet var searchBarButtonItem: UIBarButtonItem!
     @IBOutlet var profileBarButtonItem: UIBarButtonItem!
@@ -24,15 +24,29 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     let iconSize = CGFloat(12.0)
     let offset = CGFloat(5.0)
     let labelWidth = CGFloat(35.0)
-    
+    let locationManager = CLLocationManager()
+    var currCoordinate = CLLocation(latitude: 5.0, longitude: 5.0)
     var filteredVenues = [Venue]()
     var venues = [Venue]()
+    var d = ""
     
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
 
         initVenues()
+        
+        // Ask for Authorisation from the User.
+        self.locationManager.requestAlwaysAuthorization()
+        
+        // For use in foreground
+        self.locationManager.requestWhenInUseAuthorization()
+        
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.startUpdatingLocation()
+        }
         
         // Search Controller setup
         self.searchController = UISearchController(searchResultsController:  nil)
@@ -105,7 +119,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         cell.numberOfDealsLabel.text = "2 Deals"
         cell.priceLabel.text = "" + venue.price
         cell.cuisineLabel.text = venue.cuisine
-        cell.distanceLabel.text = venue.address
+        setDistance(address: venue.address, label: cell.distanceLabel)
         cell.venueTypeLabel.text = venue.type
         
         let url = URL(string: venue.profileUrl)
@@ -168,11 +182,18 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         }
     }
     
+    //MARK: CLLocationManagerDelegate
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let locValue:CLLocationCoordinate2D = manager.location!.coordinate
+        self.currCoordinate = CLLocation(latitude: locValue.latitude, longitude: locValue.longitude)
+    }
+    
     //MARK: Helpers
     
     func initVenues () {
         let ref = Database.database().reference().child("venue/")
-        ref.observeSingleEvent(of: .value, with: { snapshot in
+        print(ref)
+        ref.observeSingleEvent(of: DataEventType.value, with: { snapshot in
             print(snapshot.childrenCount) // I got the expected number of items
             let enumerator = snapshot.children
             while let rest = enumerator.nextObject() as? DataSnapshot {
@@ -194,6 +215,9 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         })
         
         
+        
+        
+        
         getDeals()
     }
     
@@ -208,6 +232,32 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             }
         })
         
+    }
+    
+    func setDistance(address : String, label: UILabel){
+        let geocoder = CLGeocoder()
+        var coordinate : CLLocation? = nil
+        geocoder.geocodeAddressString(address) {
+            placemarks, error in
+            let placemark = placemarks?.first
+            let lat = placemark?.location?.coordinate.latitude
+            let lon = placemark?.location?.coordinate.longitude
+            coordinate = CLLocation(latitude: lat!, longitude: lon!)
+            print(self.currCoordinate)
+            print(coordinate!)
+            
+            let distanceInMeters = Int(self.currCoordinate.distance(from: coordinate!))
+            
+            if (distanceInMeters > 1000) {
+                label.text = String(distanceInMeters/100) + "km"
+            } else {
+                label.text = String(distanceInMeters) + "m"
+            }
+            
+        }
+        
+        
+       
     }
     
 
