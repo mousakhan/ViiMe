@@ -119,8 +119,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             profilePicture.image = nil
         }
         
-        
-
         if (profilePicture.image != nil) {
             
             let storageRef = Storage.storage().reference().child("profile/ " + userInfo.id + ".png")
@@ -280,10 +278,11 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 self.nameTextField.text = postDict["name"] as? String
             }
             
+            
             if (profile != "") {
                 self.profileURL = profile
-                
                 let url = URL(string: profile)
+                self.profilePicture.kf.indicatorType = .activity
                 self.profilePicture.kf.setImage(with: url)
             }
             

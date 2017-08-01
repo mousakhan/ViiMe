@@ -121,6 +121,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         cell.venueTypeLabel.text = venue.type
         
         let url = URL(string: venue.profileUrl)
+        cell.logo.kf.indicatorType = .activity
         cell.logo.kf.setImage(with: url)
         
         return cell
