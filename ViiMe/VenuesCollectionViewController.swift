@@ -200,7 +200,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             while let rest = enumerator.nextObject() as? DataSnapshot {
                 let value = rest.value as? NSDictionary
                 let name = value?["name"]
-                let cuisine = value?["cuisine"] ?? ""
+                let cuisines = value?["cuisine"] ?? []
+                let cuisine = (cuisines as AnyObject).components(separatedBy: ",")[0]
                 let description = value?["description"] ?? ""
                 let price = value?["price"] ?? ""
                 let address = value?["address"] ?? ""

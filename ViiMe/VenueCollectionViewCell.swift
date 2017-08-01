@@ -11,7 +11,7 @@ import ChameleonFramework
 
 private let iconSize = CGFloat(12.0)
 private let offset = CGFloat(5.0)
-private let labelWidth = CGFloat(35.0)
+private let labelWidth = CGFloat(40.0)
 
 class VenueCollectionViewCell: UICollectionViewCell {
     
@@ -34,7 +34,8 @@ class VenueCollectionViewCell: UICollectionViewCell {
         
         // TODO: Clean up these magic numbers for the label frames
         // Venue Name
-        nameLabel = UILabel(frame: CGRect(x: 0, y: offset * 2.0, width: self.contentView.frame.size.width, height: 15))
+        
+        nameLabel = UILabel(frame: CGRect(x: 5, y: offset * 2.0, width: self.contentView.frame.size.width - 5, height: 15))
         nameLabel.textAlignment = .center
         nameLabel.font = nameLabel.font.withSize(13)
         nameLabel.textColor = FlatWhite()
@@ -42,6 +43,7 @@ class VenueCollectionViewCell: UICollectionViewCell {
         
         // Venue Logo
         logo = UIImageView(frame: CGRect(x: self.contentView.frame.size.width * 0.3, y: 25 + offset, width: self.contentView.frame.size.width/2.5, height:self.contentView.frame.size.width/2.5))
+        logo.contentMode = UIViewContentMode.scaleToFill
         logo.layer.cornerRadius = self.frame.size.width/5
         logo.backgroundColor = FlatGray()
         logo.layer.masksToBounds = true
@@ -86,7 +88,7 @@ class VenueCollectionViewCell: UICollectionViewCell {
         let cuisineIcon = addIconToCard(name: "cuisine", frame: cuisineIconFrame)
         cuisineLabel.font = cuisineLabel.font.withSize(10)
         cuisineLabel.textColor = FlatWhite()
-        cuisineLabel.numberOfLines = 1
+        cuisineLabel.numberOfLines = 0
         cuisineLabel.adjustsFontSizeToFitWidth = true
         self.contentView.addSubview(cuisineLabel)
         self.contentView.addSubview(cuisineIcon)
