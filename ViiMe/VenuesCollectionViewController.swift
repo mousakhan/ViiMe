@@ -28,7 +28,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     var currCoordinate = CLLocation(latitude: 5.0, longitude: 5.0)
     var filteredVenues = [Venue]()
     var venues = [Venue]()
-    var locationEnabled = false
     
     //MARK: View Lifecycle
     override func viewDidLoad() {
@@ -39,14 +38,12 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         // Ask for Authorisation from the User.
         self.locationManager.requestAlwaysAuthorization()
         
-        // For use in foreground
-        self.locationManager.requestWhenInUseAuthorization()
+        // self.locationManager.requestWhenInUseAuthorization()
         
-        if CLLocationManager.locationServicesEnabled() {
+        if (CLLocationManager.authorizationStatus() == .authorizedAlways || CLLocationManager.authorizationStatus() == .authorizedWhenInUse) {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
             locationManager.startUpdatingLocation()
-            locationEnabled = true
         }
         
         // Search Controller setup
@@ -193,9 +190,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     func initVenues () {
         let ref = Database.database().reference().child("venue/")
-        print(ref)
-        ref.observeSingleEvent(of: DataEventType.value, with: { snapshot in
-            print(snapshot.childrenCount) // I got the expected number of items
+        ref.observe(DataEventType.value, with: { (snapshot) in
+            self.venues = []
             let enumerator = snapshot.children
             while let rest = enumerator.nextObject() as? DataSnapshot {
                 let value = rest.value as? NSDictionary
@@ -208,13 +204,13 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 let type = value?["type"] ?? ""
                 let deals = value?["deals"] ?? []
                 let profile = value?["profileUrl"] ?? ""
-                
-                let venue = Venue(name: name as! String, price: price as! String, cuisine: cuisine as! String, type: type as! String, address: address as! String, description: description as! String, profileUrl: profile as! String)
-                print (venue)
+                let venue = Venue(name: name as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, profileUrl: profile as! String)
                 self.venues.append(venue)
                 self.collectionView?.reloadData()
             }
         })
+        
+        
         
         
         
@@ -226,11 +222,9 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     func getDeals() {
         let ref = Database.database().reference().child("deal/")
         ref.observeSingleEvent(of: .value, with: { snapshot in
-            print(snapshot.childrenCount) // I got the expected number of items
             let enumerator = snapshot.children
             while let rest = enumerator.nextObject() as? DataSnapshot {
-                print(rest)
-                print ("Deal")
+                
             }
         })
         
@@ -238,7 +232,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     func setDistance(address : String, label: UILabel){
         
-        if (locationEnabled) {
+        if (CLLocationManager.authorizationStatus() == .authorizedAlways || CLLocationManager.authorizationStatus() == .authorizedWhenInUse) {
             let geocoder = CLGeocoder()
             var coordinate : CLLocation? = nil
             geocoder.geocodeAddressString(address) {
@@ -247,8 +241,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 let lat = placemark?.location?.coordinate.latitude
                 let lon = placemark?.location?.coordinate.longitude
                 coordinate = CLLocation(latitude: lat!, longitude: lon!)
-                print(self.currCoordinate)
-                print(coordinate!)
+
                 
                 let distanceInMeters = Int(self.currCoordinate.distance(from: coordinate!))
                 
