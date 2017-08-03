@@ -13,9 +13,6 @@ import ChameleonFramework
 class DealsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     let reuseIdentifier = "DealCell"
-    
-    // This will be an array of all the venues deals in the future
-    var deal = "With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries. With the purchase of two Donairs, free small fries."
     var venue : Venue?
     
 
@@ -40,7 +37,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return venue!.deals.count
     }
     
     //MARK: UITableView Delegate
@@ -51,12 +48,13 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         cell?.backgroundColor = FlatBlackDark()
         
         cell?.dealDescriptionLabel.textColor = FlatWhite()
-        cell?.dealDescriptionLabel.text = deal
+        cell?.dealDescriptionLabel.text = venue?.deals[indexPath.row].name
         cell?.dealDescriptionLabel.font = cell?.dealDescriptionLabel.font.withSize(12)
         cell?.dealDescriptionLabel.numberOfLines = 0
         
+        
         cell?.dealActionLabel.textColor = FlatWhite()
-        cell?.dealActionLabel.text = "INVITE 10 FRIENDS"
+        cell?.dealActionLabel.text = "Test"
         cell?.dealActionLabel.font = cell?.dealActionLabel.font.withSize(12)
         cell?.dealActionLabel.textColor = FlatWhite()
         

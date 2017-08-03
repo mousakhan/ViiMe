@@ -16,4 +16,5 @@ struct Venue {
     var address : String
     var description : String
     var profileUrl : String
+    var deals : [Deal]
 }

@@ -42,11 +42,8 @@ class VenueCollectionViewCell: UICollectionViewCell {
         self.contentView.addSubview(nameLabel)
         
         // Venue Logo
-        logo = UIImageView(frame: CGRect(x: self.contentView.frame.size.width * 0.3, y: 25 + offset, width: self.contentView.frame.size.width/2.5, height:self.contentView.frame.size.width/2.5))
-        logo.contentMode = UIViewContentMode.scaleToFill
-        logo.layer.cornerRadius = self.frame.size.width/5
-        logo.backgroundColor = FlatGray()
-        logo.layer.masksToBounds = true
+        logo = UIImageView(frame: CGRect(x: self.contentView.frame.size.width * 0.3, y: 25 + offset, width: self.contentView.frame.size.width/2.4, height:self.contentView.frame.size.width/2.4))
+        logo.contentMode = .scaleAspectFit
         self.contentView.addSubview(logo)
 
         

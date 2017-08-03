@@ -104,7 +104,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
         
         
-        var venue = Venue(name: "", price: "", cuisine: "", type: "", address: "", description: "", profileUrl: "")
+        var venue = Venue(name: "", price: "", cuisine: "", type: "", address: "", description: "", profileUrl: "", deals: [])
         
         if searchController.isActive && searchController.searchBar.text != "" {
             venue = filteredVenues[indexPath.row]
@@ -205,7 +205,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 let type = value?["type"] ?? ""
                 let deals = value?["deals"] ?? []
                 let profile = value?["profileUrl"] ?? ""
-                let venue = Venue(name: name as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, profileUrl: profile as! String)
+                let venue = Venue(name: name as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, profileUrl: profile as! String, deals: [])
                 self.venues.append(venue)
                 self.collectionView?.reloadData()
             }
@@ -241,17 +241,19 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 let placemark = placemarks?.first
                 let lat = placemark?.location?.coordinate.latitude
                 let lon = placemark?.location?.coordinate.longitude
-                coordinate = CLLocation(latitude: lat!, longitude: lon!)
-
                 
-                let distanceInMeters = Int(self.currCoordinate.distance(from: coordinate!))
-                
-                if (distanceInMeters > 1000) {
-                    label.text = String(distanceInMeters/100) + "km"
+                if (lat != nil && lon != nil) {
+                    coordinate = CLLocation(latitude: lat!, longitude: lon!)
+                    let distanceInMeters = Int(self.currCoordinate.distance(from: coordinate!))
+                    
+                    if (distanceInMeters > 1000) {
+                        label.text = String(distanceInMeters/100) + "km"
+                    } else {
+                        label.text = String(distanceInMeters) + "m"
+                    }
                 } else {
-                    label.text = String(distanceInMeters) + "m"
+                    label.text = "?"
                 }
-                
             }
             
         } else {
