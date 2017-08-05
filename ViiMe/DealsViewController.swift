@@ -19,7 +19,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var groupBarButtonItem: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var venueLogo: UIImageView!
     
+    @IBOutlet weak var venueInfoView: UIView!
+    @IBOutlet weak var venueDescription: UITextView!
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +31,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         self.tableView.layer.borderWidth = 0.5
        
         print(venue!)
+     
    
     }
     
@@ -37,7 +41,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return venue!.deals.count
+        return 1
     }
     
     //MARK: UITableView Delegate
@@ -48,7 +52,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         cell?.backgroundColor = FlatBlackDark()
         
         cell?.dealDescriptionLabel.textColor = FlatWhite()
-        cell?.dealDescriptionLabel.text = venue?.deals[indexPath.row].name
+        //cell?.dealDescriptionLabel.text = venue?.deals[indexPath.row].name
+        cell?.dealDescriptionLabel.text = "TEST"
         cell?.dealDescriptionLabel.font = cell?.dealDescriptionLabel.font.withSize(12)
         cell?.dealDescriptionLabel.numberOfLines = 0
         
@@ -63,7 +68,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
 
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: "RedemptionViewControllerSegue", sender: nil)
+       // self.performSegue(withIdentifier: "RedemptionViewControllerSegue", sender: nil)
+        self.venueInfoView.isHidden = true
     }
   
 

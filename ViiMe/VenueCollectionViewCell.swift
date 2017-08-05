@@ -34,7 +34,6 @@ class VenueCollectionViewCell: UICollectionViewCell {
         
         // TODO: Clean up these magic numbers for the label frames
         // Venue Name
-        
         nameLabel = UILabel(frame: CGRect(x: 5, y: offset * 2.0, width: self.contentView.frame.size.width - 5, height: 15))
         nameLabel.textAlignment = .center
         nameLabel.font = nameLabel.font.withSize(13)
@@ -117,12 +116,7 @@ class VenueCollectionViewCell: UICollectionViewCell {
         venueTypeLabel.adjustsFontSizeToFitWidth = true
         self.contentView.addSubview(venueTypeLabel)
         self.contentView.addSubview(venueTypeIcon)
-        
-        
     }
-    
-
-    
     
     //MARK: Helper Function
     func addIconToCard(name: String, frame: CGRect) -> UIImageView {
