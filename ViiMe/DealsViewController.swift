@@ -69,7 +69,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
        // self.performSegue(withIdentifier: "RedemptionViewControllerSegue", sender: nil)
-        self.venueInfoView.isHidden = true
     }
   
 

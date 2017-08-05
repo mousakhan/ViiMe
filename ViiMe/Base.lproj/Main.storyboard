@@ -864,7 +864,6 @@
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
                         <outlet property="tableView" destination="WN2-nn-uGf" id="nK8-BN-SLc"/>
-                        <segue destination="85Y-Ls-T1t" kind="modal" identifier="RedemptionViewControllerSegue" id="LHG-oP-XQ7"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VeC-pz-lsV" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -955,6 +954,9 @@
                         <barButtonItem key="backBarButtonItem" title=" " id="99v-sA-gCD"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="Kmr-U3-hZS">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <segue destination="1IH-iL-oPA" kind="show" id="H6e-ON-6Vf"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
@@ -973,42 +975,34 @@
             </objects>
             <point key="canvasLocation" x="7939.130434782609" y="253.53260869565219"/>
         </scene>
-        <!--Add Friend-->
-        <scene sceneID="CTN-Xg-Ftx">
+        <!--Add Friend Table View Controller-->
+        <scene sceneID="XXt-cm-IgC">
             <objects>
-                <tableViewController id="n4S-uR-xHM" customClass="AddFriendTableViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="dvH-sw-DAj">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                <tableViewController id="1IH-iL-oPA" customClass="AddFriendTableViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="NuY-y2-aRP">
+                        <rect key="frame" x="0.0" y="64" width="414" height="672"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="9Ca-YI-IIV">
+                        <searchBar key="tableHeaderView" contentMode="redraw" searchBarStyle="prominent" id="ePp-jd-oll">
                             <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <textInputTraits key="textInputTraits"/>
+                            <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                             <connections>
-                                <outlet property="delegate" destination="n4S-uR-xHM" id="FNU-kA-qDd"/>
+                                <outlet property="delegate" destination="1IH-iL-oPA" id="j3o-Q0-tQW"/>
                             </connections>
                         </searchBar>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="AddFriendCell" textLabel="Z1N-2k-fqE" detailTextLabel="Vhh-d0-QtO" style="IBUITableViewCellStyleSubtitle" id="kJW-7j-85t">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="5QC-ZY-ojm" style="IBUITableViewCellStyleDefault" id="KtM-mJ-758" customClass="Adding">
                                 <rect key="frame" x="0.0" y="72" width="414" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="kJW-7j-85t" id="K9e-FD-oNK">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KtM-mJ-758" id="xJ1-yw-E4u">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="43.666666666666664"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Z1N-2k-fqE">
-                                            <rect key="frame" x="15" y="5" width="33.333333333333336" height="20.333333333333332"/>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="5QC-ZY-ojm">
+                                            <rect key="frame" x="15" y="0.0" width="384" height="43.666666666666664"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Vhh-d0-QtO">
-                                            <rect key="frame" x="14.999999999999996" y="25.333333333333332" width="43.666666666666664" height="14.333333333333334"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -1017,29 +1011,35 @@
                             </tableViewCell>
                         </prototypes>
                         <connections>
-                            <outlet property="dataSource" destination="n4S-uR-xHM" id="UkC-TQ-1RO"/>
-                            <outlet property="delegate" destination="n4S-uR-xHM" id="eAR-rA-hfo"/>
+                            <outlet property="dataSource" destination="1IH-iL-oPA" id="8QK-nU-Pv4"/>
+                            <outlet property="delegate" destination="1IH-iL-oPA" id="TG7-pN-jpt"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Add Friend" id="jGD-HE-MEl">
-                        <barButtonItem key="backBarButtonItem" title=" " id="b7D-E0-MEw"/>
-                    </navigationItem>
                     <connections>
-                        <outlet property="searchDisplayController" destination="xce-hU-WSm" id="GRy-lq-IWE"/>
+                        <outlet property="searchBar" destination="ePp-jd-oll" id="WlB-Re-IkB"/>
+                        <outlet property="searchDisplayController" destination="Ey4-td-odu" id="yyt-x5-vCC"/>
                     </connections>
                 </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="cf5-xd-bSd" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="xce-hU-WSm">
+                <placeholder placeholderIdentifier="IBFirstResponder" id="d1E-uM-VqS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="5r8-xT-9oh">
                     <connections>
-                        <outlet property="delegate" destination="n4S-uR-xHM" id="hkP-bL-Ov0"/>
-                        <outlet property="searchBar" destination="9Ca-YI-IIV" id="xGE-n0-W9X"/>
-                        <outlet property="searchContentsController" destination="n4S-uR-xHM" id="azu-Tf-YZg"/>
-                        <outlet property="searchResultsDataSource" destination="n4S-uR-xHM" id="2v3-gp-7zW"/>
-                        <outlet property="searchResultsDelegate" destination="n4S-uR-xHM" id="ZeK-HG-xjC"/>
+                        <outlet property="delegate" destination="1IH-iL-oPA" id="HaU-2M-Vtt"/>
+                        <outlet property="searchBar" destination="ePp-jd-oll" id="oZ2-gd-sZZ"/>
+                        <outlet property="searchContentsController" destination="1IH-iL-oPA" id="bCA-ht-ZIP"/>
+                        <outlet property="searchResultsDataSource" destination="1IH-iL-oPA" id="cCK-7t-LBo"/>
+                        <outlet property="searchResultsDelegate" destination="1IH-iL-oPA" id="RK6-Qz-uOF"/>
+                    </connections>
+                </searchDisplayController>
+                <searchDisplayController id="Ey4-td-odu">
+                    <connections>
+                        <outlet property="delegate" destination="1IH-iL-oPA" id="N6c-tw-T7D"/>
+                        <outlet property="searchContentsController" destination="1IH-iL-oPA" id="6p8-h9-AaJ"/>
+                        <outlet property="searchResultsDataSource" destination="1IH-iL-oPA" id="C7m-ux-Hqv"/>
+                        <outlet property="searchResultsDelegate" destination="1IH-iL-oPA" id="RIW-bI-3of"/>
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="8653" y="254"/>
+            <point key="canvasLocation" x="8642" y="261"/>
         </scene>
         <!--Redemption View Controller-->
         <scene sceneID="Txi-f1-Ci7">
