@@ -52,7 +52,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         return 60.0
     }
     
-    func dismiss() {
+    func dismissSearchController() {
         self.searchController.isActive = false
     }
     //MARK: UITableView Delegate
@@ -155,22 +155,24 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
         if (section == 0) {
             return "My Friends"
+        } else if (section == 1) {
+            if (self.contacts.count < 1) {
+                return ""
+            }
+            
+            return "My Contacts"
         }
         
-        return "My Contacts"
+        return ""
     }
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         view.tintColor = FlatBlackDark()
         var headerTitle = view as? UITableViewHeaderFooterView
         headerTitle?.textLabel?.textColor = FlatWhite()
-        
-        if (section == 0 &&  (self.user?.friends.count)! < 1) {
-            headerTitle = nil
-        } else if (section == 1 &&  self.contacts.count < 1) {
-            headerTitle = nil
-        }
     }
+    
+    
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 40.0
@@ -189,13 +191,13 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         switch (result.rawValue) {
         case MessageComposeResult.cancelled.rawValue:
             print("Message was cancelled")
-            self.dismiss(animated: true, completion: nil)
+            controller.dismiss(animated: true, completion: nil)
         case MessageComposeResult.failed.rawValue:
             print("Message failed")
-            self.dismiss(animated: true, completion: nil)
+            controller.dismiss(animated: true, completion: nil)
         case MessageComposeResult.sent.rawValue:
             print("Message was sent")
-            self.dismiss(animated: true, completion: nil)
+            controller.dismiss(animated: true, completion: nil)
         default:
             break;
         }
@@ -203,7 +205,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
    
     
-    
+    //MARK: Search Controller
     
     func willPresentSearchController(_ searchController: UISearchController) {
         DispatchQueue.main.async {
@@ -237,7 +239,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         self.searchController.searchBar.returnKeyType = .done
         self.searchController.searchBar.enablesReturnKeyAutomatically = false
         self.searchController.searchBar.keyboardAppearance = .dark
-        
+        self.searchController.searchBar.tintColor = FlatPurpleDark()
         self.searchController.searchBar.text = " "
         
         

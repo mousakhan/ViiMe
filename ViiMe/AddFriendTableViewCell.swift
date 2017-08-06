@@ -1,5 +1,5 @@
 //
-//  AddFriendTableViewCell.swift
+//  AddFriendTableViewself.swift
 //  ViiMe
 //
 //  Created by Mousa Khan on 2017-08-05.
@@ -19,15 +19,11 @@ class AddFriendTableViewCell: UITableViewCell {
         super.awakeFromNib()
         
         
-        self.isUserInteractionEnabled = true
-        
         // Initialization code
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        
-        print("SELECTED")
         // Configure the view for the selected state
     }
     

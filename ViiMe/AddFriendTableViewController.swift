@@ -14,7 +14,7 @@ import Kingfisher
 
 
 protocol AddFriendTableViewControllerDelegate {
-    func dismiss()
+    func dismissSearchController()
     func sendSmsClick(recipient: String, vc: UITableViewController)
 }
 
@@ -35,7 +35,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print(currUser)
+  
         
         self.tableView.backgroundColor = FlatBlack()
         ref = Database.database().reference()
@@ -72,9 +72,8 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     //MARK: UITableView Delegate
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if (indexPath.section == 0) {
-            let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! FriendTableViewCell
-            cell.nameLabel?.text = self.friends[indexPath.row]["name"] as? String
-            cell.isUserInteractionEnabled = false
+            let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! AddFriendTableViewCell
+            cell.nameLabel?.text = self.friends[indexPath.row]["username"] as? String
             cell.backgroundColor = FlatBlack()
             cell.textLabel?.textColor = FlatWhite()
             cell.detailTextLabel?.textColor = FlatWhite()
@@ -90,7 +89,10 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                 let url = URL(string: profile)
                 cell.profilePicture.kf.indicatorType = .activity
                 cell.profilePicture.kf.setImage(with: url)
+            } else {
+                cell.profilePicture.image = UIImage(named: "empty_profile")
             }
+            
             
             let bgColorView = UIView()
             bgColorView.backgroundColor = FlatPurpleDark()
@@ -130,8 +132,16 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
             delegate?.sendSmsClick(recipient: self.filteredContacts[indexPath.row]["number"] as! String, vc: self)
         }
         
-         delegate?.dismiss()
+         delegate?.dismissSearchController()
     }
+    
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        view.tintColor = FlatBlackDark()
+        let headerTitle = view as? UITableViewHeaderFooterView
+        headerTitle?.textLabel?.textColor = FlatWhite()
+        
+    }
+    
     
     // MARK: UITableView Data Source
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -140,10 +150,16 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
         if (section == 0) {
-            return "Search By Username"
+            return "Search by Username"
+        } else if (section == 1) {
+            if (self.filteredContacts.count < 1) {
+                return ""
+            }
+            
+            return "My Contacts"
         }
         
-        return "My Contacts"
+        return ""
     }
     
     
@@ -167,17 +183,18 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
         if (query.characters.count > 2) {
             if !query.trimmingCharacters(in: .whitespaces).isEmpty {
                 self.filteredContacts = []
-                self.contacts.filter({ (dict) -> Bool in
+                _ = self.contacts.filter({ (dict) -> Bool in
                     let number = dict["number"] as? String
-                    if (number?.contains(query))! {
+                    let name = dict["name"] as? String
+                    if (number!.contains(query) || (name!.contains(query))) {
                         self.filteredContacts.append(dict)
                     }
                     return true
                 })
                 
-                print(self.contacts)
+                
                 ref.child("users")
-                    .queryOrdered(byChild: "name")
+                    .queryOrdered(byChild: "username")
                     .queryStarting(atValue: query)
                     .queryEnding(atValue: query+"\u{f8ff}")
                     .observe(.value, with: { (snapshot) -> Void in
@@ -187,10 +204,12 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                             let postDict = friend.value as? NSDictionary
                             var dict = [String: AnyObject]()
                             let name = postDict?["name"]
+                            let username = postDict?["username"]
                             let profile = postDict?["profile"]
                             let id = postDict?["id"]
                             
                             dict["name"] = name as AnyObject
+                            dict["username"] = username as AnyObject
                             dict["id"] = id as AnyObject
                             
                             if (profile != nil) {
@@ -212,6 +231,9 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                 self.friends = []
                 self.filteredContacts = []
             }
+        } else {
+            self.friends = []
+            self.filteredContacts = []
         }
     }
     

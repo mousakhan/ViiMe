@@ -203,7 +203,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         let username = usernameTextField.text
         let name =  nameTextField.text
         let age = ageTextField.text
-        var email = emailTextField.text
+        let email = emailTextField.text
         let gender = genderTextField.text
         
         self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
