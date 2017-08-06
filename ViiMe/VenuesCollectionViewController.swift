@@ -232,7 +232,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     }
     
     func setDistance(address : String, label: UILabel){
-        
         if (CLLocationManager.authorizationStatus() == .authorizedAlways || CLLocationManager.authorizationStatus() == .authorizedWhenInUse) {
             let geocoder = CLGeocoder()
             var coordinate : CLLocation? = nil
@@ -247,7 +246,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                     let distanceInMeters = Int(self.currCoordinate.distance(from: coordinate!))
                     
                     if (distanceInMeters > 1000) {
-                        label.text = String(distanceInMeters/100) + "km"
+                        label.text = String(distanceInMeters/1000) + "km"
                     } else {
                         label.text = String(distanceInMeters) + "m"
                     }

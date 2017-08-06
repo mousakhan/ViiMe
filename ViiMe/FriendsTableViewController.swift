@@ -12,12 +12,13 @@ import Contacts
 import MessageUI
 import Firebase
 
-class FriendsTableViewController: UITableViewController, MFMessageComposeViewControllerDelegate,  UISearchBarDelegate, UISearchControllerDelegate {
+class FriendsTableViewController: UITableViewController, MFMessageComposeViewControllerDelegate,  UISearchBarDelegate, UISearchControllerDelegate, AddFriendTableViewControllerDelegate {
   
     @IBOutlet weak var searchBar: UISearchBar!
     
     var user : UserInfo? = nil
     var contacts = [Dictionary<String, Any>]()
+    
     
      var searchController : UISearchController!
     
@@ -26,8 +27,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         super.viewDidLoad()
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         initContacts()
-        
-        
+
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,6 +52,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         return 60.0
     }
     
+    func dismiss() {
+        self.searchController.isActive = false
+    }
     //MARK: UITableView Delegate
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -94,7 +97,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if (indexPath.section == 1) {
-            sendSmsClick(recipient: self.contacts[indexPath.row]["number"] as! String)
+            sendSmsClick(recipient: self.contacts[indexPath.row]["number"] as! String, vc: self)
         }
     }
 
@@ -174,12 +177,12 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     }
     
     //MARK: MFMessageComposeViewControllerDelegate
-    func sendSmsClick(recipient: String) {
+    func sendSmsClick(recipient: String, vc: UITableViewController) {
         let messageVC = MFMessageComposeViewController()
         messageVC.body = "Download ViiMe to join me on this exclusive offer! https://itunes.apple.com/ca/app/viime/id1144678737?mt=8";
         messageVC.recipients = [recipient]
         messageVC.messageComposeDelegate = self;
-        self.present(messageVC, animated: false, completion: nil)
+        vc.present(messageVC, animated: false, completion: nil)
     }
     
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
@@ -217,7 +220,12 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         
         let resultsController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddFriendTableViewController") as! AddFriendTableViewController
    
+        resultsController.delegate = self
+    
+        resultsController.searchController = self.searchController
+        
         resultsController.currUser = self.user
+        resultsController.contacts = self.contacts
         
         self.searchController = UISearchController(searchResultsController: resultsController)
         
@@ -231,6 +239,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         self.searchController.searchBar.keyboardAppearance = .dark
         
         self.searchController.searchBar.text = " "
+        
+        
             present(self.searchController, animated: true) {
                 
             }
@@ -250,6 +260,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         
       
     }
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
        self.searchController = nil
     }

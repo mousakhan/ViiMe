@@ -72,7 +72,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             datePicker.datePickerMode = .date
             textField.inputView = datePicker
             
-            // Set max date
+            // Set max date`
             var components = DateComponents()
             
             components.year = -16
