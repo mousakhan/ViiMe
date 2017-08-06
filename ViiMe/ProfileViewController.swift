@@ -21,9 +21,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     @IBOutlet weak var genderTextField: UITextField!
     @IBOutlet weak var ageTextField: UITextField!
     @IBOutlet weak var couponsTableView: UITableView!
-    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var benefitsTableView: UITableView!
     
+    @IBOutlet weak var usernameTextField: UITextField!
    
     var ref: DatabaseReference!
     var user: User!
@@ -54,6 +54,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
   
         // Textfield setup
+        setupTextField(textfield: usernameTextField)
         setupTextField(textfield: nameTextField)
         setupTextField(textfield: emailTextField)
         setupTextField(textfield: ageTextField)
@@ -117,6 +118,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             profilePicture.image = image
         } else {
             profilePicture.image = nil
+            profilePicture.image = UIImage(named: "empty_profile")
         }
         
         if (profilePicture.image != nil) {
@@ -126,7 +128,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             storageRef.delete { error in
                 if let error = error {
                     print(error)
-                    // Uh-oh, an error occurred!
                 } else {
                     print("Deleted!")
                     // File deleted successfully
@@ -159,6 +160,14 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             let datePicker = UIDatePicker()
             datePicker.datePickerMode = .date
             textField.inputView = datePicker
+            
+            // Set max date`
+            var components = DateComponents()
+            components.year = -16
+            let maxDate = Calendar.current.date(byAdding: components, to: Date())
+            datePicker.maximumDate = maxDate
+            
+            
             if (self.ageTextField.text != nil) {
                 datePicker.setDate(getDateFromString(date: self.ageTextField.text!), animated: true)
             }
@@ -191,13 +200,14 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
+        let username = usernameTextField.text
         let name =  nameTextField.text
         let age = ageTextField.text
-        let email = emailTextField.text
+        var email = emailTextField.text
         let gender = genderTextField.text
         
         self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-            self.ref.child("users/\(self.user!.uid)").setValue(["name": name, "age": age, "email": email, "gender": gender, "id": self.userInfo.id, "profile": self.userInfo.profile])
+            self.ref.child("users/\(self.user!.uid)").setValue(["username": username, "name": name, "age": age, "email": email, "gender": gender, "id": self.userInfo.id, "profile": self.userInfo.profile])
         })
         
     }
@@ -266,13 +276,17 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         let productRef = ref.child("users/\(user!.uid)")
         productRef.observe(DataEventType.value, with: { (snapshot) in
             let postDict = snapshot.value as? [String : AnyObject] ?? [:]
-            
+            let username = postDict["username"] as? String ?? ""
             let name = postDict["name"] as? String ?? ""
             let age = postDict["age"] as? String ?? ""
             let gender = postDict["gender"] as? String ?? ""
             let email = postDict["email"] as? String ?? ""
             let profile = postDict["profile"] as? String ?? ""
             let friends = postDict["friends"] as? Array<UserInfo> ?? []
+            
+            if (username != "") {
+                self.usernameTextField.text = postDict["username"] as? String
+            }
             
             if (name != "") {
                 self.nameTextField.text = postDict["name"] as? String
@@ -284,6 +298,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 let url = URL(string: profile)
                 self.profilePicture.kf.indicatorType = .activity
                 self.profilePicture.kf.setImage(with: url)
+            } else {
+                self.profilePicture.image = UIImage(named: "empty_profile")
             }
             
             if (email != "") {
