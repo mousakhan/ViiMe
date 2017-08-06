@@ -12,18 +12,22 @@ import Contacts
 import MessageUI
 import Firebase
 
-class FriendsTableViewController: UITableViewController, MFMessageComposeViewControllerDelegate {
+class FriendsTableViewController: UITableViewController, MFMessageComposeViewControllerDelegate,  UISearchBarDelegate, UISearchControllerDelegate {
   
     @IBOutlet weak var searchBar: UISearchBar!
     
     var user : UserInfo? = nil
     var contacts = [Dictionary<String, Any>]()
     
+     var searchController : UISearchController!
+    
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         initContacts()
+        
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -193,7 +197,64 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             break;
         }
     }
+    
+   
+    
+    
+    
+    func willPresentSearchController(_ searchController: UISearchController) {
+        DispatchQueue.main.async {
+            self.searchController.searchResultsController?.view.isHidden = false
+        }
+    }
 
+    func didPresentSearchController(_ searchController: UISearchController) {
+        self.searchController.searchResultsController?.view.isHidden = false
+    }
+ 
+    @IBAction func addFriendButtonClicked(_ sender: Any) {
+        // Search Controller setup
+        
+        let resultsController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddFriendTableViewController") as! AddFriendTableViewController
+   
+        resultsController.currUser = self.user
+        
+        self.searchController = UISearchController(searchResultsController: resultsController)
+        
+        self.searchController.searchResultsUpdater = resultsController as UISearchResultsUpdating
+        self.searchController.delegate = self
+        self.searchController.searchBar.delegate = self
+        self.searchController.hidesNavigationBarDuringPresentation = false
+        self.searchController.dimsBackgroundDuringPresentation = false
+        self.searchController.searchBar.returnKeyType = .done
+        self.searchController.searchBar.enablesReturnKeyAutomatically = false
+        self.searchController.searchBar.keyboardAppearance = .dark
+        
+        self.searchController.searchBar.text = " "
+            present(self.searchController, animated: true) {
+                
+            }
+    
+    }
+    
+   
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        let trimmedString = searchText.trimmingCharacters(in: .whitespaces)
+        searchBar.text = trimmedString
+        
+        if searchText == ("") {
+            searchBar.text = " "
+        }
+        
+        
+      
+    }
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+       self.searchController = nil
+    }
+    
+    
 
     /*
     // Override to support editing the table view.

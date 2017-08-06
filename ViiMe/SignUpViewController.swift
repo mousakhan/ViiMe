@@ -82,7 +82,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let email = emailTextField.text!
         let password = passwordTextField.text!
         
-        if ValidationHelper.validateName(textfield: nameTextField) && ValidationHelper.validateEmail(textfield: emailTextField) {
+        if ValidationHelper.validateEmail(textfield: emailTextField) {
             Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
                 if let error = error {
                     BannerHelper.showBanner(title: error.localizedDescription, type: .danger)

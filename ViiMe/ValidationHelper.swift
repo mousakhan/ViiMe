@@ -30,25 +30,4 @@ class ValidationHelper {
         return true
     }
     
-    static func validateName(textfield: UITextField) -> Bool {
-        var isValidName = false
-        let characterset = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        if textfield.text!.rangeOfCharacter(from: characterset.inverted) != nil {
-            isValidName = true
-        }
-        
-        if textfield.text == nil || textfield.text!.characters.count == 0 {
-            let banner = NotificationBanner(title:"Please enter your name", subtitle: "Please try again", style: .danger)
-            banner.show()
-            return false
-        } else if isValidName {
-            let banner = NotificationBanner(title:"Please enter a valid name with no special characters", subtitle: "Please try again", style: .danger)
-            banner.show()
-            return false
-        }
-        
-        return true
-    }
-    
-    
 }
