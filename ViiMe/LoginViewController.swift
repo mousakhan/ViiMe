@@ -45,7 +45,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         ref = Database.database().reference()
         Auth.auth().addStateDidChangeListener { auth, user in
-            if user != nil {
+            if user != nil && user!.isEmailVerified {
                 self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                     if !(snapshot.hasChild("\(user!.uid)")){
                         self.ref.child("users/\(user!.uid)").setValue(["name": user!.displayName, "age": "", "email": user!.email, "id": user!.uid])

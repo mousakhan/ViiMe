@@ -27,8 +27,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        ref = Database.database().reference()
-        
         // Change color of icon button, could probably make this into it's own helper function
         let origImage = UIImage(named: "cancel.png")
         let tintedImage = origImage?.withRenderingMode(.alwaysTemplate)
@@ -73,6 +71,17 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             let datePicker = UIDatePicker()
             datePicker.datePickerMode = .date
             textField.inputView = datePicker
+            
+            // Set max date
+            var components = DateComponents()
+            
+            components.year = -16
+            let maxDate = Calendar.current.date(byAdding: components, to: Date())
+            
+
+            datePicker.maximumDate = maxDate
+            
+            
             datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
         }
     }
@@ -81,6 +90,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     @IBAction func signUp(_ sender: Any) {
         let email = emailTextField.text!
         let password = passwordTextField.text!
+        
+        ref = Database.database().reference()
+        
         
         if ValidationHelper.validateEmail(textfield: emailTextField) {
             Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
@@ -93,9 +105,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                             BannerHelper.showBanner(title: error!.localizedDescription, type: .danger)
                         } else {
                             BannerHelper.showBanner(title: "Email Verification Sent.", type: .success)
-                            self.ref.child("users/(user.uid)").setValue(["name": self.nameTextField.text!, "age": self.ageTextField.text!, "email": self.emailTextField.text!, "id": user?.uid])
-                            self.dismiss(animated: true, completion: {
-                            })
+                            let id = user!.uid
+                            self.ref.child("users/\(String(describing: id))").setValue(["name": self.nameTextField.text!, "age": self.ageTextField.text!, "email": self.emailTextField.text!, "id": user?.uid])
+                            self.dismiss(animated: true, completion: {})
                         }
                     }
                 }
