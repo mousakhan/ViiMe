@@ -73,15 +73,11 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if (indexPath.section == 0) {
             let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! AddFriendTableViewCell
-            cell.nameLabel?.text = self.friends[indexPath.row]["username"] as? String
             cell.backgroundColor = FlatBlack()
-            cell.textLabel?.textColor = FlatWhite()
-            cell.detailTextLabel?.textColor = FlatWhite()
             
-            cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
-            cell.profilePicture.layer.borderWidth = 1.0
-            cell.profilePicture.layer.borderColor = FlatGray().cgColor
-            cell.profilePicture.layer.masksToBounds = true
+            
+            cell.usernameLabel.text = self.friends[indexPath.row]["username"] as? String
+            
             
             let profile =  self.friends[indexPath.row]["profile"] as! String
             
@@ -93,6 +89,13 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                 cell.profilePicture.image = UIImage(named: "empty_profile")
             }
             
+            
+            cell.profilePicture.layoutIfNeeded()
+            
+            cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.height / 2
+            cell.profilePicture.clipsToBounds = true
+            cell.profilePicture.layer.borderWidth = 1.0
+            cell.profilePicture.layer.borderColor = FlatGray().cgColor
             
             let bgColorView = UIView()
             bgColorView.backgroundColor = FlatPurpleDark()
@@ -114,8 +117,6 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
             return cell
         }
         
-        tableView.backgroundColor = FlatBlack()
-       
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -124,7 +125,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
         
         let id = self.friends[indexPath.row]["id"] as! String
         let path = "users/\(id)/invites"
-        let currUserPath = "users/\(currUser?.id)/friends"
+        let currUserPath = "users/\(String(describing: currUser?.id))/friends"
         ref.child(path).childByAutoId().setValue(currUser?.id)
         ref.child(currUserPath).childByAutoId().setValue(self.friends[indexPath.row])
        
@@ -181,6 +182,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
         
         
         if (query.characters.count > 2) {
+            
             if !query.trimmingCharacters(in: .whitespaces).isEmpty {
                 self.filteredContacts = []
                 _ = self.contacts.filter({ (dict) -> Bool in
@@ -195,9 +197,9 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                 
                 ref.child("users")
                     .queryOrdered(byChild: "username")
-                    .queryStarting(atValue: query)
-                    .queryEnding(atValue: query+"\u{f8ff}")
-                    .observe(.value, with: { (snapshot) -> Void in
+                    .queryStarting(atValue: query.lowercased())
+                    .queryEnding(atValue: query.lowercased()+"\u{f8ff}")
+                    .observe(DataEventType.value, with: { (snapshot) -> Void in
                         self.friends = []
                         let enumerator = snapshot.children
                         while let friend = enumerator.nextObject() as? DataSnapshot {
@@ -217,7 +219,10 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                             } else {
                                 dict["profile"] = "" as AnyObject
                             }
-                            self.friends.append(dict)
+                         
+                            if (id  as? String != self.currUser?.id) {
+                                self.friends.append(dict)
+                            }
                             
                         }
                         

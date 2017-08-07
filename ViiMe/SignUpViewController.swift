@@ -114,7 +114,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                             } else {
                                 BannerHelper.showBanner(title: "Email Verification Sent.", type: .success)
                                 let id = user!.uid
-                                self.ref.child("users/\(String(describing: id))").setValue(["username": self.usernameTextField.text!, "name": self.nameTextField.text!, "age": self.ageTextField.text!, "email": self.emailTextField.text!, "id": user?.uid])
+                                self.ref.child("users/\(String(describing: id))").setValue(["username": self.usernameTextField.text!.lowercased(), "name": self.nameTextField.text!, "age": self.ageTextField.text!, "email": self.emailTextField.text!, "id": user?.uid])
                                 self.dismiss(animated: true, completion: {})
                             }
                         }
