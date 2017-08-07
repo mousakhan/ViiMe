@@ -31,42 +31,15 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         
         // Check to see if there are any friend invitations
         ref = Database.database().reference()
-        let inviteRef = ref.child("users/\(user!.id)/invites")
-        inviteRef.observe(DataEventType.value, with: { (snapshot) in
-            self.invites = []
-            let enumerator = snapshot.children
-            while let invite = enumerator.nextObject() as? DataSnapshot {
-                self.ref.child("users").child(invite.key).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-                    // Get user value
-                    let value = snapshot.value as? NSDictionary
-                    let username = value?["username"] as? String ?? ""
-                    let name = value?["name"] as? String ?? ""
-                    let id = value?["id"] as? String ?? ""
-                    let age = value?["age"] as? String ?? ""
-                    let email = value?["email"] as? String ?? ""
-                    let gender = value?["gender"] as? String ?? ""
-                    let profile = value?["profile"] as? String ?? ""
-                    let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
-                    if !self.invites.contains(where: { $0.id == user.id }) {
-                        self.invites.append(user)
-                    }
-                    self.tableView.reloadData()
-                }) { (error) in
-                    print(error.localizedDescription)
-                }
-                
-            }
-        })
-        
         // Check to see if there are any friends
         let friendsRef = ref.child("users/\(user!.id)/friends")
         friendsRef.observe(DataEventType.value, with: { (snapshot) in
             self.friends = []
-            print(self.friends)
+            self.invites = []
             let enumerator = snapshot.children
-            while let invite = enumerator.nextObject() as? DataSnapshot {
-                self.ref.child("users").child(invite.key).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-    
+            while let friend = enumerator.nextObject() as? DataSnapshot {
+                self.ref.child("users").child(friend.key).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+                    let isFriend = friend.value as? Bool
                     let value = snapshot.value as? NSDictionary
                     let username = value?["username"] as? String ?? ""
                     let name = value?["name"] as? String ?? ""
@@ -77,8 +50,13 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let profile = value?["profile"] as? String ?? ""
                     let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
                     
-                    if !self.friends.contains(where: { $0.id == user.id }) {
+                    
+                    if (!self.friends.contains(where: { $0.id == user.id }) && isFriend!) {
                         self.friends.append(user)
+                    }
+                    
+                    if (!self.invites.contains(where: { $0.id == user.id }) && !isFriend!) {
+                        self.invites.append(user)
                     }
                     
                     self.tableView.reloadData()
@@ -173,6 +151,10 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             cell.profilePicture.layer.borderWidth = 1.0
             cell.profilePicture.layer.borderColor = FlatGray().cgColor
             
+            let bgColorView = UIView()
+            bgColorView.backgroundColor = FlatPurpleDark()
+            cell.selectedBackgroundView = bgColorView
+            
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ContactCell", for: indexPath)
@@ -227,13 +209,11 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             alertView.addButton("Accept", backgroundColor: FlatGreen())   {
                 self.ref.child("users/\(self.user!.id)/friends/\(self.invites[indexPath.row].id)").setValue(true)
                 self.ref.child("users/\(self.invites[indexPath.row].id)/friends/\(self.user!.id)").setValue(true)
-                self.ref.child("users/\(self.user!.id)/invites/\(self.invites[indexPath.row].id)").removeValue()
             }
             
             alertView.addButton("Decline", backgroundColor: FlatRed()) {
-                self.ref.child("users/\(self.user!.id)/invites/\(self.invites[indexPath.row].id)").removeValue()
-                self.invites.remove(at: indexPath.row)
-                self.tableView.reloadData()
+                self.ref.child("users/\(self.user!.id)/friends/\(self.invites[indexPath.row].id)").removeValue()
+            
             }
             
             // Don't do anything

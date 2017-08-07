@@ -118,12 +118,10 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         if (indexPath.section == 0) {
-            
             let username = self.friends[indexPath.row]["username"] as! String
             let id = self.friends[indexPath.row]["id"] as! String
-            let path = "users/\(id)/invites"
-    
-            ref.child(path + "/" + currUser!.id).setValue(true)
+            let path = "users/\(id)/friends"
+            ref.child(path + "/" + currUser!.id).setValue(false)
             BannerHelper.showBanner(title: "Friend Invitation Sent to \(username)", type: .success)
           
         } else {
