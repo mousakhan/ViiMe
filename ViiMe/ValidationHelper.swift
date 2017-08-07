@@ -38,6 +38,7 @@ class ValidationHelper {
             return "Please enter a username"
         }
         
+        
         // Make sure the first is not ., _, -
         let firstChar = text.characters.first!
         if (firstChar == "." || firstChar == "_" || firstChar == "-") {

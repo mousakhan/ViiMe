@@ -51,6 +51,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     
     //MARK: UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate
     func updateSearchResults(for searchController: UISearchController) {
+        print("Update")
         getSearchResults(query: searchController.searchBar.text!)
         self.tableView.reloadData()
     }
@@ -170,7 +171,6 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     //MARK: Helper Functions
     func getSearchResults(query: String) {
         if (query.characters.count > 2) {
-            
             if !query.trimmingCharacters(in: .whitespaces).isEmpty {
                 self.filteredContacts = []
                 _ = self.contacts.filter({ (dict) -> Bool in
@@ -182,6 +182,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                     return true
                 })
                 
+                print("HEREE")
                 //For why this works: https://stackoverflow.com/questions/38618953/how-to-do-a-simple-search-in-string-in-firebase-database
                 ref.child("users")
                     .queryOrdered(byChild: "username")
@@ -197,6 +198,8 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                             let id = postDict["id"] as? String ?? ""
                             let profile = postDict["profile"] as? String ?? ""
                          
+                            print(name)
+                            
                             var dict = [String: String]()
                             
                             dict["name"] = name

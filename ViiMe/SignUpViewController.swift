@@ -101,26 +101,42 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             BannerHelper.showBanner(title: userValidation, type: .danger)
         } else {
             
+            let ref = Database.database().reference()
             
-            if ValidationHelper.validateEmail(textfield: emailTextField) {
-                Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
-                    if let error = error {
-                        BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
-                        return
+            ref.child("users").observeSingleEvent(of: .value, with: { (snapshot) in
+                let enumerator = snapshot.children
+                while let user = enumerator.nextObject() as? DataSnapshot {
+                    let postDict = user.value as? [String : AnyObject] ?? [:]
+                    let username = postDict["username"] as? String ?? ""
+                    if (username == self.usernameTextField.text?.lowercased()) {
                     } else {
-                        Auth.auth().currentUser?.sendEmailVerification { (error) in
-                            if error != nil {
-                                BannerHelper.showBanner(title: error!.localizedDescription, type: .danger)
-                            } else {
-                                BannerHelper.showBanner(title: "Email Verification Sent.", type: .success)
-                                let id = user!.uid
-                                self.ref.child("users/\(String(describing: id))").setValue(["username": self.usernameTextField.text!.lowercased(), "name": self.nameTextField.text!, "age": self.ageTextField.text!, "email": self.emailTextField.text!, "id": user?.uid])
-                                self.dismiss(animated: true, completion: {})
+                        if ValidationHelper.validateEmail(textfield: self.emailTextField) {
+                            Auth.auth().createUser(withEmail: email, password: password) { (user, error) in
+                                if let error = error {
+                                    BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
+                                    return
+                                } else {
+                                    Auth.auth().currentUser?.sendEmailVerification { (error) in
+                                        if error != nil {
+                                            BannerHelper.showBanner(title: error!.localizedDescription, type: .danger)
+                                        } else {
+                                            BannerHelper.showBanner(title: "Email Verification Sent.", type: .success)
+                                            let id = user!.uid
+                                            self.ref.child("users/\(String(describing: id))").setValue(["username": self.usernameTextField.text!.lowercased(), "name": self.nameTextField.text!, "age": self.ageTextField.text!, "email": self.emailTextField.text!, "id": user?.uid])
+                                            self.dismiss(animated: true, completion: {})
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
+                
+            })
+            
+            
+            
+            
         }
     }
     
