@@ -28,15 +28,14 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     
     var friends = [Dictionary<String, Any>]()
     var currUser : UserInfo?
+    var currUserFriends : Array<UserInfo> = []
     var ref: DatabaseReference!
     var searchController : UISearchController!
     var contacts = [Dictionary<String, Any>]()
     var filteredContacts =  [Dictionary<String, Any>]()
+    
     override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        
-        
+    
         self.tableView.backgroundColor = FlatBlack()
         ref = Database.database().reference()
         
@@ -117,13 +116,16 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //TODO: if you search user that has sent you an invite, if you send them an invite, you become friends
+
         if (indexPath.section == 0) {
+            
+            let username = self.friends[indexPath.row]["username"] as! String
             let id = self.friends[indexPath.row]["id"] as! String
             let path = "users/\(id)/invites"
-            
+    
             ref.child(path + "/" + currUser!.id).setValue(true)
-            
+            BannerHelper.showBanner(title: "Friend Invitation Sent to \(username)", type: .success)
+          
         } else {
             delegate?.sendSmsClick(recipient: self.filteredContacts[indexPath.row]["number"] as! String, vc: self)
         }
@@ -189,24 +191,27 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                         self.friends = []
                         let enumerator = snapshot.children
                         while let friend = enumerator.nextObject() as? DataSnapshot {
-                            let postDict = friend.value as? NSDictionary
-                            var dict = [String: AnyObject]()
-                            let name = postDict?["name"]
-                            let username = postDict?["username"]
-                            let profile = postDict?["profile"]
-                            let id = postDict?["id"]
+                            let postDict = friend.value as? [String : AnyObject] ?? [:]
+                            let username = postDict["username"] as? String ?? ""
+                            let name = postDict["name"] as? String ?? ""
+                            let id = postDict["id"] as? String ?? ""
+                            let profile = postDict["profile"] as? String ?? ""
+                         
+                            var dict = [String: String]()
                             
-                            dict["name"] = name as AnyObject
-                            dict["username"] = username as AnyObject
-                            dict["id"] = id as AnyObject
+                            dict["name"] = name
+                            dict["username"] = username
+                            dict["id"] = id
                             
-                            if (profile != nil) {
-                                dict["profile"] = profile as AnyObject
+                            if (profile != "") {
+                                dict["profile"] = profile
                             } else {
-                                dict["profile"] = "" as AnyObject
+                                dict["profile"] = ""
                             }
                             
-                            if (id  as? String != self.currUser?.id) {
+                          
+                            if (id != self.currUser?.id && !self.currUserFriends.contains(where: { $0.id == id })
+                                ) {
                                 self.friends.append(dict)
                             }
                             

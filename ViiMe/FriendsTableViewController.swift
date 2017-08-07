@@ -48,7 +48,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let gender = value?["gender"] as? String ?? ""
                     let profile = value?["profile"] as? String ?? ""
                     let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
-                    if !self.invites.contains(where: { $0.username == user.username }) {
+                    if !self.invites.contains(where: { $0.id == user.id }) {
                         self.invites.append(user)
                     }
                     self.tableView.reloadData()
@@ -77,12 +77,12 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let profile = value?["profile"] as? String ?? ""
                     let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
                     
-                    if !self.friends.contains(where: { $0.username == user.username }) {
+                    if !self.friends.contains(where: { $0.id == user.id }) {
                         self.friends.append(user)
                     }
                     
                     self.tableView.reloadData()
-                    // ...
+      
                 }) { (error) in
                     print(error.localizedDescription)
                 }
@@ -353,6 +353,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         resultsController.searchController = self.searchController
         
         resultsController.currUser = self.user
+        resultsController.currUserFriends = self.friends
         resultsController.contacts = self.contacts
         
         self.searchController = UISearchController(searchResultsController: resultsController)

@@ -16,8 +16,16 @@ class BannerHelper {
         let numberOfBanners = NotificationBannerQueue.default.numberOfBanners
         
         if (numberOfBanners == 0) {
-            var icon = UIImage(named:"error.png")
-            icon = icon?.withRenderingMode(.alwaysTemplate)
+            var icon = UIImage()
+            
+            if (type == .danger) {
+                icon = UIImage(named:"error.png")!
+            } else if (type == .success) {
+                icon = UIImage(named:"checkmark.png")!
+            }
+            
+            
+            icon = icon.withRenderingMode(.alwaysTemplate)
             let leftView = UIImageView(image: icon)
             leftView.tintColor = UIColor.white
             let banner = NotificationBanner(title: title, leftView: leftView, style: type)
