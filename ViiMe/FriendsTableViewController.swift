@@ -36,10 +36,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             self.invites = []
             let enumerator = snapshot.children
             while let invite = enumerator.nextObject() as? DataSnapshot {
-                self.ref.child("users").child(invite.key).observe(DataEventType.value, with: { (snapshot) in
+                self.ref.child("users").child(invite.key).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                     // Get user value
                     let value = snapshot.value as? NSDictionary
-                    print(value!)
                     let username = value?["username"] as? String ?? ""
                     let name = value?["name"] as? String ?? ""
                     let id = value?["id"] as? String ?? ""
@@ -49,6 +48,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let profile = value?["profile"] as? String ?? ""
                     let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
                     if !self.invites.contains(where: { $0.id == user.id }) {
+                        print("Invite")
+                        print(user)
                         self.invites.append(user)
                     }
                     self.tableView.reloadData()
@@ -62,11 +63,13 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         // Check to see if there are any friends
         let friendsRef = ref.child("users/\(user!.id)/friends")
         friendsRef.observe(DataEventType.value, with: { (snapshot) in
+            print("Watch")
             self.friends = []
+            print(self.friends)
             let enumerator = snapshot.children
             while let invite = enumerator.nextObject() as? DataSnapshot {
-                self.ref.child("users").child(invite.key).observe(DataEventType.value, with: { (snapshot) in
-                    // Get user value
+                self.ref.child("users").child(invite.key).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+    
                     let value = snapshot.value as? NSDictionary
                     let username = value?["username"] as? String ?? ""
                     let name = value?["name"] as? String ?? ""
@@ -88,6 +91,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                 }
                 
             }
+            self.tableView.reloadData()
         })
         
         initContacts()
@@ -140,7 +144,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             }
             
             cell.profilePicture.layoutIfNeeded()
-            
             cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.height / 2
             cell.profilePicture.clipsToBounds = true
             cell.profilePicture.layer.borderWidth = 1.0
@@ -157,7 +160,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             cell.backgroundColor = FlatBlack()
             cell.textLabel?.textColor = FlatWhite()
             cell.detailTextLabel?.textColor = FlatWhite()
-            cell.isUserInteractionEnabled = false
             let profile =  self.friends[indexPath.row].profile
             
             if (profile != "") {
@@ -169,15 +171,10 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             }
             
             cell.profilePicture.layoutIfNeeded()
-            
             cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.height / 2
             cell.profilePicture.clipsToBounds = true
             cell.profilePicture.layer.borderWidth = 1.0
             cell.profilePicture.layer.borderColor = FlatGray().cgColor
-            
-            let bgColorView = UIView()
-            bgColorView.backgroundColor = FlatPurpleDark()
-            cell.selectedBackgroundView = bgColorView
             
             return cell
         } else {
@@ -249,14 +246,44 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             alertView.showInfo("Accept Invitation", subTitle: "Add \(self.invites[indexPath.row].username) to your friend list")
             
             self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
-        }
-        
-        if (indexPath.section == 1) {
+        } else if (indexPath.section == 2) {
             sendSmsClick(recipient: self.contacts[indexPath.row]["number"] as! String, vc: self)
         }
     }
 
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        if (indexPath.section == 1) {
+            return true
+        }
+        
+        return false
+    }
 
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        
+        let delete = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
+            self.ref.child("users/\(self.user!.id)/friends/\(self.friends[indexPath.row].id)").removeValue()
+            self.ref.child("users/\(self.friends[indexPath.row].id)/friends/\(self.user!.id)").removeValue()
+            self.tableView.reloadData()
+        }
+       
+        delete.backgroundColor = FlatRed()
+        
+        //TODO: Add ability to block someone in future
+        
+//        let block = UITableViewRowAction(style: .destructive, title: "Block") { (action, indexPath) in
+//            self.ref.child("users/\(self.user!.id)/friends/\(self.friends[indexPath.row].id)").removeValue()
+//            self.ref.child("users/\(self.user!.id)/blocked/\(self.friends[indexPath.row].id)").setValue(true)
+//            self.ref.child("users/\(self.friends[indexPath.row].id)/friends/\(self.user!.id)").removeValue()
+//            self.tableView.reloadData()
+//            
+//        }
+//        
+//        block.backgroundColor = FlatYellowDark()
+        
+        return [delete]
+        
+    }
     //MARK: Helper Functions
     
     func initContacts() {
