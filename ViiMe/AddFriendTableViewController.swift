@@ -182,7 +182,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                     return true
                 })
                 
-                print("HEREE")
+                
                 //For why this works: https://stackoverflow.com/questions/38618953/how-to-do-a-simple-search-in-string-in-firebase-database
                 ref.child("users")
                     .queryOrdered(byChild: "username")
