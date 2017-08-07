@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		4C1AB9561F35CC4400855189 /* AddFriendTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1AB9551F35CC4400855189 /* AddFriendTableViewController.swift */; };
 		4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */; };
-		4C50CE4C1F38151900781ACD /* AddFriendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50CE4B1F38151900781ACD /* AddFriendTableViewCell.swift */; };
 		4C5502131F16A5B80073A405 /* Venue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5502121F16A5B80073A405 /* Venue.swift */; };
 		4C5502151F16B2780073A405 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5502141F16B2780073A405 /* ProfileViewController.swift */; };
 		4C75AE841F36BFEB002E518E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C75AE831F36BFEB002E518E /* Assets.xcassets */; };
@@ -39,7 +38,6 @@
 /* Begin PBXFileReference section */
 		4C1AB9551F35CC4400855189 /* AddFriendTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFriendTableViewController.swift; sourceTree = "<group>"; };
 		4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenuesCollectionViewController.swift; sourceTree = "<group>"; };
-		4C50CE4B1F38151900781ACD /* AddFriendTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFriendTableViewCell.swift; sourceTree = "<group>"; };
 		4C5502121F16A5B80073A405 /* Venue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Venue.swift; sourceTree = "<group>"; };
 		4C5502141F16B2780073A405 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		4C75AE831F36BFEB002E518E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -164,7 +162,6 @@
 			isa = PBXGroup;
 			children = (
 				4CB6AD5F1F2A3F91004EB393 /* FriendsTableViewController.swift */,
-				4C50CE4B1F38151900781ACD /* AddFriendTableViewCell.swift */,
 				4CB6AD731F2CB692004EB393 /* FriendTableViewCell.swift */,
 				4C1AB9551F35CC4400855189 /* AddFriendTableViewController.swift */,
 			);
@@ -369,7 +366,6 @@
 				4CB6AD741F2CB692004EB393 /* FriendTableViewCell.swift in Sources */,
 				4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */,
 				4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */,
-				4C50CE4C1F38151900781ACD /* AddFriendTableViewCell.swift in Sources */,
 				4C7EDE011EEB01BD001A9B81 /* AppDelegate.swift in Sources */,
 				4C7DB2961EEEA62C00765D3A /* ValidationHelper.swift in Sources */,
 				4C7DB2941EEEA55E00765D3A /* TextFieldHelper.swift in Sources */,

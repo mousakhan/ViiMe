@@ -48,7 +48,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let gender = value?["gender"] as? String ?? ""
                     let profile = value?["profile"] as? String ?? ""
                     let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
-                    self.invites.append(user)
+                    if !self.invites.contains(where: { $0.username == user.username }) {
+                        self.invites.append(user)
+                    }
                     self.tableView.reloadData()
                 }) { (error) in
                     print(error.localizedDescription)
@@ -57,6 +59,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             }
         })
         
+        // Check to see if there are any friends
         let friendsRef = ref.child("users/\(user!.id)/friends")
         friendsRef.observe(DataEventType.value, with: { (snapshot) in
             self.friends = []
@@ -353,6 +356,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         resultsController.contacts = self.contacts
         
         self.searchController = UISearchController(searchResultsController: resultsController)
+        
+        self.searchController.searchBar.tintColor = FlatPurpleDark()
+        self.searchController.searchBar.barTintColor = FlatPurpleDark()
         
         self.searchController.searchResultsUpdater = resultsController as UISearchResultsUpdating
         self.searchController.delegate = self
