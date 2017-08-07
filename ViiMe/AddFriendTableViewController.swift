@@ -51,7 +51,6 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     
     //MARK: UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate
     func updateSearchResults(for searchController: UISearchController) {
-        print("Update")
         getSearchResults(query: searchController.searchBar.text!)
         self.tableView.reloadData()
     }
@@ -198,8 +197,6 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                             let id = postDict["id"] as? String ?? ""
                             let profile = postDict["profile"] as? String ?? ""
                          
-                            print(name)
-                            
                             var dict = [String: String]()
                             
                             dict["name"] = name

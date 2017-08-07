@@ -95,8 +95,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         
         let userValidation = ValidationHelper.validateUsername(textfield: self.usernameTextField)
         
-        print(userValidation)
-        
         if (userValidation != "") {
             BannerHelper.showBanner(title: userValidation, type: .danger)
         } else {

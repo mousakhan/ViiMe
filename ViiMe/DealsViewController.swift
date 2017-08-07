@@ -29,10 +29,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         self.view.backgroundColor = FlatBlack()
         self.tableView.layer.borderColor = FlatWhiteDark().cgColor
         self.tableView.layer.borderWidth = 0.5
-       
-        print(venue!)
-     
-   
     }
     
     //MARK: UITableView DataSource

@@ -48,8 +48,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let profile = value?["profile"] as? String ?? ""
                     let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
                     if !self.invites.contains(where: { $0.id == user.id }) {
-                        print("Invite")
-                        print(user)
                         self.invites.append(user)
                     }
                     self.tableView.reloadData()
@@ -63,7 +61,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         // Check to see if there are any friends
         let friendsRef = ref.child("users/\(user!.id)/friends")
         friendsRef.observe(DataEventType.value, with: { (snapshot) in
-            print("Watch")
             self.friends = []
             print(self.friends)
             let enumerator = snapshot.children
