@@ -26,13 +26,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
         UIApplication.shared.setStatusBarStyle(UIStatusBarStyle.lightContent, animated: true)
         
+        
+        // Check if there are any new invitations
         let ref = Database.database().reference()
+        var countRef = 0
         Auth.auth().addStateDidChangeListener { auth, user in
             if user != nil && user!.isEmailVerified {
                 let inviteRef = ref.child("users/\(user!.uid)/invites")
                 inviteRef.observe(DataEventType.value, with: { (snapshot) in
-                    if (snapshot.childrenCount > 0) {
-                    BannerHelper.showBanner(title: "You have \(snapshot.childrenCount) friend requests", type: .info)
+                    if (snapshot.childrenCount > 0 && Int(snapshot.childrenCount) >= countRef) {
+                        BannerHelper.showBanner(title: "You have \(snapshot.childrenCount) friend requests", type: .warning)
+                        countRef = Int(snapshot.childrenCount)
                     }
                 })
             }

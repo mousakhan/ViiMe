@@ -39,6 +39,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                 self.ref.child("users").child(invite.key).observe(DataEventType.value, with: { (snapshot) in
                     // Get user value
                     let value = snapshot.value as? NSDictionary
+                    print(value!)
                     let username = value?["username"] as? String ?? ""
                     let name = value?["name"] as? String ?? ""
                     let id = value?["id"] as? String ?? ""
@@ -49,7 +50,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
                     self.invites.append(user)
                     self.tableView.reloadData()
-                    // ...
                 }) { (error) in
                     print(error.localizedDescription)
                 }
@@ -73,7 +73,11 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let gender = value?["gender"] as? String ?? ""
                     let profile = value?["profile"] as? String ?? ""
                     let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
-                    self.friends.append(user)
+                    
+                    if !self.friends.contains(where: { $0.username == user.username }) {
+                        self.friends.append(user)
+                    }
+                    
                     self.tableView.reloadData()
                     // ...
                 }) { (error) in
@@ -111,9 +115,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         return 60.0
     }
     
-    func dismissSearchController() {
-        self.searchController.isActive = false
-    }
     
     //MARK: UITableView Delegate
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -195,6 +196,28 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     }
  
     
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
+        if (section == 0) {
+            return "Friend Invitations"
+        } else if (section == 1) {
+            return "My Friends"
+        }
+        
+        return "My Contacts"
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        view.tintColor = FlatBlackDark()
+        let headerTitle = view as? UITableViewHeaderFooterView
+        headerTitle?.textLabel?.textColor = FlatWhite()
+    }
+    
+    
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 40.0
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if (indexPath.section == 0) {
@@ -212,7 +235,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             
             alertView.addButton("Decline", backgroundColor: FlatRed()) {
                 self.ref.child("users/\(self.user!.id)/invites/\(self.invites[indexPath.row].id)").removeValue()
-            
+                self.invites.remove(at: indexPath.row)
+                self.tableView.reloadData()
             }
             
             // Don't do anything
@@ -222,7 +246,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             alertView.showInfo("Accept Invitation", subTitle: "Add \(self.invites[indexPath.row].username) to your friend list")
             
             self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
-            
         }
         
         if (indexPath.section == 1) {
@@ -279,39 +302,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         })
     }
     
-
-    
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
-        if (section == 0) {
-            if (self.invites.count < 1) {
-                return ""
-            }
-            return "Invitations"
-        } else if (section == 1) {
-            return "My Friends"
-        } else if (section == 2) {
-            if (self.contacts.count < 1) {
-                return ""
-            }
-            
-            return "My Contacts"
-        }
-        
-        return ""
-    }
-    
-    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        view.tintColor = FlatBlackDark()
-        let headerTitle = view as? UITableViewHeaderFooterView
-        headerTitle?.textLabel?.textColor = FlatWhite()
-    }
-    
-    
-    
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 40.0
-    }
-    
     //MARK: MFMessageComposeViewControllerDelegate
     func sendSmsClick(recipient: String, vc: UITableViewController) {
         let messageVC = MFMessageComposeViewController()
@@ -340,7 +330,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
    
     
     //MARK: Search Controller
-    
     func willPresentSearchController(_ searchController: UISearchController) {
         DispatchQueue.main.async {
             self.searchController.searchResultsController?.view.isHidden = false
@@ -402,6 +391,10 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     }
     
     
+    //MARK: AddFriendTableViewControllerDelegate
+    func dismissSearchController() {
+        self.searchController.isActive = false
+    }
 
     /*
     // Override to support editing the table view.

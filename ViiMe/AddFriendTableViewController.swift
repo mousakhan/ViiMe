@@ -72,9 +72,9 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     //MARK: UITableView Delegate
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if (indexPath.section == 0) {
-            let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! AddFriendTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! FriendTableViewCell
             cell.backgroundColor = FlatBlack()
-            cell.usernameLabel.text = self.friends[indexPath.row]["username"] as? String
+            cell.nameLabel.text = self.friends[indexPath.row]["username"] as? String
             
             let profile =  self.friends[indexPath.row]["profile"] as! String
             
@@ -117,12 +117,12 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //TODO: if you search user that has sent you an invite, if you send them an invite, you become friends
         if (indexPath.section == 0) {
             let id = self.friends[indexPath.row]["id"] as! String
             let path = "users/\(id)/invites"
-            let currUserPath = "users/\(currUser!.id)/friends"
+            
             ref.child(path + "/" + currUser!.id).setValue(true)
-            ref.child(currUserPath + "/" + id).setValue(true)
             
         } else {
             delegate?.sendSmsClick(recipient: self.filteredContacts[indexPath.row]["number"] as! String, vc: self)
@@ -147,15 +147,9 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
         if (section == 0) {
             return "Search by Username"
-        } else if (section == 1) {
-            if (self.filteredContacts.count < 1) {
-                return ""
-            }
-            
-            return "My Contacts"
         }
         
-        return ""
+        return "My Contacts"
     }
     
     
