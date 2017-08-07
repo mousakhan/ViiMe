@@ -930,6 +930,9 @@
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="G4n-O6-1Bg">
                                                     <rect key="frame" x="0.0" y="0.0" width="58" height="58"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="G4n-O6-1Bg" secondAttribute="height" multiplier="1:1" id="QUj-rh-cXk"/>
+                                                    </constraints>
                                                 </imageView>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iIi-WU-33q">
                                                     <rect key="frame" x="68" y="0.0" width="330" height="58"/>
@@ -1001,7 +1004,6 @@
         <!--Add Friend Table View Controller-->
         <scene sceneID="XXt-cm-IgC">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="d1E-uM-VqS" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController storyboardIdentifier="AddFriendTableViewController" id="1IH-iL-oPA" customClass="AddFriendTableViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="28" sectionFooterHeight="28" id="NuY-y2-aRP">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
@@ -1078,6 +1080,7 @@
                         </connections>
                     </tableView>
                 </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="d1E-uM-VqS" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <searchDisplayController id="5r8-xT-9oh">
                     <connections>
                         <outlet property="delegate" destination="1IH-iL-oPA" id="HaU-2M-Vtt"/>

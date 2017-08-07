@@ -314,7 +314,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 self.genderTextField.text = postDict["gender"] as? String
             }
             
-            self.userInfo = UserInfo(name: name, id: self.user.uid, age: age, email: email, gender: gender, profile: profile, friends: friends, deals: [])
+            self.userInfo = UserInfo(username: username, name: name, id: self.user.uid, age: age, email: email, gender: gender, profile: profile)
             
         })
     }

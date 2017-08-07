@@ -74,6 +74,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>SCLAlertView.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SnapKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -82,6 +87,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>096135D23605DBAA22532BF065C85C26</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>09A62655F66AE53A474D64E42E6E9DF9</key>
 		<dict>
 			<key>primary</key>
@@ -122,17 +132,17 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>64A0893ABD6A0A5903E4A4098AC76CA8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>7335E9C9689F3B8A16F063A884748533</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>76BD4592010354D6C23D6ECCA20D83A8</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>7DFECAC3429B128448A3B398A5FBD8EA</key>
 		<dict>
 			<key>primary</key>
 			<true/>

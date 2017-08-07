@@ -11,6 +11,7 @@ import ChameleonFramework
 import Contacts
 import MessageUI
 import Firebase
+import SCLAlertView
 
 class FriendsTableViewController: UITableViewController, MFMessageComposeViewControllerDelegate,  UISearchBarDelegate, UISearchControllerDelegate, AddFriendTableViewControllerDelegate {
   
@@ -18,14 +19,70 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     var user : UserInfo? = nil
     var contacts = [Dictionary<String, Any>]()
-    
-    
-     var searchController : UISearchController!
-    
+    var searchController : UISearchController!
+    var invites : Array<UserInfo> = []
+    var friends : Array<UserInfo> = []
+    var ref: DatabaseReference!
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.tintColor = FlatWhite()
+        
+        
+        // Check to see if there are any friend invitations
+        ref = Database.database().reference()
+        let inviteRef = ref.child("users/\(user!.id)/invites")
+        inviteRef.observe(DataEventType.value, with: { (snapshot) in
+            self.invites = []
+            let enumerator = snapshot.children
+            while let invite = enumerator.nextObject() as? DataSnapshot {
+                self.ref.child("users").child(invite.key).observe(DataEventType.value, with: { (snapshot) in
+                    // Get user value
+                    let value = snapshot.value as? NSDictionary
+                    let username = value?["username"] as? String ?? ""
+                    let name = value?["name"] as? String ?? ""
+                    let id = value?["id"] as? String ?? ""
+                    let age = value?["age"] as? String ?? ""
+                    let email = value?["email"] as? String ?? ""
+                    let gender = value?["gender"] as? String ?? ""
+                    let profile = value?["profile"] as? String ?? ""
+                    let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
+                    self.invites.append(user)
+                    self.tableView.reloadData()
+                    // ...
+                }) { (error) in
+                    print(error.localizedDescription)
+                }
+                
+            }
+        })
+        
+        let friendsRef = ref.child("users/\(user!.id)/friends")
+        friendsRef.observe(DataEventType.value, with: { (snapshot) in
+            self.friends = []
+            let enumerator = snapshot.children
+            while let invite = enumerator.nextObject() as? DataSnapshot {
+                self.ref.child("users").child(invite.key).observe(DataEventType.value, with: { (snapshot) in
+                    // Get user value
+                    let value = snapshot.value as? NSDictionary
+                    let username = value?["username"] as? String ?? ""
+                    let name = value?["name"] as? String ?? ""
+                    let id = value?["id"] as? String ?? ""
+                    let age = value?["age"] as? String ?? ""
+                    let email = value?["email"] as? String ?? ""
+                    let gender = value?["gender"] as? String ?? ""
+                    let profile = value?["profile"] as? String ?? ""
+                    let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
+                    self.friends.append(user)
+                    self.tableView.reloadData()
+                    // ...
+                }) { (error) in
+                    print(error.localizedDescription)
+                }
+                
+            }
+        })
+        
         initContacts()
 
     }
@@ -38,12 +95,14 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     //MARK: UITableView Data Source
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (section == 0) {
-            return self.user!.friends.count
+            return self.invites.count
+        } else if (section == 1) {
+            return self.friends.count
         }
         return self.contacts.count
     }
@@ -55,21 +114,62 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     func dismissSearchController() {
         self.searchController.isActive = false
     }
+    
     //MARK: UITableView Delegate
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if (indexPath.section == 0) {
             let cell = tableView.dequeueReusableCell(withIdentifier: "FriendCell", for: indexPath) as! FriendTableViewCell
-            cell.nameLabel?.text = self.user!.friends[indexPath.row] as? String
-            cell.isUserInteractionEnabled = false
+            cell.nameLabel?.text = self.invites[indexPath.row].username
             cell.backgroundColor = FlatBlack()
             cell.textLabel?.textColor = FlatWhite()
             cell.detailTextLabel?.textColor = FlatWhite()
             
-            cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.width / 2
+            let profile =  self.invites[indexPath.row].profile
+            
+            if (profile != "") {
+                let url = URL(string: profile)
+                cell.profilePicture.kf.indicatorType = .activity
+                cell.profilePicture.kf.setImage(with: url)
+            } else {
+                cell.profilePicture.image = UIImage(named: "empty_profile")
+            }
+            
+            cell.profilePicture.layoutIfNeeded()
+            
+            cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.height / 2
+            cell.profilePicture.clipsToBounds = true
             cell.profilePicture.layer.borderWidth = 1.0
             cell.profilePicture.layer.borderColor = FlatGray().cgColor
-            cell.profilePicture.layer.masksToBounds = true
+            
+            let bgColorView = UIView()
+            bgColorView.backgroundColor = FlatPurpleDark()
+            cell.selectedBackgroundView = bgColorView
+            
+            return cell
+        } else if (indexPath.section == 1) {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "FriendCell", for: indexPath) as! FriendTableViewCell
+            cell.nameLabel?.text = self.friends[indexPath.row].username
+            cell.backgroundColor = FlatBlack()
+            cell.textLabel?.textColor = FlatWhite()
+            cell.detailTextLabel?.textColor = FlatWhite()
+            cell.isUserInteractionEnabled = false
+            let profile =  self.friends[indexPath.row].profile
+            
+            if (profile != "") {
+                let url = URL(string: profile)
+                cell.profilePicture.kf.indicatorType = .activity
+                cell.profilePicture.kf.setImage(with: url)
+            } else {
+                cell.profilePicture.image = UIImage(named: "empty_profile")
+            }
+            
+            cell.profilePicture.layoutIfNeeded()
+            
+            cell.profilePicture.layer.cornerRadius = cell.profilePicture.frame.height / 2
+            cell.profilePicture.clipsToBounds = true
+            cell.profilePicture.layer.borderWidth = 1.0
+            cell.profilePicture.layer.borderColor = FlatGray().cgColor
             
             let bgColorView = UIView()
             bgColorView.backgroundColor = FlatPurpleDark()
@@ -96,6 +196,35 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
  
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        if (indexPath.section == 0) {
+            let appearance = SCLAlertView.SCLAppearance(
+                showCloseButton: false
+            )
+            
+            let alertView = SCLAlertView(appearance: appearance)
+            
+            alertView.addButton("Accept", backgroundColor: FlatGreen())   {
+                self.ref.child("users/\(self.user!.id)/friends/\(self.invites[indexPath.row].id)").setValue(true)
+                self.ref.child("users/\(self.invites[indexPath.row].id)/friends/\(self.user!.id)").setValue(true)
+                self.ref.child("users/\(self.user!.id)/invites/\(self.invites[indexPath.row].id)").removeValue()
+            }
+            
+            alertView.addButton("Decline", backgroundColor: FlatRed()) {
+                self.ref.child("users/\(self.user!.id)/invites/\(self.invites[indexPath.row].id)").removeValue()
+            
+            }
+            
+            // Don't do anything
+            alertView.addButton("Later") {}
+            
+          
+            alertView.showInfo("Accept Invitation", subTitle: "Add \(self.invites[indexPath.row].username) to your friend list")
+            
+            self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
+            
+        }
+        
         if (indexPath.section == 1) {
             sendSmsClick(recipient: self.contacts[indexPath.row]["number"] as! String, vc: self)
         }
@@ -154,8 +283,13 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
         if (section == 0) {
-            return "My Friends"
+            if (self.invites.count < 1) {
+                return ""
+            }
+            return "Invitations"
         } else if (section == 1) {
+            return "My Friends"
+        } else if (section == 2) {
             if (self.contacts.count < 1) {
                 return ""
             }
@@ -168,7 +302,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         view.tintColor = FlatBlackDark()
-        var headerTitle = view as? UITableViewHeaderFooterView
+        let headerTitle = view as? UITableViewHeaderFooterView
         headerTitle?.textLabel?.textColor = FlatWhite()
     }
     

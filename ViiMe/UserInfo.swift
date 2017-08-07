@@ -9,13 +9,11 @@
 import Foundation
 
 struct UserInfo {
+    var username : String
     var name : String
     var id: String
     var age : String
     var email : String
     var gender : String
     var profile : String
-    var friends: Array<UserInfo>
-    var deals: Array<Deal>
-    
 }

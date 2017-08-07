@@ -35,7 +35,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     override func viewDidLoad() {
         super.viewDidLoad()
         
-  
+        
         
         self.tableView.backgroundColor = FlatBlack()
         ref = Database.database().reference()
@@ -74,10 +74,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
         if (indexPath.section == 0) {
             let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! AddFriendTableViewCell
             cell.backgroundColor = FlatBlack()
-            
-            
             cell.usernameLabel.text = self.friends[indexPath.row]["username"] as? String
-            
             
             let profile =  self.friends[indexPath.row]["profile"] as! String
             
@@ -120,20 +117,18 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         if (indexPath.section == 0) {
-        
-        let id = self.friends[indexPath.row]["id"] as! String
-        let path = "users/\(id)/invites"
-        let currUserPath = "users/\(String(describing: currUser?.id))/friends"
-        ref.child(path).childByAutoId().setValue(currUser?.id)
-        ref.child(currUserPath).childByAutoId().setValue(self.friends[indexPath.row])
-       
+            let id = self.friends[indexPath.row]["id"] as! String
+            let path = "users/\(id)/invites"
+            let currUserPath = "users/\(currUser!.id)/friends"
+            ref.child(path + "/" + currUser!.id).setValue(true)
+            ref.child(currUserPath + "/" + id).setValue(true)
+            
         } else {
             delegate?.sendSmsClick(recipient: self.filteredContacts[indexPath.row]["number"] as! String, vc: self)
         }
         
-         delegate?.dismissSearchController()
+        delegate?.dismissSearchController()
     }
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
@@ -178,9 +173,6 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     
     //MARK: Helper Functions
     func getSearchResults(query: String) {
-        //For why this works: https://stackoverflow.com/questions/38618953/how-to-do-a-simple-search-in-string-in-firebase-database
-        
-        
         if (query.characters.count > 2) {
             
             if !query.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -188,13 +180,13 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                 _ = self.contacts.filter({ (dict) -> Bool in
                     let number = dict["number"] as? String
                     let name = dict["name"] as? String
-                    if (number!.contains(query) || (name!.contains(query))) {
+                    if (number!.contains(query) || (name!.lowercased().contains(query.lowercased()))) {
                         self.filteredContacts.append(dict)
                     }
                     return true
                 })
                 
-                
+                //For why this works: https://stackoverflow.com/questions/38618953/how-to-do-a-simple-search-in-string-in-firebase-database
                 ref.child("users")
                     .queryOrdered(byChild: "username")
                     .queryStarting(atValue: query.lowercased())
@@ -219,19 +211,16 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                             } else {
                                 dict["profile"] = "" as AnyObject
                             }
-                         
+                            
                             if (id  as? String != self.currUser?.id) {
                                 self.friends.append(dict)
                             }
                             
                         }
                         
-                        
                         self.tableView.reloadData()
                         
                     })
-                
-                // string contains non-whitespace characters
             } else {
                 self.friends = []
                 self.filteredContacts = []
