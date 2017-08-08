@@ -41,9 +41,12 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var websiteIcon: UIImageView!
     @IBOutlet weak var phoneIcon: UIImageView!
     
+    @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
 
+    @IBOutlet weak var venueDescriptionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
     //MARK: View Lifecycle
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -56,22 +59,21 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         self.navigationController?.navigationBar.topItem?.title = " "
         self.navigationItem.title = venue!.name
-       
-   
+        
         aboutThisVenueLabel.addBottomBorderWithColor(color: FlatGray(), width: 1)
         venueDeals.addBottomBorderWithColor(color: FlatGray(), width: 1)
-        
         
         let url = URL(string: venue!.logo)
         venueLogo.kf.indicatorType = .activity
         venueLogo.kf.setImage(with: url)
         
-        // Set label text
         venueDescription.text = venue!.description
         priceLabel.text = venue!.price
         addressLabel.text = venue!.address
         venueTypeLabel.text = venue!.type
         cuisineLabel.text = venue!.cuisine
+//        websiteLabel.text = venue!.website
+//        phoneNumberLabel.text = venue!.number
         websiteLabel.text = "www.cumberlandpizza.com/"
         phoneNumberLabel.text = "(613) 789-9999"
         
@@ -85,22 +87,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         addIcon(name: "type", imageView: venueTypeIcon)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.size.width, height: tableView.contentSize.height)
-        
-        // Distance from top is 20, then another 50 for an offset
-        scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: venueInfoView.frame.height + tableView.contentSize.height + 70)
-       
-    }
-    
-    override func viewDidLayoutSubviews(){
-        tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.size.width, height: tableView.contentSize.height)
-        tableView.reloadData()
-        
-        // Distance from top is 20, then another 50 for an offset
-        scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: venueInfoView.frame.height + tableView.contentSize.height + 70)
-     
-    }
     
     //MARK: UITableView DataSource
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -139,13 +125,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         return cell
     }
 
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       // self.performSegue(withIdentifier: "RedemptionViewControllerSegue", sender: nil)
-    }
-  
     //MARK: Helper
-    
     func addIcon(name: String, imageView : UIImageView) {
         imageView.image = UIImage(named: name)
         imageView.image = imageView.image?.withRenderingMode(.alwaysTemplate)
@@ -154,7 +134,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
 
     
     // MARK: - Navigation
-
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "CreateGroupViewControllerSegue") {
