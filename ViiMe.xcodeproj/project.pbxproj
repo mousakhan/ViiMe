@@ -11,6 +11,8 @@
 		4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */; };
 		4C50CE4E1F395F3A00781ACD /* CALayer+Border.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50CE4D1F395F3A00781ACD /* CALayer+Border.swift */; };
 		4C50CE501F39EAFC00781ACD /* CreateGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50CE4F1F39EAFC00781ACD /* CreateGroupViewController.swift */; };
+		4C50CE531F39F9C500781ACD /* GroupCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50CE521F39F9C500781ACD /* GroupCollectionViewController.swift */; };
+		4C50CE551F39FD3800781ACD /* GroupCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50CE541F39FD3800781ACD /* GroupCollectionViewCell.swift */; };
 		4C5502131F16A5B80073A405 /* Venue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5502121F16A5B80073A405 /* Venue.swift */; };
 		4C5502151F16B2780073A405 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5502141F16B2780073A405 /* ProfileViewController.swift */; };
 		4C75AE841F36BFEB002E518E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C75AE831F36BFEB002E518E /* Assets.xcassets */; };
@@ -42,6 +44,8 @@
 		4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenuesCollectionViewController.swift; sourceTree = "<group>"; };
 		4C50CE4D1F395F3A00781ACD /* CALayer+Border.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+Border.swift"; sourceTree = "<group>"; };
 		4C50CE4F1F39EAFC00781ACD /* CreateGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateGroupViewController.swift; sourceTree = "<group>"; };
+		4C50CE521F39F9C500781ACD /* GroupCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCollectionViewController.swift; sourceTree = "<group>"; };
+		4C50CE541F39FD3800781ACD /* GroupCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCollectionViewCell.swift; sourceTree = "<group>"; };
 		4C5502121F16A5B80073A405 /* Venue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Venue.swift; sourceTree = "<group>"; };
 		4C5502141F16B2780073A405 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		4C75AE831F36BFEB002E518E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -114,7 +118,9 @@
 		4C50CE511F39EB0600781ACD /* Groups */ = {
 			isa = PBXGroup;
 			children = (
+				4C50CE541F39FD3800781ACD /* GroupCollectionViewCell.swift */,
 				4C50CE4F1F39EAFC00781ACD /* CreateGroupViewController.swift */,
+				4C50CE521F39F9C500781ACD /* GroupCollectionViewController.swift */,
 			);
 			name = Groups;
 			sourceTree = "<group>";
@@ -373,12 +379,14 @@
 				4C5502151F16B2780073A405 /* ProfileViewController.swift in Sources */,
 				4CB6AD621F2A6D22004EB393 /* UITextField+Border.swift in Sources */,
 				4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */,
+				4C50CE531F39F9C500781ACD /* GroupCollectionViewController.swift in Sources */,
 				4CB6AD7E1F2D4F8E004EB393 /* Deal.swift in Sources */,
 				4C7EDE031EEB01BD001A9B81 /* LoginViewController.swift in Sources */,
 				4CB6AD7B1F2CFB08004EB393 /* RedemptionViewController.swift in Sources */,
 				4C50CE4E1F395F3A00781ACD /* CALayer+Border.swift in Sources */,
 				4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */,
 				4CB6AD741F2CB692004EB393 /* FriendTableViewCell.swift in Sources */,
+				4C50CE551F39FD3800781ACD /* GroupCollectionViewCell.swift in Sources */,
 				4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */,
 				4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */,
 				4C7EDE011EEB01BD001A9B81 /* AppDelegate.swift in Sources */,
