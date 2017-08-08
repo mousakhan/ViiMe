@@ -12,23 +12,80 @@ import ChameleonFramework
 
 class DealsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    let reuseIdentifier = "DealCell"
+    let reuseIdentifier = "UITableViewCell"
     var venue : Venue?
     
+    @IBOutlet weak var venueInfoView: UIView!
+    @IBOutlet weak var aboutThisVenueLabel: UILabel!
 
     @IBOutlet weak var groupBarButtonItem: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var venueLogo: UIImageView!
     
-    @IBOutlet weak var venueInfoView: UIView!
+    @IBOutlet weak var addressLabel: UILabel!
+    @IBOutlet weak var phoneNumberLabel: UILabel!
+    @IBOutlet weak var websiteLabel: UILabel!
+    @IBOutlet weak var priceLabel: UILabel!
+    @IBOutlet weak var distanceLabel: UILabel!
+    @IBOutlet weak var venueTypeLabel: UILabel!
+    @IBOutlet weak var cuisineLabel: UILabel!
+    
+    @IBOutlet weak var cuisineIcon: UIImageView!
+    @IBOutlet weak var distanceIcon: UIImageView!
+    @IBOutlet weak var venueTypeIcon: UIImageView!
+    @IBOutlet weak var priceIcon: UIImageView!
+    @IBOutlet weak var addressIcon: UIImageView!
+    @IBOutlet weak var websiteIcon: UIImageView!
+    @IBOutlet weak var phoneIcon: UIImageView!
+    
+    @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
     @IBOutlet weak var venueDescription: UITextView!
+  
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.view.backgroundColor = FlatBlack()
-        self.tableView.layer.borderColor = FlatWhiteDark().cgColor
-        self.tableView.layer.borderWidth = 0.5
+
+        tableView.delegate = self
+        tableView.dataSource = self
+
+       
+        aboutThisVenueLabel.layer.addBorder(edge: .bottom, color: FlatGray(), thickness: 1)
+        
+        let url = URL(string: venue!.logo)
+        venueLogo.kf.indicatorType = .activity
+        venueLogo.kf.setImage(with: url)
+        
+        // Set label text
+        venueDescription.text = venue!.description
+        priceLabel.text = venue!.price
+        addressLabel.text = venue!.address
+        venueTypeLabel.text = venue!.type
+        cuisineLabel.text = venue!.cuisine
+        websiteLabel.text = "www.cumberlandpizza.com/"
+        phoneNumberLabel.text = "(613) 789-9999"
+        
+        // Adding icon and changing color
+        addIcon(name: "phone", imageView: phoneIcon)
+        addIcon(name: "website", imageView: websiteIcon)
+        addIcon(name: "address", imageView: addressIcon)
+        addIcon(name: "distance", imageView: distanceIcon)
+        addIcon(name: "cuisine", imageView: cuisineIcon)
+        addIcon(name: "price", imageView: priceIcon)
+        addIcon(name: "type", imageView: venueTypeIcon)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.size.width, height: tableView.contentSize.height)
+       
+    }
+    
+    override func viewDidLayoutSubviews(){
+        tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.size.width, height: tableView.contentSize.height)
+        tableView.reloadData()
+     
     }
     
     //MARK: UITableView DataSource
@@ -37,29 +94,30 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return 5
     }
     
     //MARK: UITableView Delegate
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as? DealTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
      
-        cell?.backgroundColor = FlatBlackDark()
+        cell.backgroundColor = FlatBlackDark()
+        cell.textLabel?.text = "Test"
         
-        cell?.dealDescriptionLabel.textColor = FlatWhite()
-        //cell?.dealDescriptionLabel.text = venue?.deals[indexPath.row].name
-        cell?.dealDescriptionLabel.text = "TEST"
-        cell?.dealDescriptionLabel.font = cell?.dealDescriptionLabel.font.withSize(12)
-        cell?.dealDescriptionLabel.numberOfLines = 0
+//        cell?.dealDescriptionLabel.textColor = FlatWhite()
+//        //cell?.dealDescriptionLabel.text = venue?.deals[indexPath.row].name
+//        cell?.dealDescriptionLabel.text = "TEST"
+//        cell?.dealDescriptionLabel.font = cell?.dealDescriptionLabel.font.withSize(12)
+//        cell?.dealDescriptionLabel.numberOfLines = 0
+//        
+//        
+//        cell?.dealActionLabel.textColor = FlatWhite()
+//        cell?.dealActionLabel.text = "Test"
+//        cell?.dealActionLabel.font = cell?.dealActionLabel.font.withSize(12)
+//        cell?.dealActionLabel.textColor = FlatWhite()
         
-        
-        cell?.dealActionLabel.textColor = FlatWhite()
-        cell?.dealActionLabel.text = "Test"
-        cell?.dealActionLabel.font = cell?.dealActionLabel.font.withSize(12)
-        cell?.dealActionLabel.textColor = FlatWhite()
-        
-        return cell!
+        return cell
     }
 
     
@@ -67,6 +125,13 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
        // self.performSegue(withIdentifier: "RedemptionViewControllerSegue", sender: nil)
     }
   
+    //MARK: Helper
+    
+    func addIcon(name: String, imageView : UIImageView) {
+        imageView.image = UIImage(named: name)
+        imageView.image = imageView.image?.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = FlatGray()
+    }
 
     /*
     // MARK: - Navigation

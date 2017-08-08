@@ -104,7 +104,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
         
         
-        var venue = Venue(name: "", price: "", cuisine: "", type: "", address: "", description: "", profileUrl: "", deals: [])
+        var venue = Venue(name: "", price: "", cuisine: "", type: "", address: "", description: "", logo: "", deals: [])
         
         if searchController.isActive && searchController.searchBar.text != "" {
             venue = filteredVenues[indexPath.row]
@@ -120,7 +120,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         setDistance(address: venue.address, label: cell.distanceLabel)
         cell.venueTypeLabel.text = venue.type
         
-        let url = URL(string: venue.profileUrl)
+        let url = URL(string: venue.logo)
         cell.logo.kf.indicatorType = .activity
         cell.logo.kf.setImage(with: url)
         
@@ -204,8 +204,9 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 let address = value?["address"] ?? ""
                 let type = value?["type"] ?? ""
                 let deals = value?["deals"] ?? []
+                //TODO: change this naming in the back-end
                 let profile = value?["profileUrl"] ?? ""
-                let venue = Venue(name: name as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, profileUrl: profile as! String, deals: [])
+                let venue = Venue(name: name as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, logo: profile as! String, deals: [])
                 self.venues.append(venue)
                 self.collectionView?.reloadData()
             }
