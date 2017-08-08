@@ -19,6 +19,9 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     }
     
 
+    var users : Array<UserInfo> = []
+    var numOfPeople = 0
+    
     let cancelButton: UIButton = {
         let button = UIButton()
         // Change color of icon button, could probably make this into it's own helper function
@@ -70,36 +73,60 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         appsCollectionView.dataSource = self
         appsCollectionView.delegate = self
         
-        appsCollectionView.register(AppCell.self, forCellWithReuseIdentifier: cellId)
+        appsCollectionView.register(UserCell.self, forCellWithReuseIdentifier: cellId)
         
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-14-[v0]-14-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0": nameLabel]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-25-[v0]-14-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0": nameLabel]))
         
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-14-[v0]|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0": dividerLineView]))
         
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[v0]-8-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0": appsCollectionView]))
         
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-25-[nameLabel(30)][v0][v1(0.5)]|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0": appsCollectionView, "v1": dividerLineView, "nameLabel": nameLabel]))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[nameLabel(30)][v0][v1(0.5)]|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0": appsCollectionView, "v1": dividerLineView, "nameLabel": nameLabel]))
         
         
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 2
+        return numOfPeople
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! UserCell
+      
+        if (indexPath.row > (self.users.count-1)) {
+            cell.nameLabel.text = "Invite"
+            cell.profilePicture.image = UIImage(named: "invite")
+            cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
+            cell.profilePicture.tintColor = FlatGray()
+            
+        } else {
+        let name =  self.users[indexPath.row].name
+        cell.nameLabel.text = name
+        let profile =  self.users[indexPath.row].profile
+        if (profile != "") {
+            let url = URL(string: profile)
+            cell.profilePicture.kf.indicatorType = .activity
+            cell.profilePicture.kf.setImage(with: url)
+        } else {
+            cell.profilePicture.image = UIImage(named: "empty_profile")
+        }
+        }
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: frame.height/2.0, height: frame.height/2.0)
+        return CGSize(width: frame.height/3.0, height: frame.height/2.0)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print(indexPath.row)
     }
     
     
 }
 
-class AppCell: UICollectionViewCell {
+class UserCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -121,6 +148,15 @@ class AppCell: UICollectionViewCell {
         profilePicture.clipsToBounds = true
         profilePicture.layer.borderWidth = 1.0
         profilePicture.layer.borderColor = FlatGray().cgColor
+        profilePicture.backgroundColor = UIColor.clear
+        profilePicture.contentMode = .scaleAspectFill   
+        
+        nameLabel.frame = CGRect(x: frame.size.width/2.0 - 25, y: 55, width: profilePicture.frame.size.width, height: 25)
+        nameLabel.textColor = FlatWhite()
+        nameLabel.numberOfLines = 0
+        nameLabel.textAlignment = .center
+        nameLabel.font = UIFont.systemFont(ofSize: 10)
         addSubview(profilePicture)
+        addSubview(nameLabel)
     }
 }

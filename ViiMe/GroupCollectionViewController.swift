@@ -13,11 +13,13 @@ private let reuseIdentifier = "GroupCategoryCell"
 
 class GroupCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
-    var groups = ["a", "b" ,"c", "d", "e", "f", "g", "h"]
+    var groups = ["a", "b"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.collectionView?.backgroundColor = FlatBlack()
+        self.view.backgroundColor = FlatBlack()
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -55,14 +57,19 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! GroupCollectionViewCell
     
         cell.cancelButton.addTarget(self, action: #selector(removeGroup(_:)), for: .touchDown)
-        // Configure the cell
-    
+        let user = UserInfo(username: "test", name: "Mousa", id: "", age: "", email: "", gender: "", profile: "https://firebasestorage.googleapis.com/v0/b/viime-a14cf.appspot.com/o/profile%2F%20SGY9jHnWcDaW4YnotZlbn6DXTbj2.png?alt=media&token=74ca8c00-2d0d-4272-89e5-1628432911b5")
+        let user2 = UserInfo(username: "test", name: "Sunny", id: "", age: "", email: "", gender: "", profile: "https://firebasestorage.googleapis.com/v0/b/viime-a14cf.appspot.com/o/profile%2F%20wOqnHEWSw2OXRySx0gx3l4voUHj1.png?alt=media&token=30579091-e3fa-4747-89c2-a553a7350f18")
+             let user3 = UserInfo(username: "test", name: "Sunny", id: "", age: "", email: "", gender: "", profile: "https://firebasestorage.googleapis.com/v0/b/viime-a14cf.appspot.com/o/profile%2F%20wOqnHEWSw2OXRySx0gx3l4voUHj1.png?alt=media&token=30579091-e3fa-4747-89c2-a553a7350f18")
+             let user4 = UserInfo(username: "test", name: "Sunny", id: "", age: "", email: "", gender: "", profile: "https://firebasestorage.googleapis.com/v0/b/viime-a14cf.appspot.com/o/profile%2F%20wOqnHEWSw2OXRySx0gx3l4voUHj1.png?alt=media&token=30579091-e3fa-4747-89c2-a553a7350f18")
+             let user5 = UserInfo(username: "test", name: "Sunny", id: "", age: "", email: "", gender: "", profile: "https://firebasestorage.googleapis.com/v0/b/viime-a14cf.appspot.com/o/profile%2F%20wOqnHEWSw2OXRySx0gx3l4voUHj1.png?alt=media&token=30579091-e3fa-4747-89c2-a553a7350f18")
+        cell.users = [user, user2]
+        cell.numOfPeople = cell.users.count + 3
+
         return cell
     }
     
-    // MARK: Button Action
     func removeGroup(_ button: UIButton) {
-        self.test.remove(at: 0)
+        self.groups.remove(at: 0)
         self.collectionView?.reloadData()
     }
     

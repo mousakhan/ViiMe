@@ -38,6 +38,13 @@ class CreateGroupViewController: UIViewController {
     
     }
 
+    @IBAction func createGroupButtonPressed(_ sender: Any) {
+        let controller = self.presentingViewController as! UINavigationController
+        let groupController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "GroupCollectionViewController") as! GroupCollectionViewController
+        dismiss(animated: true) {
+            controller.pushViewController(groupController, animated: true)
+        }
+    }
     @IBAction func dismissCreateGroupView(_ sender: Any) {
         navigationController?.popViewController(animated: true)
         dismiss(animated: true, completion: nil)

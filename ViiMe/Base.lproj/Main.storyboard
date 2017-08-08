@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="8O3-da-ifR">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina5_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -1417,6 +1417,9 @@
                                 <state key="normal" title="CREATE GROUP">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <connections>
+                                    <action selector="createGroupButtonPressed:" destination="85Y-Ls-T1t" eventType="touchUpInside" id="YGp-Uj-ITs"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.12637259066104889" green="0.12639245390892029" blue="0.12636536359786987" alpha="1" colorSpace="calibratedRGB"/>
@@ -1443,6 +1446,7 @@
                         <outlet property="venueDealDescriptionLabel" destination="m0a-IM-y5W" id="Yf9-zO-gMG"/>
                         <outlet property="venueDealValidityLabel" destination="rVt-zN-bUX" id="Ska-We-acE"/>
                         <outlet property="venueLogoImageView" destination="y5x-SL-sMa" id="Tay-dc-Awu"/>
+                        <segue destination="8O3-da-ifR" kind="show" identifier="GroupCollectionViewControllerSegue" id="4KQ-rr-Nzv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HUN-5w-xLs" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1452,7 +1456,7 @@
         <!--Group Collection View Controller-->
         <scene sceneID="83q-MG-e7s">
             <objects>
-                <collectionViewController id="8O3-da-ifR" customClass="GroupCollectionViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="GroupCollectionViewController" id="8O3-da-ifR" customClass="GroupCollectionViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="V2E-Ax-B1C">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
