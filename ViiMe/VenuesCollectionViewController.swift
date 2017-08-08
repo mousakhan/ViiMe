@@ -216,19 +216,28 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
         
         
-        
-        getDeals()
     }
     
-    func getDeals() {
-        let ref = Database.database().reference().child("deal/")
-        ref.observeSingleEvent(of: .value, with: { snapshot in
-            let enumerator = snapshot.children
-            while let rest = enumerator.nextObject() as? DataSnapshot {
-                
-            }
-        })
-        
+    func getDeals(ids : Dictionary<String, Bool>) -> Array<Deal> {
+        var deals : Array<Deal> = []
+        for (key, val) in ids {
+            let ref = Database.database().reference().child("deal/\(key)")
+            ref.observe( DataEventType.value, with: { snapshot in
+                let enumerator = snapshot.children
+                while let rest = enumerator.nextObject() as? DataSnapshot {
+                    let value = rest.value as? NSDictionary
+                    let name = value?["name"] as! String
+                    let numberOfPeople = value?["people"] as! String
+                    let validFrom = value?["validFrom"] as! String
+                    let validTo = value?["validTo"] as! String
+                    
+                    deals.append(Deal(name: name, numberOfPeople: numberOfPeople, validFrom: validFrom, validTo: validTo))
+                }
+            })
+            
+        }
+  
+        return deals
     }
     
     func setDistance(address : String, label: UILabel){

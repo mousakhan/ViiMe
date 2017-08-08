@@ -15,10 +15,12 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     let reuseIdentifier = "UITableViewCell"
     var venue : Venue?
     
+    //TODO: Clean up naming
     @IBOutlet weak var venueInfoView: UIView!
     @IBOutlet weak var aboutThisVenueLabel: UILabel!
-
-    @IBOutlet weak var groupBarButtonItem: UIBarButtonItem!
+    @IBOutlet weak var venueDescription: UITextView!
+    @IBOutlet weak var venueDeals: UILabel!
+    
     @IBOutlet weak var tableView: UITableView!
     
     @IBOutlet weak var venueLogo: UIImageView!
@@ -38,10 +40,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var addressIcon: UIImageView!
     @IBOutlet weak var websiteIcon: UIImageView!
     @IBOutlet weak var phoneIcon: UIImageView!
+    
 
-    @IBOutlet weak var venueDescription: UITextView!
-  
-    @IBOutlet weak var venueDeals: UILabel!
     @IBOutlet weak var scrollView: UIScrollView!
     //MARK: View Lifecycle
     override func viewDidLoad() {
@@ -51,7 +51,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
 
         tableView.delegate = self
         tableView.dataSource = self
-
+        tableView.backgroundColor = FlatBlack()
+        
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         self.navigationController?.navigationBar.topItem?.title = " "
         self.navigationItem.title = venue!.name
@@ -107,7 +108,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return 10
+        //        return venue!.deals.count
     }
     
     
@@ -121,21 +123,18 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
      
         cell.backgroundColor = FlatBlackDark()
-        cell.textLabel?.text = "Test"
+//        cell.textLabel?.text = venue?.deals[indexPath.row].name
+        cell.textLabel?.text = "TEST"
         cell.textLabel?.textColor = FlatWhite()
-        cell.textLabel?.font = cell.textLabel?.font.withSize(13)
+        cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
+//        cell.textLabel?.text = venue?.deals[indexPath.row].numberOfPeople
+        cell.detailTextLabel?.text = "Group of 4 required"
+        cell.detailTextLabel?.textColor = FlatWhite()
+        cell.detailTextLabel?.font = cell.detailTextLabel?.font.withSize(10)
         
-//        cell?.dealDescriptionLabel.textColor = FlatWhite()
-//        //cell?.dealDescriptionLabel.text = venue?.deals[indexPath.row].name
-//        cell?.dealDescriptionLabel.text = "TEST"
-//        cell?.dealDescriptionLabel.font = cell?.dealDescriptionLabel.font.withSize(12)
-//        cell?.dealDescriptionLabel.numberOfLines = 0
-//        
-//        
-//        cell?.dealActionLabel.textColor = FlatWhite()
-//        cell?.dealActionLabel.text = "Test"
-//        cell?.dealActionLabel.font = cell?.dealActionLabel.font.withSize(12)
-//        cell?.dealActionLabel.textColor = FlatWhite()
+        let bgColorView = UIView()
+        bgColorView.backgroundColor = FlatPurpleDark()
+        cell.selectedBackgroundView = bgColorView
         
         return cell
     }
@@ -153,15 +152,16 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         imageView.tintColor = FlatGray()
     }
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        if (segue.identifier == "CreateGroupViewControllerSegue") {
+            let destVC = segue.destination as? CreateGroupViewController
+            destVC?.venue = self.venue
+        }
     }
-    */
 
 
 }

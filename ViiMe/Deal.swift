@@ -10,7 +10,7 @@ import Foundation
 
 struct Deal {
     var name : String
-    var numberOfPeople : Int
-    var validFrom : Double
+    var numberOfPeople : String
+    var validFrom : String
     var validTo : String
 }

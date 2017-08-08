@@ -10,6 +10,7 @@
 		4C1AB9561F35CC4400855189 /* AddFriendTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1AB9551F35CC4400855189 /* AddFriendTableViewController.swift */; };
 		4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */; };
 		4C50CE4E1F395F3A00781ACD /* CALayer+Border.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50CE4D1F395F3A00781ACD /* CALayer+Border.swift */; };
+		4C50CE501F39EAFC00781ACD /* CreateGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50CE4F1F39EAFC00781ACD /* CreateGroupViewController.swift */; };
 		4C5502131F16A5B80073A405 /* Venue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5502121F16A5B80073A405 /* Venue.swift */; };
 		4C5502151F16B2780073A405 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5502141F16B2780073A405 /* ProfileViewController.swift */; };
 		4C75AE841F36BFEB002E518E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C75AE831F36BFEB002E518E /* Assets.xcassets */; };
@@ -40,6 +41,7 @@
 		4C1AB9551F35CC4400855189 /* AddFriendTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFriendTableViewController.swift; sourceTree = "<group>"; };
 		4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenuesCollectionViewController.swift; sourceTree = "<group>"; };
 		4C50CE4D1F395F3A00781ACD /* CALayer+Border.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+Border.swift"; sourceTree = "<group>"; };
+		4C50CE4F1F39EAFC00781ACD /* CreateGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateGroupViewController.swift; sourceTree = "<group>"; };
 		4C5502121F16A5B80073A405 /* Venue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Venue.swift; sourceTree = "<group>"; };
 		4C5502141F16B2780073A405 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		4C75AE831F36BFEB002E518E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -109,6 +111,14 @@
 			name = Profile;
 			sourceTree = "<group>";
 		};
+		4C50CE511F39EB0600781ACD /* Groups */ = {
+			isa = PBXGroup;
+			children = (
+				4C50CE4F1F39EAFC00781ACD /* CreateGroupViewController.swift */,
+			);
+			name = Groups;
+			sourceTree = "<group>";
+		};
 		4C7DB2991EEED5F400765D3A /* Helper Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -151,6 +161,7 @@
 				4C02DE2F1F1EA06E002AA78C /* Venue  */,
 				4CB6AD6E1F2BBDD7004EB393 /* Deals */,
 				4CB6AD7C1F2CFF64004EB393 /* Redemption */,
+				4C50CE511F39EB0600781ACD /* Groups */,
 				4C7DB2991EEED5F400765D3A /* Helper Classes */,
 				4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */,
 				4C7EDE001EEB01BD001A9B81 /* AppDelegate.swift */,
@@ -378,6 +389,7 @@
 				4CB6AD601F2A3F91004EB393 /* FriendsTableViewController.swift in Sources */,
 				4CB6AD761F2CC2CF004EB393 /* UserInfo.swift in Sources */,
 				4C75AE861F3788BD002E518E /* String+Emoji.swift in Sources */,
+				4C50CE501F39EAFC00781ACD /* CreateGroupViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
