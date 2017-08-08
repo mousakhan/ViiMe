@@ -38,10 +38,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var addressIcon: UIImageView!
     @IBOutlet weak var websiteIcon: UIImageView!
     @IBOutlet weak var phoneIcon: UIImageView!
-    
-    @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
+
     @IBOutlet weak var venueDescription: UITextView!
   
+    @IBOutlet weak var venueDeals: UILabel!
     @IBOutlet weak var scrollView: UIScrollView!
     //MARK: View Lifecycle
     override func viewDidLoad() {
@@ -52,8 +52,14 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         tableView.delegate = self
         tableView.dataSource = self
 
+        self.navigationController?.navigationBar.tintColor = FlatWhite()
+        self.navigationController?.navigationBar.topItem?.title = " "
+        self.navigationItem.title = venue!.name
        
-        aboutThisVenueLabel.layer.addBorder(edge: .bottom, color: FlatGray(), thickness: 1)
+   
+        aboutThisVenueLabel.addBottomBorderWithColor(color: FlatGray(), width: 1)
+        venueDeals.addBottomBorderWithColor(color: FlatGray(), width: 1)
+        
         
         let url = URL(string: venue!.logo)
         venueLogo.kf.indicatorType = .activity
@@ -104,12 +110,9 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         return 4
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Venue Deals"
-    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60.0
+        return 50.0
     }
     
     //MARK: UITableView Delegate
@@ -120,6 +123,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         cell.backgroundColor = FlatBlackDark()
         cell.textLabel?.text = "Test"
         cell.textLabel?.textColor = FlatWhite()
+        cell.textLabel?.font = cell.textLabel?.font.withSize(13)
         
 //        cell?.dealDescriptionLabel.textColor = FlatWhite()
 //        //cell?.dealDescriptionLabel.text = venue?.deals[indexPath.row].name
@@ -141,13 +145,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
        // self.performSegue(withIdentifier: "RedemptionViewControllerSegue", sender: nil)
     }
   
-    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        print("Display")
-        view.tintColor = FlatBlackDark()
-        let headerTitle = view as? UITableViewHeaderFooterView
-        headerTitle?.textLabel?.textColor = FlatWhite()
-    }
-    
     //MARK: Helper
     
     func addIcon(name: String, imageView : UIImageView) {

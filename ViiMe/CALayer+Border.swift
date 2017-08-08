@@ -1,5 +1,5 @@
 //
-//  CALayer+Border.swift
+//  UIView+Border.swift
 //  ViiMe
 //
 //  Created by Mousa Khan on 2017-08-07.
@@ -8,32 +8,13 @@
 
 import UIKit
 
-extension CALayer {
+extension UIView {
     
-    func addBorder(edge: UIRectEdge, color: UIColor, thickness: CGFloat) {
-        
+    func addBottomBorderWithColor(color: UIColor, width: CGFloat) {
         let border = CALayer()
-        
-        switch edge {
-        case UIRectEdge.top:
-            border.frame = CGRect(x: 0, y: 0, width: self.frame.height, height: thickness)
-            break
-        case UIRectEdge.bottom:
-            border.frame = CGRect(x: 0, y: self.frame.height - thickness, width: UIScreen.main.bounds.width, height: thickness)
-            break
-        case UIRectEdge.left:
-            border.frame = CGRect(x: 0, y: 0, width: thickness, height: self.frame.height)
-            break
-        case UIRectEdge.right:
-            border.frame = CGRect(x: self.frame.width - thickness, y: 0, width: thickness, height: self.frame.height)
-            break
-        default:
-            break
-        }
-        
-        border.backgroundColor = color.cgColor;
-        
-        self.addSublayer(border)
+        border.backgroundColor = color.cgColor
+        border.frame = CGRect(x: 0, y: self.frame.size.height - width, width: frame.size.width, height: width)
+        self.layer.addSublayer(border)
     }
     
 }
