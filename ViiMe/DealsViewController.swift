@@ -42,6 +42,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
     @IBOutlet weak var venueDescription: UITextView!
   
+    @IBOutlet weak var scrollView: UIScrollView!
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,12 +80,18 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     override func viewDidAppear(_ animated: Bool) {
         tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.size.width, height: tableView.contentSize.height)
+        
+        // Distance from top is 20, then another 50 for an offset
+        scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: venueInfoView.frame.height + tableView.contentSize.height + 70)
        
     }
     
     override func viewDidLayoutSubviews(){
         tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.size.width, height: tableView.contentSize.height)
         tableView.reloadData()
+        
+        // Distance from top is 20, then another 50 for an offset
+        scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: venueInfoView.frame.height + tableView.contentSize.height + 70)
      
     }
     
@@ -94,7 +101,15 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return 4
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Venue Deals"
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60.0
     }
     
     //MARK: UITableView Delegate
@@ -104,6 +119,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
      
         cell.backgroundColor = FlatBlackDark()
         cell.textLabel?.text = "Test"
+        cell.textLabel?.textColor = FlatWhite()
         
 //        cell?.dealDescriptionLabel.textColor = FlatWhite()
 //        //cell?.dealDescriptionLabel.text = venue?.deals[indexPath.row].name
@@ -125,6 +141,13 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
        // self.performSegue(withIdentifier: "RedemptionViewControllerSegue", sender: nil)
     }
   
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        print("Display")
+        view.tintColor = FlatBlackDark()
+        let headerTitle = view as? UITableViewHeaderFooterView
+        headerTitle?.textLabel?.textColor = FlatWhite()
+    }
+    
     //MARK: Helper
     
     func addIcon(name: String, imageView : UIImageView) {

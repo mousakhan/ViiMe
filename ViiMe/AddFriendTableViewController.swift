@@ -135,7 +135,6 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
         view.tintColor = FlatBlackDark()
         let headerTitle = view as? UITableViewHeaderFooterView
         headerTitle?.textLabel?.textColor = FlatWhite()
-        
     }
     
     

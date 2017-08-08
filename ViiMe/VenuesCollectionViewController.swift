@@ -103,7 +103,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VenueCollectionViewCell
         
         
-        
         var venue = Venue(name: "", price: "", cuisine: "", type: "", address: "", description: "", logo: "", deals: [])
         
         if searchController.isActive && searchController.searchBar.text != "" {
