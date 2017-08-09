@@ -27,8 +27,8 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     var delegate: AddFriendTableViewControllerDelegate?
     
     var friends = [Dictionary<String, Any>]()
-    var currUser : UserInfo?
-    var currUserFriends : Array<UserInfo> = []
+    var user : User? = nil
+    var userFriends : Array<UserInfo> = []
     var ref: DatabaseReference!
     var searchController : UISearchController!
     var contacts = [Dictionary<String, Any>]()
@@ -37,14 +37,10 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     override func viewDidLoad() {
     
         self.tableView.backgroundColor = FlatBlack()
+        
         ref = Database.database().reference()
+        user = Auth.auth().currentUser
         
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-        
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
     
     
@@ -121,7 +117,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
             let username = self.friends[indexPath.row]["username"] as! String
             let id = self.friends[indexPath.row]["id"] as! String
             let path = "users/\(id)/friends"
-            ref.child(path + "/" + currUser!.id).setValue(false)
+            ref.child(path + "/" + user!.uid).setValue(false)
             BannerHelper.showBanner(title: "Friend Invitation Sent to \(username)", type: .success)
           
         } else {
@@ -207,7 +203,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                             }
                             
                           
-                            if (id != self.currUser?.id && !self.currUserFriends.contains(where: { $0.id == id })
+                            if (id != self.user?.uid && !self.userFriends.contains(where: { $0.id == id })
                                 ) {
                                 self.friends.append(dict)
                             }

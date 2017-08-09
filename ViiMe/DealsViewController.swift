@@ -45,8 +45,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
 
     @IBOutlet weak var venueDescriptionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
+    
     //MARK: View Lifecycle
-   
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -72,10 +72,9 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         addressLabel.text = venue!.address
         venueTypeLabel.text = venue!.type
         cuisineLabel.text = venue!.cuisine
-//        websiteLabel.text = venue!.website
-//        phoneNumberLabel.text = venue!.number
-        websiteLabel.text = "www.cumberlandpizza.com/"
-        phoneNumberLabel.text = "(613) 789-9999"
+        websiteLabel.text = venue!.website
+        phoneNumberLabel.text = venue!.number
+        
         
         // Adding icon and changing color
         addIcon(name: "phone", imageView: phoneIcon)
@@ -94,8 +93,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
-        //        return venue!.deals.count
+        return venue!.deals.count
     }
     
     
@@ -109,12 +107,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
      
         cell.backgroundColor = FlatBlackDark()
-//        cell.textLabel?.text = venue?.deals[indexPath.row].name
-        cell.textLabel?.text = "TEST"
+        cell.textLabel?.text = venue?.deals[indexPath.row].title
         cell.textLabel?.textColor = FlatWhite()
         cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
-//        cell.textLabel?.text = venue?.deals[indexPath.row].numberOfPeople
-        cell.detailTextLabel?.text = "Group of 4 required"
+        cell.detailTextLabel?.text = "Group of \(venue!.deals[indexPath.row].numberOfPeople) required"
         cell.detailTextLabel?.textColor = FlatWhite()
         cell.detailTextLabel?.font = cell.detailTextLabel?.font.withSize(10)
         
@@ -139,6 +135,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         if (segue.identifier == "CreateGroupViewControllerSegue") {
             let destVC = segue.destination as? CreateGroupViewController
             destVC?.venue = self.venue
+            let index = tableView.indexPathForSelectedRow?.row
+            destVC?.deal = self.venue?.deals[index!]
         }
     }
 

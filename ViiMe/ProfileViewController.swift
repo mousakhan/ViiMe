@@ -140,9 +140,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                     if error != nil {
                         print(error!)
                         return
-                    }
-                    
-                    
+                    }                    
                     Database.database().reference().root.child("users").child(self.userInfo.id).updateChildValues(["profile": metadata?.downloadURL()?.absoluteString ?? ""])
                     
                     
@@ -282,7 +280,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             let gender = postDict["gender"] as? String ?? ""
             let email = postDict["email"] as? String ?? ""
             let profile = postDict["profile"] as? String ?? ""
-            let friends = postDict["friends"] as? Array<UserInfo> ?? []
+            let groups = postDict["groups"] as? Dictionary<String, Any> ?? [:]
+            let friends = postDict["friends"] as? Array<String> ?? []
             
             if (username != "") {
                 self.usernameTextField.text = postDict["username"] as? String
@@ -314,7 +313,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 self.genderTextField.text = postDict["gender"] as? String
             }
             
-            self.userInfo = UserInfo(username: username, name: name, id: self.user.uid, age: age, email: email, gender: gender, profile: profile)
+            self.userInfo = UserInfo(username: username, name: name, id: self.user.uid, age: age, email: email, gender: gender, profile: profile, groups: groups, friends: friends)
             
         })
     }
@@ -362,7 +361,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "FriendsTableViewControllerSegue") {
             let destVC = segue.destination as? FriendsTableViewController
-            destVC?.user = self.userInfo
+//            destVC?.user = self.userInfo
         }
     }
 

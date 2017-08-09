@@ -103,7 +103,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VenueCollectionViewCell
         
         
-        var venue = Venue(name: "", price: "", cuisine: "", type: "", address: "", description: "", logo: "", deals: [])
+        var venue = Venue(name: "", id: "", price: "", cuisine: "", type: "", address: "", description: "", logo: "", website: "", number: "", deals: [])
         
         if searchController.isActive && searchController.searchBar.text != "" {
             venue = filteredVenues[indexPath.row]
@@ -111,9 +111,12 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             venue = venues[indexPath.row]
         }
         
-        
+        print(venue.deals)
+      
         cell.nameLabel.text = venue.name
-        cell.numberOfDealsLabel.text = "2 Deals"
+       
+        cell.numberOfDealsLabel.text = "\(venue.deals.count) Deals"
+        
         cell.priceLabel.text = "" + venue.price
         cell.cuisineLabel.text = venue.cuisine
         setDistance(address: venue.address, label: cell.distanceLabel)
@@ -161,6 +164,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
     }
+    
     //MARK: IBActions
     @IBAction func searchBarButtonClicked(_ sender: Any) {
         self.navigationItem.rightBarButtonItem = nil
@@ -195,49 +199,58 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             let enumerator = snapshot.children
             while let rest = enumerator.nextObject() as? DataSnapshot {
                 let value = rest.value as? NSDictionary
-                let name = value?["name"]
+                let name = value?["name"] ?? ""
+                let id = value?["id"] ?? ""
                 let cuisines = value?["cuisine"] ?? []
                 let cuisine = (cuisines as AnyObject).components(separatedBy: ",")[0]
                 let description = value?["description"] ?? ""
                 let price = value?["price"] ?? ""
                 let address = value?["address"] ?? ""
+                let website = value?["website"] ?? " "
+                let number = value?["number"] ?? " "
                 let type = value?["type"] ?? ""
-                let deals = value?["deals"] ?? []
+                let deals = value?["deals"] ?? {}
+      
                 //TODO: change this naming in the back-end
                 let profile = value?["profileUrl"] ?? ""
-                let venue = Venue(name: name as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, logo: profile as! String, deals: [])
-                self.venues.append(venue)
+                var venue = Venue(name: name as! String, id: id as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, logo: profile as! String, website: website as! String, number: number as! String, deals: [])
+                self.getDeals(ids: deals as! NSDictionary, completionHandler: { (isComplete, deals) in
+                    if (isComplete) {
+                        venue.deals = deals
+                        self.venues.append(venue)
+                        self.collectionView?.reloadData()
+                    }
+                })
                 self.collectionView?.reloadData()
             }
         })
         
-        
-        
-        
-        
-        
     }
     
-    func getDeals(ids : Dictionary<String, Bool>) -> Array<Deal> {
+    typealias DownloadComplete = () -> ()
+    
+    func getDeals(ids : NSDictionary, completionHandler: @escaping (_ isComplete: Bool, _ deal: Array<Deal>) -> ()){
         var deals : Array<Deal> = []
-        for (key, val) in ids {
+        for (key, _) in ids {
             let ref = Database.database().reference().child("deal/\(key)")
             ref.observe( DataEventType.value, with: { snapshot in
-                let enumerator = snapshot.children
-                while let rest = enumerator.nextObject() as? DataSnapshot {
-                    let value = rest.value as? NSDictionary
-                    let name = value?["name"] as! String
-                    let numberOfPeople = value?["people"] as! String
-                    let validFrom = value?["validFrom"] as! String
-                    let validTo = value?["validTo"] as! String
-                    
-                    deals.append(Deal(name: name, numberOfPeople: numberOfPeople, validFrom: validFrom, validTo: validTo))
-                }
+                    let value = snapshot.value as? NSDictionary
+                    let title = value?["title"] ?? ""
+                    let shortDescription = value?["short-description"] ?? ""
+                    let longDescription = value?["long-description"] ?? ""
+                    let id = value?["id"] ?? ""
+                    let numberOfPeople = value?["people"] ?? ""
+                    let validFrom = value?["validFrom"] ?? ""
+                    let validTo = value?["validTo"] ?? ""
+                    let recurringFrom = value?["recurringFrom"] ?? ""
+                    let recurringTo = value?["recurringTo"] ?? ""
+                    let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)
+                    deals.append(deal)
+                    completionHandler(true, deals)
             })
-            
         }
-  
-        return deals
+        
+        
     }
     
     func setDistance(address : String, label: UILabel){

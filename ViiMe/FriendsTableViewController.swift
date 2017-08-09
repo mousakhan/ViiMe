@@ -17,7 +17,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
   
     @IBOutlet weak var searchBar: UISearchBar!
     
-    var user : UserInfo? = nil
+    var user : User? = nil
     var contacts = [Dictionary<String, Any>]()
     var searchController : UISearchController!
     var invites : Array<UserInfo> = []
@@ -26,13 +26,14 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         self.navigationController?.navigationBar.tintColor = FlatWhite()
-        
-        
+
+        user = Auth.auth().currentUser
         // Check to see if there are any friend invitations
         ref = Database.database().reference()
         // Check to see if there are any friends
-        let friendsRef = ref.child("users/\(user!.id)/friends")
+        let friendsRef = ref.child("users/\(user!.uid)/friends")
         friendsRef.observe(DataEventType.value, with: { (snapshot) in
             self.friends = []
             self.invites = []
@@ -48,7 +49,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let email = value?["email"] as? String ?? ""
                     let gender = value?["gender"] as? String ?? ""
                     let profile = value?["profile"] as? String ?? ""
-                    let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile)
+                  
+                    let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile, groups: [:], friends: [])
                     
                     
                     if (!self.friends.contains(where: { $0.id == user.id }) && isFriend!) {
@@ -207,12 +209,12 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             let alertView = SCLAlertView(appearance: appearance)
             
             alertView.addButton("Accept", backgroundColor: FlatGreen())   {
-                self.ref.child("users/\(self.user!.id)/friends/\(self.invites[indexPath.row].id)").setValue(true)
-                self.ref.child("users/\(self.invites[indexPath.row].id)/friends/\(self.user!.id)").setValue(true)
+                self.ref.child("users/\(self.user!.uid)/friends/\(self.invites[indexPath.row].id)").setValue(true)
+                self.ref.child("users/\(self.invites[indexPath.row].id)/friends/\(self.user!.uid)").setValue(true)
             }
             
             alertView.addButton("Decline", backgroundColor: FlatRed()) {
-                self.ref.child("users/\(self.user!.id)/friends/\(self.invites[indexPath.row].id)").removeValue()
+                self.ref.child("users/\(self.user!.uid)/friends/\(self.invites[indexPath.row].id)").removeValue()
             
             }
             
@@ -223,6 +225,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             alertView.showInfo("Accept Invitation", subTitle: "Add \(self.invites[indexPath.row].username) to your friend list")
             
             self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
+        } else if (indexPath.section == 1) {
+            
         } else if (indexPath.section == 2) {
             sendSmsClick(recipient: self.contacts[indexPath.row]["number"] as! String, vc: self)
         }
@@ -239,8 +243,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
-            self.ref.child("users/\(self.user!.id)/friends/\(self.friends[indexPath.row].id)").removeValue()
-            self.ref.child("users/\(self.friends[indexPath.row].id)/friends/\(self.user!.id)").removeValue()
+            self.ref.child("users/\(self.user!.uid)/friends/\(self.friends[indexPath.row].id)").removeValue()
+            self.ref.child("users/\(self.friends[indexPath.row].id)/friends/\(self.user!.uid)").removeValue()
             self.tableView.reloadData()
         }
        
@@ -249,9 +253,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         //TODO: Add ability to block someone in future
         
 //        let block = UITableViewRowAction(style: .destructive, title: "Block") { (action, indexPath) in
-//            self.ref.child("users/\(self.user!.id)/friends/\(self.friends[indexPath.row].id)").removeValue()
-//            self.ref.child("users/\(self.user!.id)/blocked/\(self.friends[indexPath.row].id)").setValue(true)
-//            self.ref.child("users/\(self.friends[indexPath.row].id)/friends/\(self.user!.id)").removeValue()
+//            self.ref.child("users/\(self.user!.uid)/friends/\(self.friends[indexPath.row].id)").removeValue()
+//            self.ref.child("users/\(self.user!.uid)/blocked/\(self.friends[indexPath.row].id)").setValue(true)
+//            self.ref.child("users/\(self.friends[indexPath.row].id)/friends/\(self.user!.uid)").removeValue()
 //            self.tableView.reloadData()
 //            
 //        }
@@ -356,8 +360,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
         resultsController.searchController = self.searchController
         
-        resultsController.currUser = self.user
-        resultsController.currUserFriends = self.friends
+        resultsController.userFriends = self.friends
         resultsController.contacts = self.contacts
         
         self.searchController = UISearchController(searchResultsController: resultsController)

@@ -9,16 +9,22 @@
 import UIKit
 import ChameleonFramework
 
+protocol UserCollectionViewCellDelegate {
+    func invite()
+}
+
 class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    private let cellId = "cell"
+    private let reusableIdentifier = "cell"
+    
+    var delegate: UserCollectionViewCellDelegate?
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
         setupViews()
     }
     
-
+    
     var users : Array<UserInfo> = []
     var numOfPeople = 0
     
@@ -33,17 +39,20 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         return button
     }()
     
-    let nameLabel: UILabel = {
+    let dealLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.textColor = FlatWhite()
-        label.text = "BesBest New AppsBest New AppsBest New AppsBest New Appst New Apps"
-        label.font = UIFont.systemFont(ofSize: 12)
+        label.text = "Purchase a Greek Soulvalki Platter 14.60, get $3 off on second skewer get $3 off on second skewer"
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.numberOfLines = 2
+        label.minimumScaleFactor = 0.6
+        label.adjustsFontSizeToFitWidth = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    let appsCollectionView: UICollectionView = {
+    let usersCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -54,36 +63,72 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         return collectionView
     }()
     
+    
+    let redeemButton: UIButton = {
+        let button = UIButton()
+        // Change color of icon button, could probably make this into it's own helper function
+        button.setTitle("REDEEM", for: .normal)
+        button.setTitleColor(FlatWhite(), for: .normal)
+        button.backgroundColor = FlatPurpleDark()
+        return button
+    }()
+    
+    
     let dividerLineView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(white: 0.4, alpha: 0.4)
-        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor(white: 0.4, alpha: 0.5)
         return view
     }()
     
     func setupViews() {
         backgroundColor = FlatBlackDark()
         
-        addSubview(appsCollectionView)
-        addSubview(dividerLineView)
-        addSubview(nameLabel)
-        cancelButton.frame = CGRect(x: frame.origin.x + 5, y: frame.origin.y + 5, width: 15, height: 15)
+        addSubview(usersCollectionView)
+        addSubview(dealLabel)
         addSubview(cancelButton)
+        addSubview(redeemButton)
+        addSubview(dividerLineView)
         
-        appsCollectionView.dataSource = self
-        appsCollectionView.delegate = self
+        usersCollectionView.dataSource = self
+        usersCollectionView.delegate = self
         
-        appsCollectionView.register(UserCell.self, forCellWithReuseIdentifier: cellId)
+        usersCollectionView.register(UserCollectionViewCell.self, forCellWithReuseIdentifier: reusableIdentifier)
         
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-25-[v0]-14-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0": nameLabel]))
+        self.layer.borderWidth = 0.5
+        self.layer.borderColor = FlatGrayDark().cgColor
         
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-14-[v0]|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0": dividerLineView]))
+        // Setting up all the constraints
+        self.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        cancelButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 5).isActive = true
+        cancelButton.topAnchor.constraint(equalTo: self.topAnchor, constant:5).isActive = true
+        cancelButton.heightAnchor.constraint(equalToConstant: 15).isActive = true
+        cancelButton.widthAnchor.constraint(equalToConstant: 15).isActive = true
         
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-8-[v0]-8-|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0": appsCollectionView]))
+        dealLabel.translatesAutoresizingMaskIntoConstraints = false
+        dealLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 30).isActive = true
+        dealLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
+        dealLabel.topAnchor.constraint(equalTo: self.cancelButton.topAnchor, constant:5).isActive = true
+        dealLabel.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
-        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[nameLabel(30)][v0][v1(0.5)]|", options: NSLayoutFormatOptions(), metrics: nil, views: ["v0": appsCollectionView, "v1": dividerLineView, "nameLabel": nameLabel]))
+        dividerLineView.translatesAutoresizingMaskIntoConstraints = false
+        dividerLineView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        dividerLineView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        dividerLineView.topAnchor.constraint(equalTo: self.dealLabel.bottomAnchor).isActive = true
+        dividerLineView.heightAnchor.constraint(equalToConstant: 2).isActive = true
+        
+        usersCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        usersCollectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
+        usersCollectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
+        usersCollectionView.topAnchor.constraint(equalTo: self.dividerLineView.bottomAnchor, constant: -2.0).isActive = true
         
         
+        redeemButton.translatesAutoresizingMaskIntoConstraints = false
+        redeemButton.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        redeemButton.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        redeemButton.topAnchor.constraint(equalTo: self.usersCollectionView.bottomAnchor).isActive = true
+        redeemButton.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+//        redeemButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -91,42 +136,53 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! UserCell
-      
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reusableIdentifier, for: indexPath) as! UserCollectionViewCell
+        
         if (indexPath.row > (self.users.count-1)) {
-            cell.nameLabel.text = "Invite"
+            cell.userdealLabel.text = "Invite"
             cell.profilePicture.image = UIImage(named: "invite")
             cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
             cell.profilePicture.tintColor = FlatGray()
+            cell.profilePicture.contentMode = .center
             
         } else {
-        let name =  self.users[indexPath.row].name
-        cell.nameLabel.text = name
-        let profile =  self.users[indexPath.row].profile
-        if (profile != "") {
-            let url = URL(string: profile)
-            cell.profilePicture.kf.indicatorType = .activity
-            cell.profilePicture.kf.setImage(with: url)
-        } else {
-            cell.profilePicture.image = UIImage(named: "empty_profile")
-        }
+            let name =  self.users[indexPath.row].name
+            cell.userdealLabel.text = name
+            if (indexPath.row == 0) {
+                cell.statusLabel.text = "Group Owner"
+            }
+            let profile =  self.users[indexPath.row].profile
+            if (profile != "") {
+                let url = URL(string: profile)
+                cell.profilePicture.kf.indicatorType = .activity
+                cell.profilePicture.kf.setImage(with: url)
+            } else {
+                cell.profilePicture.image = UIImage(named: "empty_profile")
+            }
         }
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: frame.height/3.0, height: frame.height/2.0)
+        return CGSize(width: frame.height/3.0, height: frame.height/2.5)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath.row)
+        print("Select")
+        delegate?.invite()
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsetsMake(0, 14, 0, 14)
+    }
+    
     
     
 }
 
-class UserCell: UICollectionViewCell {
+// Horizontal collection view containing each user
+class UserCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -137,26 +193,55 @@ class UserCell: UICollectionViewCell {
     }
     
     var profilePicture = UIImageView()
-    var nameLabel = UILabel()
-    var statusLabel = UIImageView()
+    var userdealLabel = UILabel()
+    var statusLabel = UILabel()
     
+    // This view set up is for the horizontal collection view that includes each user's profile picture, name, and status
     func setupViews(){
         backgroundColor = UIColor.clear
-        profilePicture.frame = CGRect(x: frame.size.width/2.0 - 25, y: 5, width: 50, height: 50)
+        
+        addSubview(profilePicture)
+        addSubview(userdealLabel)
+        addSubview(statusLabel)
+        
+        profilePicture.translatesAutoresizingMaskIntoConstraints = false
+        profilePicture.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 0).isActive = true
+        profilePicture.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        profilePicture.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
+        profilePicture.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
+        
+        userdealLabel.translatesAutoresizingMaskIntoConstraints = false
+        userdealLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        userdealLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 2.0).isActive = true
+        userdealLabel.heightAnchor.constraint(equalToConstant: 15.0).isActive = true
+        userdealLabel.centerXAnchor.constraint(equalTo: profilePicture.centerXAnchor).isActive = true
+        userdealLabel.textAlignment = .center
+        userdealLabel.textColor = FlatWhite()
+        userdealLabel.numberOfLines = 0
+        userdealLabel.font = UIFont.systemFont(ofSize: 12)
+        userdealLabel.sizeToFit()
+        
+        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        statusLabel.topAnchor.constraint(equalTo: userdealLabel.bottomAnchor).isActive = true
+        statusLabel.heightAnchor.constraint(equalToConstant: 15.0).isActive = true
+        statusLabel.widthAnchor.constraint(equalToConstant: 60.0).isActive = true
+        statusLabel.centerXAnchor.constraint(equalTo: profilePicture.centerXAnchor).isActive = true
+        
+        
+        statusLabel.textAlignment = .center
+        statusLabel.textColor = FlatWhite()
+        statusLabel.numberOfLines = 0
+        statusLabel.font = UIFont.systemFont(ofSize: 8)
+        
+        
+
         profilePicture.layoutIfNeeded()
         profilePicture.layer.cornerRadius = profilePicture.frame.height / 2
         profilePicture.clipsToBounds = true
         profilePicture.layer.borderWidth = 1.0
         profilePicture.layer.borderColor = FlatGray().cgColor
         profilePicture.backgroundColor = UIColor.clear
-        profilePicture.contentMode = .scaleAspectFill   
+    
         
-        nameLabel.frame = CGRect(x: frame.size.width/2.0 - 25, y: 55, width: profilePicture.frame.size.width, height: 25)
-        nameLabel.textColor = FlatWhite()
-        nameLabel.numberOfLines = 0
-        nameLabel.textAlignment = .center
-        nameLabel.font = UIFont.systemFont(ofSize: 10)
-        addSubview(profilePicture)
-        addSubview(nameLabel)
     }
 }

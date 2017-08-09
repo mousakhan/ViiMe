@@ -9,8 +9,13 @@
 import Foundation
 
 struct Deal {
-    var name : String
+    var title : String
+    var shortDescription : String
+    var longDescription : String
+    var id : String
     var numberOfPeople : String
     var validFrom : String
     var validTo : String
+    var recurringFrom : String
+    var recurringTo : String
 }

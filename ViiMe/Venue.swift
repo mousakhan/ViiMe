@@ -10,11 +10,14 @@ import Foundation
 
 struct Venue {
     var name : String
+    var id : String
     var price : String
     var cuisine : String
     var type : String
     var address : String
     var description : String
     var logo : String
+    var website : String
+    var number : String
     var deals : [Deal]
 }

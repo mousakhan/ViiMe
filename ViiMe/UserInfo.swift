@@ -16,4 +16,6 @@ struct UserInfo {
     var email : String
     var gender : String
     var profile : String
+    var groups : Dictionary<String, Any>
+    var friends : Array<String>
 }
