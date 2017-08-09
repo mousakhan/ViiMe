@@ -291,9 +291,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     (contact, cursor) -> Void in
                     
                     for phoneNumber in contact.phoneNumbers {
-                        if let number = phoneNumber.value as? CNPhoneNumber,
-                            let label = phoneNumber.label {
-                            let localizedLabel = CNLabeledValue<CNPhoneNumber>.localizedString(forLabel: label)
+                        if let number = phoneNumber.value as? CNPhoneNumber {
                             if (number.stringValue != "" && contact.givenName != "") {
                                 self.contacts.append(["name": contact.givenName + " " + contact.familyName, "number": number.stringValue])
                             }

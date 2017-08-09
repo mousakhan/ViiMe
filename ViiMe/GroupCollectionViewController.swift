@@ -50,7 +50,8 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.groups.count
+//        return self.groups.count
+        return 1
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

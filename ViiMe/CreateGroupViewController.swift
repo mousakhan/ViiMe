@@ -27,8 +27,7 @@ class CreateGroupViewController: UIViewController {
         super.viewDidLoad()
         
         ref = Database.database().reference()
-        
-        
+
         self.view.backgroundColor = FlatBlack().withAlphaComponent(0.9)
         
         // Change color of icon button, could probably make this into it's own helper function
