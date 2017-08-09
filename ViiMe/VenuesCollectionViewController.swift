@@ -111,12 +111,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             venue = venues[indexPath.row]
         }
         
-        print(venue.deals)
-      
         cell.nameLabel.text = venue.name
-       
         cell.numberOfDealsLabel.text = "\(venue.deals.count) Deals"
-        
         cell.priceLabel.text = "" + venue.price
         cell.cuisineLabel.text = venue.cuisine
         setDistance(address: venue.address, label: cell.distanceLabel)

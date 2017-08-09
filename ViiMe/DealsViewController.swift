@@ -15,16 +15,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     let reuseIdentifier = "UITableViewCell"
     var venue : Venue?
     
-    //TODO: Clean up naming
     @IBOutlet weak var venueInfoView: UIView!
     @IBOutlet weak var aboutThisVenueLabel: UILabel!
     @IBOutlet weak var venueDescription: UITextView!
     @IBOutlet weak var venueDeals: UILabel!
-    
-    @IBOutlet weak var tableView: UITableView!
-    
-    @IBOutlet weak var venueLogo: UIImageView!
-    
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var phoneNumberLabel: UILabel!
     @IBOutlet weak var websiteLabel: UILabel!
@@ -32,7 +26,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var venueTypeLabel: UILabel!
     @IBOutlet weak var cuisineLabel: UILabel!
-    
     @IBOutlet weak var cuisineIcon: UIImageView!
     @IBOutlet weak var distanceIcon: UIImageView!
     @IBOutlet weak var venueTypeIcon: UIImageView!
@@ -40,9 +33,9 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var addressIcon: UIImageView!
     @IBOutlet weak var websiteIcon: UIImageView!
     @IBOutlet weak var phoneIcon: UIImageView!
-    
+    @IBOutlet weak var venueLogo: UIImageView!
+    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
-
     @IBOutlet weak var venueDescriptionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
     
@@ -50,12 +43,57 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = FlatBlack()
-
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.backgroundColor = FlatBlack()
         
+        initDealsView()
+    }
+    
+    
+    //MARK: UITableView DataSource
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return venue!.deals.count
+    }
+    
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 50.0
+    }
+    
+    //MARK: UITableView Delegate
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
+        
+        cell.backgroundColor = FlatBlackDark()
+        cell.textLabel?.text = venue?.deals[indexPath.row].title
+        cell.textLabel?.textColor = FlatWhite()
+        cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
+        cell.detailTextLabel?.text = "Group of \(venue!.deals[indexPath.row].numberOfPeople) required"
+        cell.detailTextLabel?.textColor = FlatWhite()
+        cell.detailTextLabel?.font = cell.detailTextLabel?.font.withSize(10)
+        
+        let bgColorView = UIView()
+        bgColorView.backgroundColor = FlatPurpleDark()
+        cell.selectedBackgroundView = bgColorView
+        
+        return cell
+    }
+    
+    //MARK: Helper
+    func addIcon(name: String, imageView : UIImageView) {
+        imageView.image = UIImage(named: name)
+        imageView.image = imageView.image?.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = FlatGray()
+    }
+    
+    func initDealsView() {
+        
+        // Navigation Title
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         self.navigationController?.navigationBar.topItem?.title = " "
         self.navigationItem.title = venue!.name
@@ -87,48 +125,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     
-    //MARK: UITableView DataSource
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return venue!.deals.count
-    }
-    
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50.0
-    }
-    
-    //MARK: UITableView Delegate
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
-     
-        cell.backgroundColor = FlatBlackDark()
-        cell.textLabel?.text = venue?.deals[indexPath.row].title
-        cell.textLabel?.textColor = FlatWhite()
-        cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
-        cell.detailTextLabel?.text = "Group of \(venue!.deals[indexPath.row].numberOfPeople) required"
-        cell.detailTextLabel?.textColor = FlatWhite()
-        cell.detailTextLabel?.font = cell.detailTextLabel?.font.withSize(10)
-        
-        let bgColorView = UIView()
-        bgColorView.backgroundColor = FlatPurpleDark()
-        cell.selectedBackgroundView = bgColorView
-        
-        return cell
-    }
-
-    //MARK: Helper
-    func addIcon(name: String, imageView : UIImageView) {
-        imageView.image = UIImage(named: name)
-        imageView.image = imageView.image?.withRenderingMode(.alwaysTemplate)
-        imageView.tintColor = FlatGray()
-    }
-
-    
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -139,6 +135,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             destVC?.deal = self.venue?.deals[index!]
         }
     }
-
-
+    
+    
 }
