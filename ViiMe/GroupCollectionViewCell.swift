@@ -128,7 +128,6 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         redeemButton.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
         redeemButton.topAnchor.constraint(equalTo: self.usersCollectionView.bottomAnchor).isActive = true
         redeemButton.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-//        redeemButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

@@ -223,8 +223,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
     }
     
-    typealias DownloadComplete = () -> ()
-    
     func getDeals(ids : NSDictionary, completionHandler: @escaping (_ isComplete: Bool, _ deal: Array<Deal>) -> ()){
         var deals : Array<Deal> = []
         for (key, _) in ids {
@@ -245,8 +243,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                     completionHandler(true, deals)
             })
         }
-        
-        
     }
     
     func setDistance(address : String, label: UILabel){

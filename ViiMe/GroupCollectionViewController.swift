@@ -13,7 +13,7 @@ private let reuseIdentifier = "GroupCategoryCell"
 
 class GroupCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UserCollectionViewCellDelegate {
 
-    var groups : Dictionary<String, Any>!
+    var groups : Array<Any>!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,14 +50,13 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
 
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return self.groups.count
-        return 1
+        return self.groups.count
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! GroupCollectionViewCell
         cell.delegate = self
-        cell.cancelButton.addTarget(self, action: #selector(removeGroup(_:)), for: .touchDown)
+        cell.cancelButton.addTarget(self, action: #selector(removeGroup(sender:)), for: .touchUpInside)
         
         // This should be group owner
         cell.users = []
@@ -66,8 +65,8 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         return cell
     }
     
-    func removeGroup(_ button: UIButton) {
-//        self.groups.remove(at: 0)
+    func removeGroup(sender: UICollectionViewCell) {
+//        self.groups.remove(at: index!.row)
         self.collectionView?.reloadData()
     }
     
@@ -83,6 +82,26 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         self.navigationController?.pushViewController(invitationController, animated: true)
     }
     
+//    let value = group.value as? NSDictionary
+//    let deal = value?["deal"] ?? ""
+//    let users = value?["users"] as? Dictionary ?? [:]
+//    var testDeal  = Deal(title: "", shortDescription: "", longDescription: "", id: "", numberOfPeople: "", validFrom: "", validTo: "", recurringFrom: "", recurringTo: "")
+//    Database.database().reference().child("deal/\(deal)").ref.observeSingleEvent(of: DataEventType.value, with: { (dealSnapshot) in
+//    let deal = dealSnapshot.value as? NSDictionary
+//    let dealTitle = deal?["title"] ?? ""
+//    
+//    testDeal = Deal(title: "test", shortDescription: "", longDescription: "", id: "", numberOfPeople: "", validFrom: "", validTo: "", recurringFrom: "", recurringTo: "")
+//    
+//    })
+//    
+//    for (id, _) in users {
+//    Database.database().reference().child("users/\(id)").observeSingleEvent(of: DataEventType.value, with: { (userSnapshot) in
+//    let user = userSnapshot.value as? NSDictionary
+//    groupUsers.append(user!)
+//    print(user!)
+//    })
+//    }
+//    
     // MARK: UICollectionViewDelegate
 
     /*
