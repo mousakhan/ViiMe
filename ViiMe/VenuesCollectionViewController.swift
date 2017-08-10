@@ -229,7 +229,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             let ref = Database.database().reference().child("deal/\(key)")
             ref.observe( DataEventType.value, with: { snapshot in
                     let value = snapshot.value as? NSDictionary
-                    let title = value?["title"] ?? ""
+                    // Change to title later
+                    let title = value?["name"] ?? ""
                     let shortDescription = value?["short-description"] ?? ""
                     let longDescription = value?["long-description"] ?? ""
                     let id = value?["id"] ?? ""

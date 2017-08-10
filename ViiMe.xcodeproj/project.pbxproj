@@ -30,7 +30,6 @@
 		4CB6AD701F2BC779004EB393 /* DealsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6F1F2BC779004EB393 /* DealsViewController.swift */; };
 		4CB6AD741F2CB692004EB393 /* FriendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD731F2CB692004EB393 /* FriendTableViewCell.swift */; };
 		4CB6AD761F2CC2CF004EB393 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD751F2CC2CF004EB393 /* UserInfo.swift */; };
-		4CB6AD7B1F2CFB08004EB393 /* RedemptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD7A1F2CFB08004EB393 /* RedemptionViewController.swift */; };
 		4CB6AD7E1F2D4F8E004EB393 /* Deal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD7D1F2D4F8E004EB393 /* Deal.swift */; };
 		4CC2B2341EEDDEAB0044797D /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC2B2331EEDDEAB0044797D /* SignUpViewController.swift */; };
 		4CD8E1CF1EEB661B009C3FD0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */; };
@@ -382,7 +381,6 @@
 				4C50CE531F39F9C500781ACD /* GroupCollectionViewController.swift in Sources */,
 				4CB6AD7E1F2D4F8E004EB393 /* Deal.swift in Sources */,
 				4C7EDE031EEB01BD001A9B81 /* LoginViewController.swift in Sources */,
-				4CB6AD7B1F2CFB08004EB393 /* RedemptionViewController.swift in Sources */,
 				4C50CE4E1F395F3A00781ACD /* UIView+Border.swift in Sources */,
 				4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */,
 				4CB6AD741F2CB692004EB393 /* FriendTableViewCell.swift in Sources */,
@@ -464,7 +462,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -508,7 +506,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";

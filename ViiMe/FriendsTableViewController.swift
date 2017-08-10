@@ -14,21 +14,25 @@ import Firebase
 import SCLAlertView
 
 class FriendsTableViewController: UITableViewController, MFMessageComposeViewControllerDelegate,  UISearchBarDelegate, UISearchControllerDelegate, AddFriendTableViewControllerDelegate {
-  
+    
     @IBOutlet weak var searchBar: UISearchBar!
     
     var user : User? = nil
+    var deal : Deal? = nil
+    var group : Dictionary<String, Any>? = nil
     var contacts = [Dictionary<String, Any>]()
     var searchController : UISearchController!
     var invites : Array<UserInfo> = []
     var friends : Array<UserInfo> = []
     var ref: DatabaseReference!
+    
+    
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.tintColor = FlatWhite()
-
+        
         user = Auth.auth().currentUser
         // Check to see if there are any friend invitations
         ref = Database.database().reference()
@@ -49,7 +53,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let email = value?["email"] as? String ?? ""
                     let gender = value?["gender"] as? String ?? ""
                     let profile = value?["profile"] as? String ?? ""
-                  
+                    
                     let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile, groups: [:], friends: [])
                     
                     
@@ -62,7 +66,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     }
                     
                     self.tableView.reloadData()
-      
+                    
                 }) { (error) in
                     print(error.localizedDescription)
                 }
@@ -72,20 +76,20 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         })
         
         initContacts()
-
+        
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
     
     //MARK: UITableView Data Source
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 3
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (section == 0) {
             return self.invites.count
@@ -94,7 +98,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         }
         return self.contacts.count
     }
-
+    
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60.0
     }
@@ -133,12 +137,13 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             return cell
         } else if (indexPath.section == 1) {
             let cell = tableView.dequeueReusableCell(withIdentifier: "FriendCell", for: indexPath) as! FriendTableViewCell
+            
             cell.nameLabel?.text = self.friends[indexPath.row].username
             cell.backgroundColor = FlatBlack()
             cell.textLabel?.textColor = FlatWhite()
             cell.detailTextLabel?.textColor = FlatWhite()
-            let profile =  self.friends[indexPath.row].profile
             
+            let profile =  self.friends[indexPath.row].profile
             if (profile != "") {
                 let url = URL(string: profile)
                 cell.profilePicture.kf.indicatorType = .activity
@@ -154,9 +159,14 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             cell.profilePicture.layer.borderColor = FlatGray().cgColor
             
             let bgColorView = UIView()
-            bgColorView.backgroundColor = FlatPurpleDark()
-            cell.selectedBackgroundView = bgColorView
             
+            if (deal != nil) {
+                bgColorView.backgroundColor = .clear
+            } else {
+                bgColorView.backgroundColor = FlatPurpleDark()
+            }
+            
+             cell.selectedBackgroundView = bgColorView
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ContactCell", for: indexPath)
@@ -165,7 +175,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             cell.backgroundColor = FlatBlack()
             cell.textLabel?.textColor = FlatWhite()
             cell.detailTextLabel?.textColor = FlatWhite()
-
+            
             let bgColorView = UIView()
             bgColorView.backgroundColor = FlatPurpleDark()
             cell.selectedBackgroundView = bgColorView
@@ -173,9 +183,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             return cell
         }
         
-
+        
     }
- 
+    
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
         if (section == 0) {
@@ -215,23 +225,29 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             
             alertView.addButton("Decline", backgroundColor: FlatRed()) {
                 self.ref.child("users/\(self.user!.uid)/friends/\(self.invites[indexPath.row].id)").removeValue()
-            
+                
             }
             
             // Don't do anything
             alertView.addButton("Later") {}
             
-          
+            
             alertView.showInfo("Accept Invitation", subTitle: "Add \(self.invites[indexPath.row].username) to your friend list")
             
             self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
         } else if (indexPath.section == 1) {
-            
+            if (deal != nil) {
+                let id = self.group?["id"] as! String
+                Database.database().reference().child("groups/\(id)/users/\(self.friends[indexPath.row].id)").setValue(true)
+                Database.database().reference().child("users/\(self.friends[indexPath.row].id)/groups/\(id)").setValue(true)
+                self.navigationController?.popViewController(animated: true)
+                
+            }
         } else if (indexPath.section == 2) {
             sendSmsClick(recipient: self.contacts[indexPath.row]["number"] as! String, vc: self)
         }
     }
-
+    
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         if (indexPath.section == 1) {
             return true
@@ -239,7 +255,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         
         return false
     }
-
+    
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
@@ -247,20 +263,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             self.ref.child("users/\(self.friends[indexPath.row].id)/friends/\(self.user!.uid)").removeValue()
             self.tableView.reloadData()
         }
-       
+        
         delete.backgroundColor = FlatRed()
-        
-        //TODO: Add ability to block someone in future
-        
-//        let block = UITableViewRowAction(style: .destructive, title: "Block") { (action, indexPath) in
-//            self.ref.child("users/\(self.user!.uid)/friends/\(self.friends[indexPath.row].id)").removeValue()
-//            self.ref.child("users/\(self.user!.uid)/blocked/\(self.friends[indexPath.row].id)").setValue(true)
-//            self.ref.child("users/\(self.friends[indexPath.row].id)/friends/\(self.user!.uid)").removeValue()
-//            self.tableView.reloadData()
-//            
-//        }
-//        
-//        block.backgroundColor = FlatYellowDark()
         
         return [delete]
         
@@ -298,13 +302,13 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                         }
                         
                     }
-      
+                    
                 }
             } catch let error {
                 NSLog("Fetch contact error: \(error)")
             }
             
-
+            
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
@@ -336,7 +340,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         }
     }
     
-   
+    
     
     //MARK: Search Controller
     func willPresentSearchController(_ searchController: UISearchController) {
@@ -344,18 +348,18 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             self.searchController.searchResultsController?.view.isHidden = false
         }
     }
-
+    
     func didPresentSearchController(_ searchController: UISearchController) {
         self.searchController.searchResultsController?.view.isHidden = false
     }
- 
+    
     @IBAction func addFriendButtonClicked(_ sender: Any) {
         // Search Controller setup
         
         let resultsController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddFriendTableViewController") as! AddFriendTableViewController
-   
+        
         resultsController.delegate = self
-    
+        
         resultsController.searchController = self.searchController
         
         resultsController.userFriends = self.friends
@@ -378,13 +382,13 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         self.searchController.searchBar.text = " "
         
         
-            present(self.searchController, animated: true) {
-                
-            }
-    
+        present(self.searchController, animated: true) {
+            
+        }
+        
     }
     
-   
+    
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         let trimmedString = searchText.trimmingCharacters(in: .whitespaces)
@@ -393,13 +397,10 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         if searchText == ("") {
             searchBar.text = " "
         }
-        
-        
-      
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-       self.searchController = nil
+        self.searchController = nil
     }
     
     
@@ -407,42 +408,42 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     func dismissSearchController() {
         self.searchController.isActive = false
     }
-
+    
     /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
+     // Override to support editing the table view.
+     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+     if editingStyle == .delete {
+     // Delete the row from the data source
+     tableView.deleteRows(at: [indexPath], with: .fade)
+     } else if editingStyle == .insert {
+     // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+     }
+     }
+     */
+    
     /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
+     // Override to support rearranging the table view.
+     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
+     
+     }
+     */
+    
     /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
+     // Override to support conditional rearranging of the table view.
+     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+     // Return false if you do not want the item to be re-orderable.
+     return true
+     }
+     */
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }

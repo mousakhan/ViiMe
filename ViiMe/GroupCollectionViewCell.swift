@@ -10,7 +10,7 @@ import UIKit
 import ChameleonFramework
 
 protocol UserCollectionViewCellDelegate {
-    func invite()
+    func invite(index : Int, deal: Deal)
 }
 
 class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -24,8 +24,9 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         setupViews()
     }
     
-    
+    var owner : UserInfo? = nil
     var users : Array<UserInfo> = []
+    var deal : Deal? = nil
     var numOfPeople = 0
     
     let cancelButton: UIButton = {
@@ -43,7 +44,6 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         let label = UILabel()
         label.numberOfLines = 0
         label.textColor = FlatWhite()
-        label.text = "Purchase a Greek Soulvalki Platter 14.60, get $3 off on second skewer get $3 off on second skewer"
         label.font = UIFont.systemFont(ofSize: 13)
         label.numberOfLines = 2
         label.minimumScaleFactor = 0.6
@@ -134,31 +134,46 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         return numOfPeople
     }
     
+    var groupTag = 0
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reusableIdentifier, for: indexPath) as! UserCollectionViewCell
-        
-        if (indexPath.row > (self.users.count-1)) {
-            cell.userdealLabel.text = "Invite"
-            cell.profilePicture.image = UIImage(named: "invite")
-            cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
-            cell.profilePicture.tintColor = FlatGray()
-            cell.profilePicture.contentMode = .center
-            
-        } else {
-            let name =  self.users[indexPath.row].name
-            cell.userdealLabel.text = name
-            if (indexPath.row == 0) {
-                cell.statusLabel.text = "Group Owner"
-            }
-            let profile =  self.users[indexPath.row].profile
+        if (owner != nil && indexPath.row == 0) {
+            let name =  owner?.name
+            let profile =  owner?.profile
             if (profile != "") {
-                let url = URL(string: profile)
+                let url = URL(string: profile!)
                 cell.profilePicture.kf.indicatorType = .activity
                 cell.profilePicture.kf.setImage(with: url)
             } else {
                 cell.profilePicture.image = UIImage(named: "empty_profile")
             }
+            cell.nameLabel.text = name
+            cell.profilePicture.contentMode = .scaleToFill
+            cell.statusLabel.text = "Group Owner"
+        } else if (self.users.count > 0) {
+            if ((self.users.count-1) >= indexPath.row) {
+                let name =  self.users[indexPath.row].name
+                let profile =  self.users[indexPath.row].profile
+                if (profile != "") {
+                    let url = URL(string: profile)
+                    cell.profilePicture.kf.indicatorType = .activity
+                    cell.profilePicture.kf.setImage(with: url)
+                } else {
+                    cell.profilePicture.image = UIImage(named: "empty_profile")
+                }
+                cell.nameLabel.text = name
+                cell.profilePicture.contentMode = .scaleToFill
+            }
+        } else {
+            cell.nameLabel.text = "Invite"
+            cell.profilePicture.image = UIImage(named: "invite")
+            cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
+            cell.profilePicture.tintColor = FlatGray()
+            cell.profilePicture.contentMode = .center
         }
+
+        cell.tag = groupTag
         
         return cell
     }
@@ -168,13 +183,15 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("Select")
-        delegate?.invite()
+        let cell = self.usersCollectionView.cellForItem(at: indexPath)
+        
+        delegate?.invite(index: cell!.tag, deal: self.deal!)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsetsMake(0, 14, 0, 14)
     }
+    
     
     
     
@@ -192,7 +209,7 @@ class UserCollectionViewCell: UICollectionViewCell {
     }
     
     var profilePicture = UIImageView()
-    var userdealLabel = UILabel()
+    var nameLabel = UILabel()
     var statusLabel = UILabel()
     
     // This view set up is for the horizontal collection view that includes each user's profile picture, name, and status
@@ -200,7 +217,7 @@ class UserCollectionViewCell: UICollectionViewCell {
         backgroundColor = UIColor.clear
         
         addSubview(profilePicture)
-        addSubview(userdealLabel)
+        addSubview(nameLabel)
         addSubview(statusLabel)
         
         profilePicture.translatesAutoresizingMaskIntoConstraints = false
@@ -209,31 +226,28 @@ class UserCollectionViewCell: UICollectionViewCell {
         profilePicture.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
         profilePicture.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
         
-        userdealLabel.translatesAutoresizingMaskIntoConstraints = false
-        userdealLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        userdealLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 2.0).isActive = true
-        userdealLabel.heightAnchor.constraint(equalToConstant: 15.0).isActive = true
-        userdealLabel.centerXAnchor.constraint(equalTo: profilePicture.centerXAnchor).isActive = true
-        userdealLabel.textAlignment = .center
-        userdealLabel.textColor = FlatWhite()
-        userdealLabel.numberOfLines = 0
-        userdealLabel.font = UIFont.systemFont(ofSize: 12)
-        userdealLabel.sizeToFit()
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        nameLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 2.0).isActive = true
+        nameLabel.heightAnchor.constraint(equalToConstant: 15.0).isActive = true
+        nameLabel.centerXAnchor.constraint(equalTo: profilePicture.centerXAnchor).isActive = true
+        nameLabel.textAlignment = .center
+        nameLabel.textColor = FlatWhite()
+        nameLabel.numberOfLines = 0
+        nameLabel.font = UIFont.systemFont(ofSize: 12)
+        nameLabel.sizeToFit()
         
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
-        statusLabel.topAnchor.constraint(equalTo: userdealLabel.bottomAnchor).isActive = true
+        statusLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
         statusLabel.heightAnchor.constraint(equalToConstant: 15.0).isActive = true
         statusLabel.widthAnchor.constraint(equalToConstant: 60.0).isActive = true
         statusLabel.centerXAnchor.constraint(equalTo: profilePicture.centerXAnchor).isActive = true
-        
         
         statusLabel.textAlignment = .center
         statusLabel.textColor = FlatWhite()
         statusLabel.numberOfLines = 0
         statusLabel.font = UIFont.systemFont(ofSize: 8)
         
-        
-
         profilePicture.layoutIfNeeded()
         profilePicture.layer.cornerRadius = profilePicture.frame.height / 2
         profilePicture.clipsToBounds = true

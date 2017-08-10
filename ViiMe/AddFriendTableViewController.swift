@@ -37,7 +37,6 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     override func viewDidLoad() {
     
         self.tableView.backgroundColor = FlatBlack()
-        
         ref = Database.database().reference()
         user = Auth.auth().currentUser
         

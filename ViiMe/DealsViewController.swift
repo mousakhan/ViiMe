@@ -109,11 +109,11 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let groupRef = self.ref.child("groups")
             let id = groupRef.childByAutoId()
             
-            self.ref.child("groups/\(id.key)").setValue(["created": ServerValue.timestamp(), "deal": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue": self.venue!.id])
+            self.ref.child("groups/\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue": self.venue!.id])
             let userRef = self.ref.child("users/\(self.user!.id)/groups/\(id.key)")
             userRef.setValue(true)
             
-            self.groups?.append(["created": ServerValue.timestamp(), "deal": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue": self.venue!.id])
+            self.groups?.append(["created": ServerValue.timestamp(), "id": id.key, "deal": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue": self.venue!.id])
             
             self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
         }
@@ -178,58 +178,20 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let friends = postDict["friends"] as? Array<String> ?? []
             let groupIDs = postDict["groups"] as? Dictionary<String, Any> ?? [:]
             
-            self.getGroups(ids: groupIDs as NSDictionary, completionHandler: { (isComplete, groups) in
-                if (isComplete) {
-                    self.groups = groups
-
-                }
-            })
-            
             self.user = UserInfo(username: username, name: name, id: currentUser!.uid, age: age, email: email, gender: gender, profile: profile, groups: groupIDs, friends: friends)
         })
     }
     
     
-    // This'll fetch all the informationg relating to the groups of this venue for the user
-    func getGroups(ids : NSDictionary, completionHandler: @escaping (_ isComplete: Bool, _ groups:Array<Any>) -> ()){
-        var groups : Array<Any> = []
-        // Query for the groups of this venue
-        let ref = Database.database().reference().child("groups").queryOrdered(byChild: "venue").queryEqual(toValue : self.venue!.id)
-        ref.observe(.value, with:{ (snapshot: DataSnapshot) in
-            groups = []
-            let enumerator = snapshot.children
-            while let group = enumerator.nextObject() as? DataSnapshot {
-                let value = group.value as? NSDictionary
-                let deal = value?["deal"] ?? ""
-                let created = value?["created"] ?? ""
-                let owner = value?["owner"] ?? ""
-                let groupUsers = value?["users"] as? Dictionary<String, Bool> ?? [:]
-                var userIds = [String()]
-                
-                for (key, _) in groupUsers {
-                    userIds.append(key)
-                }
-                
-                var dict = [String: Any]()
-                dict["deal"] = deal
-                dict["users"] = userIds
-                dict["created"] = created
-                dict["owner"] = owner
-                groups.append(dict)
-             
-            }
-             completionHandler(true, groups)
-        })
-        
-    }
-    
  
+
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "GroupCollectionViewSegue") {
             let destVC = segue.destination as? GroupCollectionViewController
-            destVC?.groups = self.groups
+            destVC?.ids = self.user!.groups
+            destVC?.venue = self.venue!
         }
     }
     
