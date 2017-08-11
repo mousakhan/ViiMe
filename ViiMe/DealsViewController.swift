@@ -113,8 +113,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let userRef = self.ref.child("users/\(self.user!.id)/groups/\(id.key)")
             userRef.setValue(true)
             
-            self.groups?.append(["created": ServerValue.timestamp(), "id": id.key, "deal": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue": self.venue!.id])
-            
+//            self.groups?.append(["created": ServerValue.timestamp(), "id": id.key, "deal": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue": self.venue!.id])
+//            
             self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
         }
         
@@ -184,6 +184,9 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     
  
+    @IBAction func groupBarButtonItemPressed(_ sender: Any) {
+        self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
+    }
 
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation

@@ -22,6 +22,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     required init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
         setupViews()
+        self.users = []
     }
     
     var owner : UserInfo? = nil
@@ -72,7 +73,6 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         button.backgroundColor = FlatPurpleDark()
         return button
     }()
-    
     
     let dividerLineView: UIView = {
         let view = UIView()
@@ -138,6 +138,9 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reusableIdentifier, for: indexPath) as! UserCollectionViewCell
+        cell.tag = groupTag
+        
+//        print("The users count is " + String(self.users.count) + " and index is " + String(indexPath.row) +     " and group tag " + String(groupTag))
         if (owner != nil && indexPath.row == 0) {
             let name =  owner?.name
             let profile =  owner?.profile
@@ -152,9 +155,10 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
             cell.profilePicture.contentMode = .scaleToFill
             cell.statusLabel.text = "Group Owner"
         } else if (self.users.count > 0) {
-            if ((self.users.count-1) >= indexPath.row) {
-                let name =  self.users[indexPath.row].name
-                let profile =  self.users[indexPath.row].profile
+            if ((self.users.count) >= indexPath.row) {
+                let index = indexPath.row - 1
+                let name =  self.users[index].name
+                let profile =  self.users[index].profile
                 if (profile != "") {
                     let url = URL(string: profile)
                     cell.profilePicture.kf.indicatorType = .activity
@@ -164,6 +168,12 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                 }
                 cell.nameLabel.text = name
                 cell.profilePicture.contentMode = .scaleToFill
+            } else {
+                cell.nameLabel.text = "Invite"
+                cell.profilePicture.image = UIImage(named: "invite")
+                cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
+                cell.profilePicture.tintColor = FlatGray()
+                cell.profilePicture.contentMode = .center
             }
         } else {
             cell.nameLabel.text = "Invite"
@@ -173,7 +183,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
             cell.profilePicture.contentMode = .center
         }
 
-        cell.tag = groupTag
+        
         
         return cell
     }
@@ -184,7 +194,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = self.usersCollectionView.cellForItem(at: indexPath)
-        
+//        print(cell!.tag)
         delegate?.invite(index: cell!.tag, deal: self.deal!)
     }
     

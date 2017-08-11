@@ -1162,6 +1162,9 @@
                         <barButtonItem key="rightBarButtonItem" image="group" id="sOf-A5-OmK">
                             <inset key="imageInsets" minX="12" minY="12" maxX="12" maxY="12"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <action selector="groupBarButtonItemPressed:" destination="vQ5-nF-ICX" id="UBQ-CT-8oZ"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>

@@ -39,8 +39,9 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         collectionViewLayout?.invalidateLayout()
     }
     
+    
     override func viewWillAppear(_ animated: Bool) {
-        print("View appearing")
+        super.viewWillAppear(animated)
         self.collectionView?.reloadData()
     }
     
@@ -65,7 +66,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         cell.delegate = self
         cell.cancelButton.addTarget(self, action: #selector(removeGroup(sender:)), for: .touchUpInside)
         
-        print("Reloading")
+        
         getDeals(index: indexPath.row) { (isComplete, deal) in
             if (isComplete) {
                 cell.dealLabel.text = deal.title
@@ -111,23 +112,39 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     }
     
     func getUsers(index : Int, completionHandler: @escaping (_ isComplete: Bool, _ users:Array<Any>) -> ()) {
+        
         let group = self.groups[index] as! Dictionary<String, Any>
-        // Check if the group has users and if it does, grab them
         if ((group["users"]) != nil) {
             let users = group["users"] as! Array<String>
             var userInfos : Array<UserInfo> = []
-            
-            for id in users {
-                Database.database().reference().child("users/\(id)").observe(DataEventType.value, with: { (userSnapshot) in
-                    let user = userSnapshot.value as? NSDictionary
-                    let name = user?["name"] ?? ""
-                    let id = user?["id"] ?? ""
-                    let profile = user?["profile"] ?? ""
-                    let userInfo = UserInfo(username: "", name: name as! String, id: id as! String, age: "", email: "", gender: "", profile: profile as! String, groups: [String: Any](), friends: [])
-                    userInfos.append(userInfo)
-                    completionHandler(true, userInfos)
-                })
-            }
+            Database.database().reference().child("users").observe(DataEventType.value, with: { (snapshot) in
+                userInfos = []
+                for id in users {
+                    
+                    if (id != "") {
+                        var user = UserInfo(username: "", name: "", id: "'", age: "'", email: "", gender: "'", profile: "", groups: [String: Any](), friends: [])
+                        for child in snapshot.childSnapshot(forPath: id).children {
+                            let key = (child as! DataSnapshot).key
+                            
+                            if (key == "name") {
+                                let value = (child as! DataSnapshot).value as! String
+                                user.name = value
+                            } else if (key == "id") {
+                                let value = (child as! DataSnapshot).value as! String
+                                user.id = value
+                            } else if (key == "profile"){
+                                let value = (child as! DataSnapshot).value as! String
+                                user.profile = value
+                            }
+                            
+                        }
+                        userInfos.append(user)
+                    }
+                }
+                completionHandler(true, userInfos)
+            })
+        } else {
+            completionHandler(true, [])
         }
     }
     
@@ -169,32 +186,35 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         // Query for the groups of this venue
         let ref = Database.database().reference().child("groups").queryOrdered(byChild: "venue").queryEqual(toValue : self.venue!.id)
         ref.observe(DataEventType.value, with:{ (snapshot: DataSnapshot) in
-            print("Heeereee")
             groups = []
             let enumerator = snapshot.children
             while let group = enumerator.nextObject() as? DataSnapshot {
                 let value = group.value as? NSDictionary
                 let id = value?["id"] ?? ""
-                let deal = value?["deal"] ?? ""
-                let created = value?["created"] ?? ""
-                let owner = value?["owner"] ?? ""
-                let groupUsers = value?["users"] as? Dictionary<String, Bool> ?? [:]
-                
-                var userIds = [String()]
-                
-                for (key, _) in groupUsers {
-                    userIds.append(key)
+                for (key, _) in ids {
+                    if (key as! String == id as! String) {
+                        let deal = value?["deal"] ?? ""
+                        let created = value?["created"] ?? ""
+                        let owner = value?["owner"] ?? ""
+                        let groupUsers = value?["users"] as? Dictionary<String, Bool> ?? [:]
+                        
+                        var userIds = [String()]
+                        
+                        for (key, _) in groupUsers {
+                            userIds.append(key)
+                        }
+                        
+                        var dict = [String: Any]()
+                        dict["deal"] = deal
+                        dict["id"] = id
+                        dict["users"] = userIds
+                        dict["created"] = created
+                        dict["owner"] = owner
+                        groups.append(dict)
+                    }
                 }
                 
                 
-                
-                var dict = [String: Any]()
-                dict["deal"] = deal
-                dict["id"] = id
-                dict["users"] = userIds
-                dict["created"] = created
-                dict["owner"] = owner
-                groups.append(dict)
                 
             }
             completionHandler(true, groups)
