@@ -1386,7 +1386,7 @@
         <scene sceneID="83q-MG-e7s">
             <objects>
                 <collectionViewController storyboardIdentifier="GroupCollectionViewController" id="8O3-da-ifR" customClass="GroupCollectionViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="V2E-Ax-B1C">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" prefetchingEnabled="NO" id="V2E-Ax-B1C">
                         <rect key="frame" x="0.0" y="64" width="414" height="672"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1418,6 +1418,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3zj-0e-CJ5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4971" y="128"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="iL2-Cb-Z80">
+            <objects>
+                <viewController id="w55-eS-zWc" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="NDD-fh-XLh"/>
+                        <viewControllerLayoutGuide type="bottom" id="fnX-Y1-1NU"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="bKO-xl-Zfc">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DLs-1M-hh5" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5774" y="129"/>
         </scene>
         <!--VenuesNavigation-->
         <scene sceneID="Rel-gp-3St">

@@ -54,7 +54,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let gender = value?["gender"] as? String ?? ""
                     let profile = value?["profile"] as? String ?? ""
                     
-                    let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile, groups: [:], friends: [])
+                    let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile, status: "", groups: [:], friends: [])
                     
                     
                     if (!self.friends.contains(where: { $0.id == user.id }) && isFriend!) {
@@ -238,10 +238,10 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         } else if (indexPath.section == 1) {
             if (deal != nil) {
                 let id = self.group?["id"] as! String
-                Database.database().reference().child("groups/\(id)/users/\(self.friends[indexPath.row].id)").setValue(true)
-                Database.database().reference().child("users/\(self.friends[indexPath.row].id)/groups/\(id)").setValue(true)
-                self.navigationController?.popViewController(animated: true)
+                Database.database().reference().child("groups/\(id)/users/\(self.friends[indexPath.row].id)").setValue(false)
+                Database.database().reference().child("users/\(self.friends[indexPath.row].id)/groups/\(id)").setValue(false)
                 
+                self.navigationController?.popViewController(animated: true)
             }
         } else if (indexPath.section == 2) {
             sendSmsClick(recipient: self.contacts[indexPath.row]["number"] as! String, vc: self)

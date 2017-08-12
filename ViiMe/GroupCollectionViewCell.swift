@@ -8,9 +8,12 @@
 
 import UIKit
 import ChameleonFramework
+import SCLAlertView
 
 protocol UserCollectionViewCellDelegate {
     func invite(index : Int, deal: Deal)
+    func acceptGroupInvitation(groupIndex : Int)
+    func declineGroupInvitation(groupIndex : Int)
 }
 
 class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -71,6 +74,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         button.setTitle("REDEEM", for: .normal)
         button.setTitleColor(FlatWhite(), for: .normal)
         button.backgroundColor = FlatPurpleDark()
+        button.setTitleColor(FlatGray(), for: .disabled)
         return button
     }()
     
@@ -91,6 +95,14 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         
         usersCollectionView.dataSource = self
         usersCollectionView.delegate = self
+        
+        redeemButton.isEnabled = false
+        
+        if #available(iOS 10.0, *) {
+            usersCollectionView.isPrefetchingEnabled = false
+        } else {
+            // Fallback on earlier versions
+        }
         
         usersCollectionView.register(UserCollectionViewCell.self, forCellWithReuseIdentifier: reusableIdentifier)
         
@@ -135,13 +147,16 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     }
     
     var groupTag = 0
+    var user : UserInfo? = nil
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reusableIdentifier, for: indexPath) as! UserCollectionViewCell
         cell.tag = groupTag
+        cell.profilePicture.image = nil
+        cell.isUserInteractionEnabled = false
         
-//        print("The users count is " + String(self.users.count) + " and index is " + String(indexPath.row) +     " and group tag " + String(groupTag))
         if (owner != nil && indexPath.row == 0) {
+       
             let name =  owner?.name
             let profile =  owner?.profile
             if (profile != "") {
@@ -168,12 +183,27 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                 }
                 cell.nameLabel.text = name
                 cell.profilePicture.contentMode = .scaleToFill
+                cell.statusLabel.text = self.users[index].status
+                cell.isUserInteractionEnabled = true
+                if (owner?.id != self.user?.id) {
+                    cell.isUserInteractionEnabled = false
+                }
+                
+                if (self.users[index].id == self.user?.id) {
+                    cell.isUserInteractionEnabled = true
+                }
+                
             } else {
                 cell.nameLabel.text = "Invite"
                 cell.profilePicture.image = UIImage(named: "invite")
                 cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
                 cell.profilePicture.tintColor = FlatGray()
                 cell.profilePicture.contentMode = .center
+                cell.statusLabel.text = ""
+                cell.isUserInteractionEnabled = true
+                if (owner?.id != self.user?.id) {
+                    cell.isUserInteractionEnabled = false
+                }
             }
         } else {
             cell.nameLabel.text = "Invite"
@@ -181,9 +211,12 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
             cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
             cell.profilePicture.tintColor = FlatGray()
             cell.profilePicture.contentMode = .center
+            cell.statusLabel.text = ""
+            cell.isUserInteractionEnabled = true
+            if (owner?.id != self.user?.id) {
+                cell.isUserInteractionEnabled = false
+            }
         }
-
-        
         
         return cell
     }
@@ -194,8 +227,41 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = self.usersCollectionView.cellForItem(at: indexPath)
-//        print(cell!.tag)
-        delegate?.invite(index: cell!.tag, deal: self.deal!)
+        
+        var userIndex = -1
+        
+        for (index, user) in self.users.enumerated() {
+            if user.id == self.user?.id && user.status != "" {
+                userIndex = index
+            }
+        }
+        
+        if (self.users.count > 0 && userIndex == (indexPath.row - 1)) {
+            
+            let appearance = SCLAlertView.SCLAppearance(
+                showCloseButton: false,
+                showCircularIcon: false
+            )
+            
+            let alertView = SCLAlertView(appearance: appearance)
+            
+            alertView.addButton("Accept", backgroundColor: FlatGreen())   {
+                self.delegate?.acceptGroupInvitation(groupIndex: cell!.tag)
+                cell?.isUserInteractionEnabled = false
+            }
+            
+            alertView.addButton("Decline", backgroundColor: FlatRed()) {
+                self.delegate?.declineGroupInvitation(groupIndex: cell!.tag)
+            }
+            
+            
+            alertView.addButton("Later") {}
+            
+            alertView.showInfo("Invitation", subTitle: "Accept Invitation")
+        } else {
+            delegate?.invite(index: cell!.tag, deal: self.deal!)
+        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -264,7 +330,7 @@ class UserCollectionViewCell: UICollectionViewCell {
         profilePicture.layer.borderWidth = 1.0
         profilePicture.layer.borderColor = FlatGray().cgColor
         profilePicture.backgroundColor = UIColor.clear
-    
+        
         
     }
 }

@@ -15,6 +15,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     let reuseIdentifier = "UITableViewCell"
     var venue : Venue?
+    var deal : Deal?
     var user : UserInfo?
     var ref: DatabaseReference!
     var groups: Array<Any>?
@@ -105,6 +106,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         let alertView = SCLAlertView(appearance: appearance)
         
+        
         alertView.addButton("Create", backgroundColor: FlatPurple())    {
             let groupRef = self.ref.child("groups")
             let id = groupRef.childByAutoId()
@@ -113,9 +115,16 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let userRef = self.ref.child("users/\(self.user!.id)/groups/\(id.key)")
             userRef.setValue(true)
             
-//            self.groups?.append(["created": ServerValue.timestamp(), "id": id.key, "deal": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue": self.venue!.id])
-//            
-            self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
+            self.user!.groups[id.key] = true
+            
+            self.getDeal(index: indexPath.row, completionHandler: { (isComplete, deal) in
+                if (isComplete) {
+                    self.deal = deal
+                    self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
+                }
+            })
+            
+            
         }
         
         alertView.addButton("Cancel", backgroundColor: FlatRed())   {}
@@ -178,7 +187,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let friends = postDict["friends"] as? Array<String> ?? []
             let groupIDs = postDict["groups"] as? Dictionary<String, Any> ?? [:]
             
-            self.user = UserInfo(username: username, name: name, id: currentUser!.uid, age: age, email: email, gender: gender, profile: profile, groups: groupIDs, friends: friends)
+            self.user = UserInfo(username: username, name: name, id: currentUser!.uid, age: age, email: email, gender: gender, profile: profile, status: "", groups: groupIDs, friends: friends)
         })
     }
     
@@ -187,14 +196,37 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBAction func groupBarButtonItemPressed(_ sender: Any) {
         self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
     }
+    
+    //MARK: 
+    func getDeal(index : Int, completionHandler: @escaping (_ isComplete: Bool, _ deal: Deal) -> ()) {
+        let id = venue!.deals[index].id
+        if (id != "") {
+            Database.database().reference().child("deal/\(id)").observe(DataEventType.value, with: { (dealSnapshot) in
+
+                let deal = dealSnapshot.value as? NSDictionary
+                //TODO: Change this to 'title'
+                let title = deal?["name"] ?? ""
+                let numberOfPeople = deal?["numberOfPeople"] ?? ""
+                let id = deal?["id"] ?? ""
+                
+                let dealInfo = Deal(title: title as! String, shortDescription: "", longDescription: "", id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: "", validTo: "", recurringFrom: "", recurringTo: "")
+                
+                completionHandler(true, dealInfo)
+            })
+        }
+        
+    }
 
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "GroupCollectionViewSegue") {
             let destVC = segue.destination as? GroupCollectionViewController
+            print(self.user!.groups)
             destVC?.ids = self.user!.groups
             destVC?.venue = self.venue!
+            destVC?.deal = self.deal!
+            destVC?.user = self.user!
         }
     }
     
