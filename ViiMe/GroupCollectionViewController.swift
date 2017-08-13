@@ -61,18 +61,18 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         super.viewDidDisappear(animated)
         
         if (shouldDeleteGroups) {
-        for (index, group) in self.groups.enumerated() {
-            var dict = group as! Dictionary<String, Any>
-            if (dict["users"] == nil) {
-                var group = self.groups[index] as! Dictionary<String, Any>
-                let id = group["id"] as! String
-                Database.database().reference().child("groups/\(id)").removeValue()
-                Database.database().reference().child("users/\(self.user.id)/groups/\(id)").removeValue()
-                self.groups[index] = []
+            for (index, group) in self.groups.enumerated() {
+                var dict = group as! Dictionary<String, Any>
+                if (dict["users"] == nil) {
+                    var group = self.groups[index] as! Dictionary<String, Any>
+                    let id = group["id"] as! String
+                    Database.database().reference().child("groups/\(id)").removeValue()
+                    Database.database().reference().child("users/\(self.user.id)/groups/\(id)").removeValue()
+                    self.groups[index] = []
+                }
             }
-        }
-        
-        self.groups = self.groups.filter { ($0 as AnyObject).count > 0 }
+            
+            self.groups = self.groups.filter { ($0 as AnyObject).count > 0 }
             shouldDeleteGroups = true
         }
     }
@@ -108,7 +108,9 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         
         cell.delegate = self
         
-        // Set the index value for the cancel button, so we know which group is being removed
+        
+        // Set the index value for the cancel and redeem button, so we know which group is being removed
+        cell.redeemButton.layer.setValue(indexPath.row, forKey: "row")
         cell.cancelButton.layer.setValue(indexPath.row, forKey: "row")
         cell.cancelButton.layer.setValue(indexPath.section, forKey: "section")
         cell.cancelButton.addTarget(self, action: #selector(removeGroup(sender:)), for: .touchUpInside)
@@ -116,16 +118,25 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         cell.dealLabel.text = self.deal.title
         cell.deal = deal
         
+        if (cell.deal!.numberOfPeople != ""){
+            cell.numOfPeople = Int(cell.deal!.numberOfPeople)!
+        } else {
+            cell.numOfPeople = 1
+        }
+     
         if (self.owners.count > 0 && self.users.count == 0 ) {
             cell.owner = self.owners[indexPath.row]
-            cell.usersCollectionView.reloadData()
         } else if (self.users.count > 0) {
+            let foundItems = self.users[indexPath.row].filter { ($0 ).status == "Accepted"}
+            if ( (foundItems.count + 1) == cell.numOfPeople && self.owners[indexPath.row].id == self.user.id) {
+                cell.redeemButton.isEnabled = true
+            }
             cell.owner = self.owners[indexPath.row]
             cell.users = self.users[indexPath.row]
         }
-    
+        
+
         cell.usersCollectionView.reloadData()
-        cell.numOfPeople = 3
         
         // Set the group tag so we know which group corresponds to the users
         cell.groupTag = indexPath.row
@@ -142,7 +153,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         let group = self.groups[row] as! Dictionary<String, Any>
         let id = group["id"]!
         
-        self.collectionView?.performBatchUpdates({ 
+        self.collectionView?.performBatchUpdates({
             self.groups.remove(at: row)
             self.collectionView?.deleteItems(at: [indexPath])
         }, completion: { (isComplete) in
@@ -151,7 +162,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         })
         
         
-    
+        
         
         //        self.getUsers(index: i-1) { (isComplete, users) in
         //            if (isComplete) {
@@ -191,6 +202,10 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         Database.database().reference().child("groups/\(id)/users/\(self.user.id)").removeValue()
     }
     
+    func redeem(index: Int) {
+        self.performSegue(withIdentifier: "RedemptionViewControllerSegue", sender: index)
+        shouldDeleteGroups = false
+    }
     
     func getUsers(completionHandler: @escaping (_ isComplete: Bool, _ users:Array<Any>) -> ()) {
         if (self.groups.count > 0) {
@@ -206,6 +221,8 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                             
                             if (!(val as! Bool)) {
                                 user.status = "Invited"
+                            } else {
+                                user.status = "Accepted"
                             }
                             
                             for child in snapshot.childSnapshot(forPath: key).children {
@@ -224,7 +241,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                             }
                             userInfos.append(user)
                         }
-          
+                        
                     }
                     completionHandler(true, userInfos)
                 }
@@ -318,7 +335,16 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
             destVC?.deal = infoArray[0] as? Deal
             destVC?.group = infoArray[1] as? Dictionary<String, Any>
             shouldDeleteGroups = false
+        } else if (segue.identifier == "RedemptionViewControllerSegue") {
+            let destVC = segue.destination as? RedemptionViewController
+            let index = sender as! Int
+            destVC?.deal = self.deal
+            destVC?.venue = self.venue
+            destVC?.owner = self.owners[index]
+            destVC?.users = self.users[index]
         }
+        
+        
     }
     
     /*

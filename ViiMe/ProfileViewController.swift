@@ -12,7 +12,7 @@ import Firebase
 import FBSDKLoginKit
 import FirebaseStorage
 
-class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var profilePicture: UIImageView!
@@ -28,7 +28,10 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     var ref: DatabaseReference!
     var user: User!
     var userInfo : UserInfo!
-    
+    var groups : Array<Any>! = []
+    var deals : Array<Deal>! = []
+    var venues : Array<Venue>! = []
+    var benefits : Array<Any>! = []
     let genders = ["", "Male", "Female"]
     var profileURL = ""
     var imagePicker: UIImagePickerController!
@@ -43,7 +46,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         ref = Database.database().reference()
     
         setupData()
-        
+        getGroups { (isComplete) in
+            self.benefitsTableView.reloadData()
+        }
         //Profile Image Setup
         profilePicture.layer.cornerRadius = profilePicture.frame.size.width/2.0
         profilePicture.layer.borderWidth = 1.0
@@ -70,6 +75,39 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         scrollView.addGestureRecognizer(tapGesture)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
+    }
+    
+    //MARK: UITableViewDataSource
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        if (tableView == self.benefitsTableView) {
+            return self.deals.count
+        }
+        
+        return self.benefits.count
+    }
+    
+    //MARK: UITableViewDelegate
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "UITableViewCell", for: indexPath)
+        
+        cell.backgroundColor = FlatBlack()
+        cell.textLabel?.textColor  = FlatWhite()
+        
+        if (self.deals.count > 0) {
+            cell.textLabel?.text = self.deals[indexPath.row].title
+            print(self.venues)
+            if (self.venues.count > 0) {
+                cell.detailTextLabel?.text = self.venues[indexPath.row].name
+            }
+        }
+        return cell
+        
     }
     
     //MARK: Image Picker
@@ -218,7 +256,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         genderTextField.resignFirstResponder()
     }
     
-    
     func datePickerChanged(sender: UIDatePicker) {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -240,6 +277,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         tableView.layer.borderColor = FlatGrayDark().cgColor
         tableView.layer.borderWidth = 0.5
         tableView.layer.masksToBounds = true
+        tableView.delegate = self
+        tableView.dataSource = self
     }
 
     
@@ -316,6 +355,106 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             self.userInfo = UserInfo(username: username, name: name, id: self.user.uid, age: age, email: email, gender: gender, profile: profile, status: "", groups: groups, friends: friends)
             
         })
+    }
+    
+    // This'll fetch all the informationg relating to the groups of this venue for the user
+    func getGroups(completionHandler: @escaping (_ isComplete: Bool) -> ()){
+        let ref = Database.database().reference().child("groups")
+        ref.observe(DataEventType.value, with:{ (snapshot: DataSnapshot) in
+            self.groups = []
+            self.deals = []
+            self.venues = []
+            for (key, _) in self.userInfo.groups {
+                var dict = [String: Any]()
+                for child in snapshot.childSnapshot(forPath: key ).children {
+                    let key = (child as! DataSnapshot).key
+                    if (key == "deal") {
+                        let value = (child as! DataSnapshot).value as! String
+                        dict["deal"] = value
+                        self.getDeal(id: value, completionHandler: { (isComplete) in
+    
+                            if (isComplete) {
+                                self.benefitsTableView.reloadData()
+                            }
+                        })
+                    } else if (key == "id") {
+                        let value = (child as! DataSnapshot).value as! String
+                        dict["id"] = value
+                    } else if (key == "users") {
+                        let value = (child as! DataSnapshot).value as! NSDictionary
+                        dict["users"] = value
+                    } else if (key == "usersStatuses") {
+                        let value = (child as! DataSnapshot).value as! Array<Bool>
+                        dict["usersStatuses"] = value
+                    } else if (key == "created") {
+                        let value = (child as! DataSnapshot).value as! Int
+                        dict["created"] = value
+                    } else if (key == "owner") {
+                        let value = (child as! DataSnapshot).value as! String
+                        dict["owner"] = value
+                    } else if (key == "venueId") {
+                        let value = (child as! DataSnapshot).value as! String
+                        dict["venue"] = value
+                        self.getVenue(id: value, completionHandler: { (isComplete) in
+                            if (isComplete) {
+                                self.benefitsTableView.reloadData()
+                            }
+                        })
+                        
+                    }
+                }
+                
+                if (dict.count > 0) {
+                    self.groups.append(dict)
+                    self.groups = self.groups.sorted { (($0 as! Dictionary<String, Any>)["created"] as! Int)  > (($1 as! Dictionary<String, Any>)["created"] as! Int) }
+                }
+            }
+            completionHandler(true)
+        })
+        
+    
+    }
+    
+    func getDeal(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
+        if (id != "") {
+            Database.database().reference().child("deal/\(id)").observe(DataEventType.value, with: { (snapshot) in
+                let deal = snapshot.value as? NSDictionary
+                //TODO: Change this to 'title'
+                let title = deal?["name"] ?? ""
+                let numberOfPeople = deal?["number-of-people"] ?? ""
+                let id = deal?["id"] ?? ""
+                
+                let dealInfo = Deal(title: title as! String, shortDescription: "", longDescription: "", id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: "", validTo: "", recurringFrom: "", recurringTo: "")
+                
+                self.deals.append(dealInfo)
+                completionHandler(true)
+            })
+        }
+        
+    }
+    
+    func getVenue(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
+        if (id != "") {
+            Database.database().reference().child("venue/\(id)").observe(DataEventType.value, with: { (snapshot) in
+                let value = snapshot.value as? NSDictionary
+                let name = value?["name"] ?? ""
+                let id = value?["id"] ?? ""
+                _ = value?["cuisine"] ?? []
+                let cuisine =  ""
+                let description = value?["description"] ?? ""
+                let price = value?["price"] ?? ""
+                let address = value?["address"] ?? ""
+                let website = value?["website"] ?? " "
+                let number = value?["number"] ?? " "
+                let type = value?["type"] ?? ""
+                let deals = value?["deals"] ?? {}
+                let profile = value?["profileUrl"] ?? ""
+                var venue = Venue(name: name as! String, id: id as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
+                self.venues.append(venue)
+                completionHandler(true)
+            })
+        }
+        
     }
     
     //MARK: Picker View Delegate & Data Source

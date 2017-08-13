@@ -24,25 +24,15 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var aboutThisVenueLabel: UILabel!
     @IBOutlet weak var venueDescriptionLabel: UILabel!
     @IBOutlet weak var venueDeals: UILabel!
-    @IBOutlet weak var addressLabel: UILabel!
-    @IBOutlet weak var phoneNumberLabel: UILabel!
-    @IBOutlet weak var websiteLabel: UILabel!
-    @IBOutlet weak var priceLabel: UILabel!
-    @IBOutlet weak var distanceLabel: UILabel!
-    @IBOutlet weak var venueTypeLabel: UILabel!
-    @IBOutlet weak var cuisineLabel: UILabel!
+    @IBOutlet var addressLabel: UILabel!
+    @IBOutlet var phoneLabel: UILabel!
+    @IBOutlet var websiteLabel: UILabel!
     @IBOutlet weak var venueDealsLabel: UILabel!
-    @IBOutlet weak var cuisineIcon: UIImageView!
-    @IBOutlet weak var distanceIcon: UIImageView!
-    @IBOutlet weak var venueTypeIcon: UIImageView!
-    @IBOutlet weak var priceIcon: UIImageView!
     @IBOutlet weak var addressIcon: UIImageView!
     @IBOutlet weak var websiteIcon: UIImageView!
     @IBOutlet weak var phoneIcon: UIImageView!
     @IBOutlet weak var venueLogo: UIImageView!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
-    @IBOutlet weak var venueDescriptionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var scrollView: UIScrollView!
     
     //MARK: View Lifecycle
@@ -56,7 +46,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         setupUser()
         initDealsView()
-        
     }
     
     
@@ -82,10 +71,9 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         cell.backgroundColor = FlatBlackDark()
         cell.textLabel?.text = venue?.deals[indexPath.row].title
         cell.textLabel?.textColor = FlatWhite()
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+        cell.textLabel?.numberOfLines = 0
         cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
-        cell.detailTextLabel?.text = "Group of \(venue!.deals[indexPath.row].numberOfPeople) required"
-        cell.detailTextLabel?.textColor = FlatWhite()
-        cell.detailTextLabel?.font = cell.detailTextLabel?.font.withSize(10)
         
         let bgColorView = UIView()
         bgColorView.backgroundColor = FlatPurpleDark()
@@ -96,6 +84,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
+        
+        // Create custom alert view
         let appearance = SCLAlertView.SCLAppearance(
             kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
             kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
@@ -106,7 +96,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         let alertView = SCLAlertView(appearance: appearance)
         
-        
+        // When the 'Create' button is pressed, we write to the backend to create the group
         alertView.addButton("Create", backgroundColor: FlatPurple())    {
             let groupRef = self.ref.child("groups")
             let id = groupRef.childByAutoId()
@@ -116,21 +106,27 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             userRef.setValue(true)
             
             self.user!.groups[id.key] = true
+            self.deal = self.venue!.deals[indexPath.row]
             
-            self.getDeal(index: indexPath.row, completionHandler: { (isComplete, deal) in
-                if (isComplete) {
-                    self.deal = deal
-                    self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
-                }
-            })
-            
-            
+            self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
         }
         
         alertView.addButton("Cancel", backgroundColor: FlatRed())   {}
         
-        alertView.showInfo("Create Group", subTitle: "Purchase a Medium Pizza (5 Toppings), Get 10 Free wings. Valid from \(venue!.deals[indexPath.row].validFrom) to \(venue!.deals[indexPath.row].validTo)")
         
+        // Create the message to show
+        let title = "Create Group"
+        var subTitle = "\(venue!.deals[indexPath.row].title) \n\n Valid from \(venue!.deals[indexPath.row].validFrom) to \(venue!.deals[indexPath.row].validTo)"
+        
+        let recurringTo = venue!.deals[indexPath.row].recurringTo
+        let recurringFrom = venue!.deals[indexPath.row].recurringFrom
+        
+        // If it's a deal that only recurs from certain times, show it
+        if (recurringTo != "" && recurringFrom != "") {
+            subTitle = subTitle + "\n\nOnly available from \(recurringFrom) to \(recurringTo) during these dates"
+        }
+        
+        alertView.showInfo(title, subTitle: subTitle)
         self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
         
     }
@@ -141,37 +137,78 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         imageView.tintColor = FlatGray()
     }
     
+ 
+    
     func initDealsView() {
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         self.navigationItem.title = venue!.name
         
         aboutThisVenueLabel.addBottomBorderWithColor(color: FlatGray(), width: 1)
         
+        // Adding tap gesture
+        let phoneGesture = UITapGestureRecognizer(target: self, action: #selector(call(_:)))
+        phoneLabel.addGestureRecognizer(phoneGesture)
+        let webGesture = UITapGestureRecognizer(target: self, action: #selector(openWebsite(_:)))
+        websiteLabel.addGestureRecognizer(webGesture)
+        let addressGesture = UITapGestureRecognizer(target: self, action: #selector(openAddress(_:)))
+        addressLabel.addGestureRecognizer(addressGesture)
+        
         let url = URL(string: venue!.logo)
         venueLogo.kf.indicatorType = .activity
         venueLogo.kf.setImage(with: url)
         
         venueDescriptionLabel.text = venue!.description
-        priceLabel.text = venue!.price
         addressLabel.text = venue!.address
-        venueTypeLabel.text = venue!.type
-//        distanceLabel.text = venue!.distance
-        cuisineLabel.text = venue!.cuisine
         websiteLabel.text = venue!.website
-        phoneNumberLabel.text = venue!.number
-        
+        phoneLabel.text = venue!.number
         venueDealsLabel.text = "\(venue!.deals.count) Venue Deals"
         
+    
         // Adding icon and changing color
         addIcon(name: "phone", imageView: phoneIcon)
         addIcon(name: "website", imageView: websiteIcon)
         addIcon(name: "address", imageView: addressIcon)
-        addIcon(name: "distance", imageView: distanceIcon)
-        addIcon(name: "cuisine", imageView: cuisineIcon)
-        addIcon(name: "price", imageView: priceIcon)
-        addIcon(name: "type", imageView: venueTypeIcon)
     }
     
+    func call(_ sender : UITapGestureRecognizer) {
+        let text = (sender.view as! UILabel).text
+        let alert = UIAlertController(title: "Call Venue", message: "", preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Call", style: .default, handler: { (action) in
+            if let phoneCallURL:NSURL = NSURL(string:"tel://\(text!)") {
+                let application:UIApplication = UIApplication.shared
+                if (application.canOpenURL(phoneCallURL as URL)) {
+                    application.openURL(phoneCallURL as URL);
+                }
+            }
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func openWebsite(_ sender: UITapGestureRecognizer) {
+        let text = (sender.view as! UILabel).text
+        let url = URL(string: text!)!
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        } else {
+            UIApplication.shared.openURL(url)
+        }
+    }
+    
+    func openAddress(_ sender: UITapGestureRecognizer) {
+        let text = (sender.view as! UILabel).text
+        let baseUrl: String = "http://maps.apple.com/?q="
+        let encodedName = text?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+        let finalUrl = baseUrl + encodedName!
+        if let url = URL(string: finalUrl)
+        {
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            } else {
+                UIApplication.shared.openURL(url)
+            }
+        }
+    }
     
     func setupUser() {
         let currentUser = Auth.auth().currentUser
@@ -193,37 +230,16 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     
- 
+    //MARK: IBActions
     @IBAction func groupBarButtonItemPressed(_ sender: Any) {
         self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
     }
     
-    //MARK: 
-    func getDeal(index : Int, completionHandler: @escaping (_ isComplete: Bool, _ deal: Deal) -> ()) {
-        let id = venue!.deals[index].id
-        if (id != "") {
-            Database.database().reference().child("deal/\(id)").observe(DataEventType.value, with: { (dealSnapshot) in
-
-                let deal = dealSnapshot.value as? NSDictionary
-                //TODO: Change this to 'title'
-                let title = deal?["name"] ?? ""
-                let numberOfPeople = deal?["numberOfPeople"] ?? ""
-                let id = deal?["id"] ?? ""
-                
-                let dealInfo = Deal(title: title as! String, shortDescription: "", longDescription: "", id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: "", validTo: "", recurringFrom: "", recurringTo: "")
-                
-                completionHandler(true, dealInfo)
-            })
-        }
-        
-    }
-
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "GroupCollectionViewSegue") {
             let destVC = segue.destination as? GroupCollectionViewController
-            print(self.user!.groups)
             destVC?.ids = self.user!.groups
             destVC?.venue = self.venue!
             destVC?.deal = self.deal!

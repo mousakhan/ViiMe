@@ -230,23 +230,52 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             let ref = Database.database().reference().child("deal/\(key)")
             ref.observe( DataEventType.value, with: { snapshot in
                     let value = snapshot.value as? NSDictionary
-                    // Change to title later
+                    // Change the dict keys when back-end is updated with proper values
                     let title = value?["name"] ?? ""
                     let shortDescription = value?["short-description"] ?? ""
                     let longDescription = value?["long-description"] ?? ""
+                    let numberOfPeople = value?["number-of-people"] ?? ""
                     let id = value?["id"] ?? ""
-                    let numberOfPeople = value?["people"] ?? ""
-                    let validFrom = value?["validFrom"] ?? ""
-                    let validTo = value?["validTo"] ?? ""
-                    let recurringFrom = value?["recurringFrom"] ?? ""
-                    let recurringTo = value?["recurringTo"] ?? ""
-                    let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)
+                    let validFrom = value?["valid-from"] ?? ""
+                    let validTo = value?["valid-to"] ?? ""
+                    let recurringFrom = value?["recurring-from"] ?? ""
+                    let recurringTo = value?["recurring-to"] ?? ""
+                
+                    let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: self.parseDate(date: validFrom as! String), validTo: self.parseDate(date: validTo as! String), recurringFrom: self.parseTime(time: recurringFrom as! String), recurringTo: self.parseTime(time: recurringTo as! String))
                     deals.append(deal)
                     completionHandler(true, deals)
             })
         }
     }
     
+    func parseDate(date : String) -> String {
+        let format = DateFormatter()
+        format.dateFormat = "yyyy-MM-dd'T'HH:mm"
+        let date = format.date(from: date)
+        format.dateFormat = "EEEE, MMM d, yyyy"
+        if (date != nil) {
+            var returnDate = format.string(from: date!)
+            format.dateFormat = "h:mm a"
+            returnDate = returnDate + " at " + format.string(from: date!)
+            return  returnDate
+        }
+        
+        return ""
+    }
+    
+    func parseTime(time : String) -> String {
+        let format = DateFormatter()
+        format.dateFormat = "HH:mm"
+        let time = format.date(from: time)
+        format.dateFormat =  "h:mm a"
+        if (time != nil) {
+            return format.string(from: time!)
+        }
+        
+        return ""
+    }
+    
+    // This will take an addrse and calculate the distance between the two points, and will return the distance as a string
     func setDistance(address : String, completionHandler: @escaping (_ isComplete: Bool, _ distance: String) -> ()) {
         if (CLLocationManager.authorizationStatus() == .authorizedAlways || CLLocationManager.authorizationStatus() == .authorizedWhenInUse) {
             let geocoder = CLGeocoder()

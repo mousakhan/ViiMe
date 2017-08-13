@@ -12,6 +12,7 @@ import SCLAlertView
 
 protocol UserCollectionViewCellDelegate {
     func invite(index : Int, deal: Deal)
+    func redeem(index : Int)
     func acceptGroupInvitation(groupIndex : Int)
     func declineGroupInvitation(groupIndex : Int)
 }
@@ -75,6 +76,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         button.setTitleColor(FlatWhite(), for: .normal)
         button.backgroundColor = FlatPurpleDark()
         button.setTitleColor(FlatGray(), for: .disabled)
+        button.isEnabled = false
         return button
     }()
     
@@ -96,7 +98,6 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         usersCollectionView.dataSource = self
         usersCollectionView.delegate = self
         
-        redeemButton.isEnabled = false
         
         if #available(iOS 10.0, *) {
             usersCollectionView.isPrefetchingEnabled = false
@@ -140,6 +141,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         redeemButton.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
         redeemButton.topAnchor.constraint(equalTo: self.usersCollectionView.bottomAnchor).isActive = true
         redeemButton.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        redeemButton.addTarget(self, action: #selector(redeem(sender:)), for: .touchUpInside )
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -156,7 +158,6 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         cell.isUserInteractionEnabled = false
         
         if (owner != nil && indexPath.row == 0) {
-       
             let name =  owner?.name
             let profile =  owner?.profile
             if (profile != "") {
@@ -183,7 +184,6 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                 }
                 cell.nameLabel.text = name
                 cell.profilePicture.contentMode = .scaleToFill
-                cell.statusLabel.text = self.users[index].status
                 cell.isUserInteractionEnabled = true
                 if (owner?.id != self.user?.id) {
                     cell.isUserInteractionEnabled = false
@@ -193,13 +193,15 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                     cell.isUserInteractionEnabled = true
                 }
                 
+                if (self.users[index].status != "") {
+                    cell.statusLabel.text = self.users[index].status
+                }
             } else {
                 cell.nameLabel.text = "Invite"
                 cell.profilePicture.image = UIImage(named: "invite")
                 cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
                 cell.profilePicture.tintColor = FlatGray()
                 cell.profilePicture.contentMode = .center
-                cell.statusLabel.text = ""
                 cell.isUserInteractionEnabled = true
                 if (owner?.id != self.user?.id) {
                     cell.isUserInteractionEnabled = false
@@ -268,10 +270,18 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         return UIEdgeInsetsMake(0, 14, 0, 14)
     }
     
+    //MARK: Helper functions
+    
+    func redeem(sender: UIButton) {
+        let row : Int = (sender.layer.value(forKey: "row")) as! Int
+        delegate?.redeem(index: row)
+    }
     
     
     
 }
+
+
 
 // Horizontal collection view containing each user
 class UserCollectionViewCell: UICollectionViewCell {
@@ -309,8 +319,10 @@ class UserCollectionViewCell: UICollectionViewCell {
         nameLabel.centerXAnchor.constraint(equalTo: profilePicture.centerXAnchor).isActive = true
         nameLabel.textAlignment = .center
         nameLabel.textColor = FlatWhite()
-        nameLabel.numberOfLines = 0
-        nameLabel.font = UIFont.systemFont(ofSize: 12)
+        nameLabel.numberOfLines = 1
+        nameLabel.lineBreakMode = .byClipping
+        nameLabel.minimumScaleFactor = 0.5
+        nameLabel.font = UIFont.systemFont(ofSize: 11)
         nameLabel.sizeToFit()
         
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
