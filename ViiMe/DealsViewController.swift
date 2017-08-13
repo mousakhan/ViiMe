@@ -155,6 +155,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         priceLabel.text = venue!.price
         addressLabel.text = venue!.address
         venueTypeLabel.text = venue!.type
+//        distanceLabel.text = venue!.distance
         cuisineLabel.text = venue!.cuisine
         websiteLabel.text = venue!.website
         phoneNumberLabel.text = venue!.number

@@ -1175,6 +1175,7 @@
                         <outlet property="cuisineIcon" destination="25c-bS-tln" id="voM-Qz-LnZ"/>
                         <outlet property="cuisineLabel" destination="KT3-vm-Une" id="2ue-Ax-kdX"/>
                         <outlet property="distanceIcon" destination="fNj-vO-T5Y" id="HxJ-Et-tVF"/>
+                        <outlet property="distanceLabel" destination="KeM-ny-YgJ" id="jnT-FG-lHm"/>
                         <outlet property="phoneIcon" destination="tyK-Se-Brn" id="tfn-kd-jCV"/>
                         <outlet property="phoneNumberLabel" destination="3R7-Ro-zVk" id="eeo-70-HS8"/>
                         <outlet property="priceIcon" destination="UoG-uH-Z8b" id="rxG-RF-lBf"/>

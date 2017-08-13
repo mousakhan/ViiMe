@@ -25,7 +25,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     let offset = CGFloat(5.0)
     let labelWidth = CGFloat(35.0)
     let locationManager = CLLocationManager()
-    var currCoordinate = CLLocation(latitude: 5.0, longitude: 5.0)
+    var currCoordinate = CLLocation(latitude: 0.0, longitude: 0.0)
     var filteredVenues = [Venue]()
     var venues = [Venue]()
     
@@ -38,11 +38,9 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         // Ask for Authorisation from the User.
         self.locationManager.requestAlwaysAuthorization()
         
-        // self.locationManager.requestWhenInUseAuthorization()
-        
-        if (CLLocationManager.authorizationStatus() == .authorizedAlways || CLLocationManager.authorizationStatus() == .authorizedWhenInUse) {
+        if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
             locationManager.startUpdatingLocation()
         }
         
@@ -103,7 +101,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VenueCollectionViewCell
         
         
-        var venue = Venue(name: "", id: "", price: "", cuisine: "", type: "", address: "", description: "", logo: "", website: "", number: "", deals: [])
+        var venue = Venue(name: "", id: "", price: "", cuisine: "", type: "", address: "", description: "", distance: "", logo: "", website: "", number: "", deals: [])
         
         if searchController.isActive && searchController.searchBar.text != "" {
             venue = filteredVenues[indexPath.row]
@@ -115,7 +113,11 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         cell.numberOfDealsLabel.text = "\(venue.deals.count) Deals"
         cell.priceLabel.text = "" + venue.price
         cell.cuisineLabel.text = venue.cuisine
-        setDistance(address: venue.address, label: cell.distanceLabel)
+        setDistance(address: venue.address, completionHandler: { (isComplete, distance) in
+            if (isComplete) {
+                cell.distanceLabel.text = distance
+            }
+        })
         cell.venueTypeLabel.text = venue.type
         
         let url = URL(string: venue.logo)
@@ -187,7 +189,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     }
     
     //MARK: Helpers
-    
     func initVenues () {
         let ref = Database.database().reference().child("venue/")
         ref.observe(DataEventType.value, with: { (snapshot) in
@@ -209,7 +210,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
       
                 //TODO: change this naming in the back-end
                 let profile = value?["profileUrl"] ?? ""
-                var venue = Venue(name: name as! String, id: id as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, logo: profile as! String, website: website as! String, number: number as! String, deals: [])
+                var venue = Venue(name: name as! String, id: id as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
                 self.getDeals(ids: deals as! NSDictionary, completionHandler: { (isComplete, deals) in
                     if (isComplete) {
                         venue.deals = deals
@@ -246,7 +247,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         }
     }
     
-    func setDistance(address : String, label: UILabel){
+    func setDistance(address : String, completionHandler: @escaping (_ isComplete: Bool, _ distance: String) -> ()) {
         if (CLLocationManager.authorizationStatus() == .authorizedAlways || CLLocationManager.authorizationStatus() == .authorizedWhenInUse) {
             let geocoder = CLGeocoder()
             var coordinate : CLLocation? = nil
@@ -255,23 +256,18 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 let placemark = placemarks?.first
                 let lat = placemark?.location?.coordinate.latitude
                 let lon = placemark?.location?.coordinate.longitude
-                
+                var distance = ""
                 if (lat != nil && lon != nil) {
                     coordinate = CLLocation(latitude: lat!, longitude: lon!)
                     let distanceInMeters = Int(self.currCoordinate.distance(from: coordinate!))
-                    
-                    if (distanceInMeters > 1000) {
-                        label.text = String(distanceInMeters/1000) + "km"
-                    } else {
-                        label.text = String(distanceInMeters) + "m"
-                    }
+                    distance = "\(distanceInMeters/1000)km"
                 } else {
-                    label.text = "?"
+                    distance = "?"
                 }
+                completionHandler(true, distance)
             }
-            
         } else {
-            label.text = "?"
+            completionHandler(true, "?")
         }
         
         

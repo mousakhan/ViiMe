@@ -16,6 +16,7 @@ struct Venue {
     var type : String
     var address : String
     var description : String
+    var distance : String
     var logo : String
     var website : String
     var number : String
