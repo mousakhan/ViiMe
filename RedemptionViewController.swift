@@ -14,14 +14,11 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
     private let reusableIdentifier = "cell"
     
     @IBOutlet weak var dealTitleLabel: UILabel!
-    
     @IBOutlet weak var dealDescriptionLabel: UILabel!
-    
     @IBOutlet weak var codeTextField: UITextField!
-    
     @IBOutlet weak var collectionView: UICollectionView!
-    
     @IBOutlet weak var cancelButton: UIButton!
+    
     var deal : Deal!
     var venue : Venue!
     var owner : UserInfo!
@@ -125,8 +122,7 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
     
     
     
-    //MARK: IBActions
-    
+    //MARK: IBAction
     @IBAction func cancel(_ sender: Any) {
         self.dismiss(animated: true) {
             

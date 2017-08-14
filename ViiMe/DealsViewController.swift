@@ -102,6 +102,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let groupRef = self.ref.child("groups")
             let id = groupRef.childByAutoId()
             
+            print(self.venue!)
+            
             self.ref.child("groups/\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue-id": self.venue!.id])
             let userRef = self.ref.child("users/\(self.user!.id)/groups/\(id.key)")
             userRef.setValue(true)

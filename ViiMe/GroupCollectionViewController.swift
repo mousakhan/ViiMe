@@ -28,15 +28,18 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         // Get all the groups
         self.getGroups(ids: self.ids as NSDictionary, completionHandler: { (isComplete, groups) in
             if (isComplete) {
                 self.groups = groups
                 self.collectionView?.reloadData()
                 self.users = []
+                // When the group's are done loading, get all the group owners
                 self.getOwners { (isComplete, owners) in
                     if (isComplete) {
                         self.owners = owners
+                        // When the group owners are done loading, get all the users
                         self.getUsers(completionHandler: { (isComplete, users) in
                             if (isComplete) {
                                 self.users.append(users as! Array<UserInfo>)
@@ -59,7 +62,6 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
         // This is to deal with the case where someone creates a group, then leaves the page. 
         // The group should be deleted unless it's to redeem a deal, or to invite someone, and
         // that's what the shouldDeleteGroups bool is keeping track of
@@ -119,7 +121,6 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         cell.cancelButton.layer.setValue(indexPath.section, forKey: "section")
         cell.cancelButton.addTarget(self, action: #selector(removeGroup(sender:)), for: .touchUpInside)
         
-    
         if (self.deals.count > 0 && (self.deals.count-1) >= indexPath.row) {
             cell.dealLabel.text = self.deals[indexPath.row].shortDescription
             cell.deal = self.deals[indexPath.row]
@@ -165,10 +166,12 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
             self.collectionView?.deleteItems(at: [indexPath])
         }, completion: { (isComplete) in
             
+            // Only remove the entire group if you're the owner
             if (self.user!.id == self.owners[row].id) {
                 Database.database().reference().child("groups/\(id)").removeValue()
                 Database.database().reference().child("users/\(self.user.id)/groups/\(id)").removeValue()
             } else {
+                // Else just remove yourself from the group
                 Database.database().reference().child("users/\(self.user.id)/groups/\(id)").removeValue()
             }
         })
@@ -216,15 +219,21 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                    
                     if (group["users"] != nil) {
                         let users = group["users"] as! Dictionary<String, Any>
+                        
+                        // Loop through all the user ids
                         for (key, val) in users {
                             var user = UserInfo(username: "", name: "", id: "'", age: "'", email: "", gender: "'", profile: "", status: "", groups: [String: Any](), friends: [])
                             
+                            // Check if the user value is true or false.
+                            // If it is false, the user is still in the invited status
                             if (!(val as! Bool)) {
                                 user.status = "Invited"
                             } else {
+                            // Else they have accepted
                                 user.status = "Accepted"
                             }
                             
+                            // Go into firebase and loop through every key for the user path
                             for child in snapshot.childSnapshot(forPath: key).children {
                                 let key = (child as! DataSnapshot).key
                                 if (key == "name") {
@@ -285,9 +294,11 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     // This'll fetch all the informationg relating to the groups of this venue for the user
     func getGroups(ids : NSDictionary, completionHandler: @escaping (_ isComplete: Bool, _ groups:Array<Any>) -> ()){
         var groups : Array<Any> = []
+        
         // Query for the groups of this venue
         var ref = Database.database().reference().child("groups").queryOrdered(byChild: "deal-id").queryEqual(toValue : self.deal!.id)
         
+        // If it is the group page, where all groups are shown, query by venue-id instead
         if (isGroupPage) {
             ref = Database.database().reference().child("groups").queryOrdered(byChild: "venue-id").queryEqual(toValue : self.venue!.id)
         }
@@ -295,7 +306,6 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         ref.observe(DataEventType.value, with:{ (snapshot: DataSnapshot) in
             groups = []
             for (key, _) in ids {
-
                 var dict = [String: Any]()
                 for child in snapshot.childSnapshot(forPath: key as! String).children {
                     let key = (child as! DataSnapshot).key
@@ -353,9 +363,9 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                 let recurringFrom = value?["recurring-from"] ?? ""
                 let recurringTo = value?["recurring-to"] ?? ""
                 
-                let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: self.parseDate(date: validFrom as! String), validTo: self.parseDate(date: validTo as! String), recurringFrom: self.parseTime(time: recurringFrom as! String), recurringTo: self.parseTime(time: recurringTo as! String))
+                let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: DateHelper.parseDate(date: validFrom as! String), validTo: DateHelper.parseDate(date: validTo as! String), recurringFrom: DateHelper.parseTime(time: recurringFrom as! String), recurringTo: DateHelper.parseTime(time: recurringTo as! String))
                 
-                if (self.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
+                if (DateHelper.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
                     self.deals.append(deal)
                 }
                 completionHandler(true)
@@ -363,58 +373,6 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         }
         
     }
-    
-    func parseDate(date : String) -> String {
-        let format = DateFormatter()
-        format.dateFormat = "yyyy-MM-dd'T'HH:mm"
-        let date = format.date(from: date)
-        format.dateFormat = "EEEE, MMM d, yyyy"
-        if (date != nil) {
-            var returnDate = format.string(from: date!)
-            format.dateFormat = "h:mm a"
-            returnDate = returnDate + " at " + format.string(from: date!)
-            return  returnDate
-        }
-        
-        return ""
-    }
-    
-    func parseTime(time : String) -> String {
-        let format = DateFormatter()
-        format.dateFormat = "HH:mm"
-        let time = format.date(from: time)
-        format.dateFormat =  "h:mm a"
-        if (time != nil) {
-            return format.string(from: time!)
-        }
-        
-        return ""
-    }
-    
-    func checkDateValidity(validFrom: String, validTo: String, recurringFrom: String, recurringTo: String) -> Bool {
-        if (validFrom != "" && validTo != "") {
-            let date = Date()
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
-            let result = formatter.string(from: date)
-            let currentDate = formatter.date(from: result)!
-            let dealFirstDate = formatter.date(from: validFrom)!
-            let dealLastDate = formatter.date(from: validTo)!
-            if (recurringFrom != "" && recurringTo != "") {
-                let date = Date()
-                let formatter = DateFormatter()
-                formatter.dateFormat = "HH:mm"
-                let result = formatter.string(from: date)
-                let currentTime = formatter.date(from: result)!
-                let dealFirstTime = formatter.date(from: recurringFrom)!
-                let dealLastTime = formatter.date(from: recurringTo)!
-                return currentDate > dealFirstDate && currentDate < dealLastDate && currentTime > dealFirstTime && currentTime < dealLastTime
-            }
-            return currentDate > dealFirstDate && currentDate < dealLastDate
-        }
-        return false
-    }
-
     
     
     // MARK: - Navigation

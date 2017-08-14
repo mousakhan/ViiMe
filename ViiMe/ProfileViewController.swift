@@ -432,26 +432,33 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     }
     
     func getDeal(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
-        print("Deal " + id)
         if (id != "") {
             Database.database().reference().child("deal/\(id)").observe(DataEventType.value, with: { (snapshot) in
-                let deal = snapshot.value as? NSDictionary
-                let title = deal?["title"] ?? ""
-                let numberOfPeople = deal?["number-of-people"] ?? ""
-                let id = deal?["id"] ?? ""
+                let value = snapshot.value as? NSDictionary
+                let title = value?["title"] ?? ""
+                let shortDescription = value?["short-description"] ?? ""
+                let longDescription = value?["long-description"] ?? ""
+                let numberOfPeople = value?["number-of-people"] ?? ""
+                let id = value?["id"] ?? ""
+                let validFrom = value?["valid-from"] ?? ""
+                let validTo = value?["valid-to"] ?? ""
+                let recurringFrom = value?["recurring-from"] ?? ""
+                let recurringTo = value?["recurring-to"] ?? ""
                 
-                let dealInfo = Deal(title: title as! String, shortDescription: "", longDescription: "", id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: "", validTo: "", recurringFrom: "", recurringTo: "")
+                let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: DateHelper.parseDate(date: validFrom as! String), validTo: DateHelper.parseDate(date: validTo as! String), recurringFrom: DateHelper.parseTime(time: recurringFrom as! String), recurringTo: DateHelper.parseTime(time: recurringTo as! String))
                 
-                self.deals.append(dealInfo)
+                if (DateHelper.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
+                    self.deals.append(deal)
+                }
                 completionHandler(true)
             })
         }
         
     }
     
+    
     func getVenue(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
         if (id != "") {
-            print(id)
             Database.database().reference().child("venue/\(id)").observe(DataEventType.value, with: { (snapshot) in
                 let value = snapshot.value as? NSDictionary
                 let name = value?["name"] ?? ""
@@ -465,7 +472,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 let number = value?["number"] ?? " "
                 let type = value?["type"] ?? ""
                 let deals = value?["deals"] ?? {}
-                let profile = value?["profileUrl"] ?? ""
+                let profile = value?["logo"] ?? ""
                 let venue = Venue(name: name as! String, id: id as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
                 self.venues.append(venue)
                 completionHandler(true)

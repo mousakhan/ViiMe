@@ -35,6 +35,7 @@
 		4CD8E1CF1EEB661B009C3FD0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */; };
 		4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */; };
 		4CF360FB1F3FEA3300E14EB1 /* RedemptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF360FA1F3FEA3200E14EB1 /* RedemptionViewController.swift */; };
+		4CF360FD1F41448900E14EB1 /* DateHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF360FC1F41448900E14EB1 /* DateHelper.swift */; };
 		4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFA46CC1EEBD2EE008BDF8F /* ForgotPasswordController.swift */; };
 		A75F914523E7601419AB1C2F /* Pods_ViiMe.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91F5863EEE27A9C74733223C /* Pods_ViiMe.framework */; };
 /* End PBXBuildFile section */
@@ -70,7 +71,9 @@
 		4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueCollectionViewCell.swift; sourceTree = "<group>"; };
 		4CF360FA1F3FEA3200E14EB1 /* RedemptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RedemptionViewController.swift; sourceTree = "<group>"; };
+		4CF360FC1F41448900E14EB1 /* DateHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateHelper.swift; sourceTree = "<group>"; };
 		4CFA46CC1EEBD2EE008BDF8F /* ForgotPasswordController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordController.swift; sourceTree = "<group>"; };
+		4CFFF2461F41528F00AB05F3 /* ViiMe.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ViiMe.entitlements; sourceTree = "<group>"; };
 		5912848828A13E7FC084CBA3 /* Pods-ViiMe.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ViiMe.release.xcconfig"; path = "Pods/Target Support Files/Pods-ViiMe/Pods-ViiMe.release.xcconfig"; sourceTree = "<group>"; };
 		91F5863EEE27A9C74733223C /* Pods_ViiMe.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ViiMe.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9C08C15543500E5B053732B /* Pods-ViiMe.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ViiMe.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ViiMe/Pods-ViiMe.debug.xcconfig"; sourceTree = "<group>"; };
@@ -134,6 +137,7 @@
 				4C75AE851F3788BD002E518E /* String+Emoji.swift */,
 				4C50CE4D1F395F3A00781ACD /* UIView+Border.swift */,
 				4C8C0FAB1F3BA9F300B23D37 /* CALayer+BorderProperties.swift */,
+				4CF360FC1F41448900E14EB1 /* DateHelper.swift */,
 			);
 			name = "Helper Classes";
 			sourceTree = "<group>";
@@ -159,6 +163,7 @@
 		4C7EDDFF1EEB01BD001A9B81 /* ViiMe */ = {
 			isa = PBXGroup;
 			children = (
+				4CFFF2461F41528F00AB05F3 /* ViiMe.entitlements */,
 				4C75AE831F36BFEB002E518E /* Assets.xcassets */,
 				4CB6AD771F2CC573004EB393 /* Data Model */,
 				4C02DE2E1F1EA052002AA78C /* Login & Signup  */,
@@ -271,6 +276,11 @@
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 3L8HKMPJ68;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -394,6 +404,7 @@
 				4C7DB2961EEEA62C00765D3A /* ValidationHelper.swift in Sources */,
 				4C7DB2941EEEA55E00765D3A /* TextFieldHelper.swift in Sources */,
 				4CB6AD701F2BC779004EB393 /* DealsViewController.swift in Sources */,
+				4CF360FD1F41448900E14EB1 /* DateHelper.swift in Sources */,
 				4C1AB9561F35CC4400855189 /* AddFriendTableViewController.swift in Sources */,
 				4CB6AD601F2A3F91004EB393 /* FriendsTableViewController.swift in Sources */,
 				4CB6AD761F2CC2CF004EB393 /* UserInfo.swift in Sources */,
@@ -521,6 +532,7 @@
 			baseConfigurationReference = A9C08C15543500E5B053732B /* Pods-ViiMe.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ViiMe/ViiMe.entitlements;
 				DEVELOPMENT_TEAM = 3L8HKMPJ68;
 				INFOPLIST_FILE = ViiMe/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -536,6 +548,7 @@
 			baseConfigurationReference = 5912848828A13E7FC084CBA3 /* Pods-ViiMe.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ViiMe/ViiMe.entitlements;
 				DEVELOPMENT_TEAM = 3L8HKMPJ68;
 				INFOPLIST_FILE = ViiMe/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;

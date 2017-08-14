@@ -812,7 +812,7 @@
                                 <action selector="dismissProfilePage:" destination="nMK-oK-2pX" id="kat-Aq-66s"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="group" id="gSM-v6-F3d">
+                        <barButtonItem key="rightBarButtonItem" image="contacts" id="gSM-v6-F3d">
                             <inset key="imageInsets" minX="12" minY="12" maxX="12" maxY="12"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
@@ -1295,7 +1295,7 @@
         <scene sceneID="83q-MG-e7s">
             <objects>
                 <collectionViewController storyboardIdentifier="GroupCollectionViewController" id="8O3-da-ifR" customClass="GroupCollectionViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" prefetchingEnabled="NO" id="V2E-Ax-B1C">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" prefetchingEnabled="NO" id="V2E-Ax-B1C">
                         <rect key="frame" x="0.0" y="64" width="414" height="672"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1426,7 +1426,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="2iz-ff-PRD"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <state key="normal" title="REDEEM">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -1484,6 +1484,7 @@
         <image name="ViiMe" width="1280" height="980"/>
         <image name="address" width="50" height="50"/>
         <image name="cancel" width="50" height="50"/>
+        <image name="contacts" width="26" height="26"/>
         <image name="group" width="50" height="50"/>
         <image name="phone" width="64" height="64"/>
         <image name="profile" width="50" height="50"/>

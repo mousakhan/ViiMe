@@ -277,8 +277,6 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         return UIEdgeInsetsMake(0, 14, 0, 14)
     }
     
-    //MARK: Helper functions
-    
     func redeem(sender: UIButton) {
         let row : Int = (sender.layer.value(forKey: "row")) as! Int
         delegate?.redeem(index: row)

@@ -198,8 +198,11 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 let value = rest.value as? NSDictionary
                 let name = value?["name"] ?? ""
                 let id = value?["id"] ?? ""
-                let cuisines = value?["cuisine"] ?? []
-                let cuisine = (cuisines as AnyObject).components(separatedBy: ",")[0]
+                let cuisines = value?["cuisine"] ?? ""
+                var cuisine = ""
+                if (cuisines as! String != ""){
+                    cuisine = (cuisines as AnyObject).components(separatedBy: ",")[0]
+                }
                 let description = value?["description"] ?? ""
                 let price = value?["price"] ?? ""
                 let address = value?["address"] ?? ""
@@ -209,10 +212,12 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 let deals = value?["deals"] ?? {}
       
                 //TODO: change this naming in the back-end
-                let profile = value?["profileUrl"] ?? ""
+                let profile = value?["logo"] ?? ""
                 var venue = Venue(name: name as! String, id: id as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
-                self.getDeals(ids: deals as! NSDictionary, completionHandler: { (isComplete, deals) in
+                if let deals = deals as? NSDictionary {
+                self.getDeals(ids: deals , completionHandler: { (isComplete, deals) in
                     if (isComplete) {
+                        print(deals)
                         venue.deals = deals
                         
                         self.venues.append(venue)
@@ -222,7 +227,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                         
                         for venue in self.venues.reversed() {
                             if !seen.contains(venue.id) {
-                                unique.insert(venue, at: 0)
+                                    unique.insert(venue, at: 0)
                                 seen.insert(venue.id)
                             }
                         }
@@ -233,6 +238,10 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                     }
                 })
                 self.collectionView?.reloadData()
+                }
+                else {
+                    
+                }
             }
         })
         
@@ -254,9 +263,9 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                     let recurringFrom = value?["recurring-from"] ?? ""
                     let recurringTo = value?["recurring-to"] ?? ""
                 
-                    let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: self.parseDate(date: validFrom as! String), validTo: self.parseDate(date: validTo as! String), recurringFrom: self.parseTime(time: recurringFrom as! String), recurringTo: self.parseTime(time: recurringTo as! String))
+                    let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: DateHelper.parseDate(date: validFrom as! String), validTo: DateHelper.parseDate(date: validTo as! String), recurringFrom: DateHelper.parseTime(time: recurringFrom as! String), recurringTo: DateHelper.parseTime(time: recurringTo as! String))
                 
-                if (self.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
+                if (DateHelper.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
                     deals.append(deal)
                 }
                 
@@ -265,56 +274,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         }
     }
     
-    func parseDate(date : String) -> String {
-        let format = DateFormatter()
-        format.dateFormat = "yyyy-MM-dd'T'HH:mm"
-        let date = format.date(from: date)
-        format.dateFormat = "EEEE, MMM d, yyyy"
-        if (date != nil) {
-            var returnDate = format.string(from: date!)
-            format.dateFormat = "h:mm a"
-            returnDate = returnDate + " at " + format.string(from: date!)
-            return  returnDate
-        }
-        
-        return ""
-    }
     
-    func parseTime(time : String) -> String {
-        let format = DateFormatter()
-        format.dateFormat = "HH:mm"
-        let time = format.date(from: time)
-        format.dateFormat =  "h:mm a"
-        if (time != nil) {
-            return format.string(from: time!)
-        }
-        
-        return ""
-    }
-    
-    func checkDateValidity(validFrom: String, validTo: String, recurringFrom: String, recurringTo: String) -> Bool {
-        if (validFrom != "" && validTo != "") {
-            let date = Date()
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
-            let result = formatter.string(from: date)
-            let currentDate = formatter.date(from: result)!
-            let dealFirstDate = formatter.date(from: validFrom)!
-            let dealLastDate = formatter.date(from: validTo)!
-            if (recurringFrom != "" && recurringTo != "") {
-                let date = Date()
-                let formatter = DateFormatter()
-                formatter.dateFormat = "HH:mm"
-                let result = formatter.string(from: date)
-                let currentTime = formatter.date(from: result)!
-                let dealFirstTime = formatter.date(from: recurringFrom)!    
-                let dealLastTime = formatter.date(from: recurringTo)!
-                return currentDate > dealFirstDate && currentDate < dealLastDate && currentTime > dealFirstTime && currentTime < dealLastTime
-            }
-            return currentDate > dealFirstDate && currentDate < dealLastDate
-        }
-        return false
-    }
+
 
     
     // This will take an addrse and calculate the distance between the two points, and will return the distance as a string

@@ -9,6 +9,7 @@ target 'ViiMe' do
   pod 'Crashlytics'
   pod 'Firebase/Storage'
   pod 'ImagePicker'
+  pod 'Firebase/Messaging'
   pod 'Firebase/Core'
   pod 'Firebase/Auth’
   pod 'FacebookCore'
