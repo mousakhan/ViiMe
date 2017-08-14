@@ -9,6 +9,7 @@
 import UIKit
 import ChameleonFramework
 import SCLAlertView
+import Firebase
 
 protocol UserCollectionViewCellDelegate {
     func invite(index : Int, deal: Deal)
