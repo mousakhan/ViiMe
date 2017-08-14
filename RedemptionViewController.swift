@@ -37,7 +37,21 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         cancelButton.tintColor = UIColor.white
         
         
-        self.dealTitleLabel.text = deal.title
+        self.dealTitleLabel.text = deal.shortDescription
+        
+        // Create the message to show
+        var subTitle = "Valid from \(deal.validFrom) to \(deal.validTo)"
+        
+        let recurringTo = deal.recurringTo
+        let recurringFrom = deal.recurringFrom
+        
+        // If it's a deal that only recurs from certain times, show it
+        if (recurringTo != "" && recurringFrom != "") {
+            subTitle = subTitle + "\nOnly available from \(recurringFrom) to \(recurringTo) during these dates"
+        }
+        
+        self.dealDescriptionLabel.text = subTitle
+        
         collectionView.delegate  = self
         collectionView.dataSource = self
         

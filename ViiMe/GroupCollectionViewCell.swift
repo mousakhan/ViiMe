@@ -155,7 +155,6 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reusableIdentifier, for: indexPath) as! UserCollectionViewCell
         cell.tag = groupTag
         cell.profilePicture.image = nil
-        cell.isUserInteractionEnabled = false
         
         if (owner != nil && indexPath.row == 0) {
             let name =  owner?.name
@@ -170,6 +169,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
             cell.nameLabel.text = name
             cell.profilePicture.contentMode = .scaleToFill
             cell.statusLabel.text = "Group Owner"
+            cell.isUserInteractionEnabled = false
         } else if (self.users.count > 0) {
             if ((self.users.count) >= indexPath.row) {
                 let index = indexPath.row - 1
@@ -185,6 +185,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                 cell.nameLabel.text = name
                 cell.profilePicture.contentMode = .scaleToFill
                 cell.isUserInteractionEnabled = true
+                
                 if (owner?.id != self.user?.id) {
                     cell.isUserInteractionEnabled = false
                 }
@@ -195,6 +196,9 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                 
                 if (self.users[index].status != "") {
                     cell.statusLabel.text = self.users[index].status
+                    if (self.users[index].status == "Accepted") {
+                        cell.isUserInteractionEnabled = false
+                    }
                 }
             } else {
                 cell.nameLabel.text = "Invite"
@@ -206,6 +210,8 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                 if (owner?.id != self.user?.id) {
                     cell.isUserInteractionEnabled = false
                 }
+                
+                cell.statusLabel.text = ""
             }
         } else {
             cell.nameLabel.text = "Invite"
@@ -218,6 +224,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
             if (owner?.id != self.user?.id) {
                 cell.isUserInteractionEnabled = false
             }
+            cell.statusLabel.text = ""
         }
         
         return cell

@@ -28,7 +28,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     var currCoordinate = CLLocation(latitude: 0.0, longitude: 0.0)
     var filteredVenues = [Venue]()
     var venues = [Venue]()
-    
+    var deals = [Deal]()
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -190,7 +190,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     //MARK: Helpers
     func initVenues () {
-        let ref = Database.database().reference().child("venue/")
+        let ref = Database.database().reference().child("venue")
         ref.observe(DataEventType.value, with: { (snapshot) in
             self.venues = []
             let enumerator = snapshot.children
@@ -214,7 +214,21 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 self.getDeals(ids: deals as! NSDictionary, completionHandler: { (isComplete, deals) in
                     if (isComplete) {
                         venue.deals = deals
+                        
                         self.venues.append(venue)
+                        
+                        var seen = Set<String>()
+                        var unique = [Venue]()
+                        
+                        for venue in self.venues.reversed() {
+                            if !seen.contains(venue.id) {
+                                unique.insert(venue, at: 0)
+                                seen.insert(venue.id)
+                            }
+                        }
+                        
+                        self.venues = unique
+                        
                         self.collectionView?.reloadData()
                     }
                 })
@@ -230,8 +244,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             let ref = Database.database().reference().child("deal/\(key)")
             ref.observe( DataEventType.value, with: { snapshot in
                     let value = snapshot.value as? NSDictionary
-                    // Change the dict keys when back-end is updated with proper values
-                    let title = value?["name"] ?? ""
+                    let title = value?["title"] ?? ""
                     let shortDescription = value?["short-description"] ?? ""
                     let longDescription = value?["long-description"] ?? ""
                     let numberOfPeople = value?["number-of-people"] ?? ""
@@ -242,8 +255,12 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                     let recurringTo = value?["recurring-to"] ?? ""
                 
                     let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: self.parseDate(date: validFrom as! String), validTo: self.parseDate(date: validTo as! String), recurringFrom: self.parseTime(time: recurringFrom as! String), recurringTo: self.parseTime(time: recurringTo as! String))
+                
+                if (self.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
                     deals.append(deal)
-                    completionHandler(true, deals)
+                }
+                
+                completionHandler(true, deals)
             })
         }
     }
@@ -274,6 +291,31 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
         return ""
     }
+    
+    func checkDateValidity(validFrom: String, validTo: String, recurringFrom: String, recurringTo: String) -> Bool {
+        if (validFrom != "" && validTo != "") {
+            let date = Date()
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+            let result = formatter.string(from: date)
+            let currentDate = formatter.date(from: result)!
+            let dealFirstDate = formatter.date(from: validFrom)!
+            let dealLastDate = formatter.date(from: validTo)!
+            if (recurringFrom != "" && recurringTo != "") {
+                let date = Date()
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm"
+                let result = formatter.string(from: date)
+                let currentTime = formatter.date(from: result)!
+                let dealFirstTime = formatter.date(from: recurringFrom)!    
+                let dealLastTime = formatter.date(from: recurringTo)!
+                return currentDate > dealFirstDate && currentDate < dealLastDate && currentTime > dealFirstTime && currentTime < dealLastTime
+            }
+            return currentDate > dealFirstDate && currentDate < dealLastDate
+        }
+        return false
+    }
+
     
     // This will take an addrse and calculate the distance between the two points, and will return the distance as a string
     func setDistance(address : String, completionHandler: @escaping (_ isComplete: Bool, _ distance: String) -> ()) {

@@ -18,15 +18,16 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     var groups : Array<Any> = []
     var users : [[UserInfo]]! = []
     var owners: Array<UserInfo>! = []
-    var deal: Deal!
+    var deal: Deal! = nil
+    var deals: Array<Deal>! = []
     var venue : Venue!
     var user : UserInfo!
     var shouldDeleteGroups = true
+    var isGroupPage = false
     
+    //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
         // Get all the groups
         self.getGroups(ids: self.ids as NSDictionary, completionHandler: { (isComplete, groups) in
             if (isComplete) {
@@ -56,10 +57,12 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     }
     
     
-    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
+        // This is to deal with the case where someone creates a group, then leaves the page. 
+        // The group should be deleted unless it's to redeem a deal, or to invite someone, and
+        // that's what the shouldDeleteGroups bool is keeping track of
         if (shouldDeleteGroups) {
             for (index, group) in self.groups.enumerated() {
                 var dict = group as! Dictionary<String, Any>
@@ -72,14 +75,15 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                 }
             }
             
+            // Filter out any empty groups
             self.groups = self.groups.filter { ($0 as AnyObject).count > 0 }
             shouldDeleteGroups = true
         }
     }
     
-    // This is for when you invite someone, and go back to the groups page
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // This is for when you invite someone, and go back to the groups page
         self.collectionView?.reloadData()
     }
     
@@ -107,7 +111,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! GroupCollectionViewCell
         
         cell.delegate = self
-        
+        cell.redeemButton.isEnabled = false
         
         // Set the index value for the cancel and redeem button, so we know which group is being removed
         cell.redeemButton.layer.setValue(indexPath.row, forKey: "row")
@@ -115,25 +119,28 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         cell.cancelButton.layer.setValue(indexPath.section, forKey: "section")
         cell.cancelButton.addTarget(self, action: #selector(removeGroup(sender:)), for: .touchUpInside)
         
-        cell.dealLabel.text = self.deal.title
-        cell.deal = deal
-        
-        if (cell.deal!.numberOfPeople != ""){
-            cell.numOfPeople = Int(cell.deal!.numberOfPeople)!
-        } else {
-            cell.numOfPeople = 1
+    
+        if (self.deals.count > 0 && (self.deals.count-1) >= indexPath.row) {
+            cell.dealLabel.text = self.deals[indexPath.row].shortDescription
+            cell.deal = self.deals[indexPath.row]
+            if (self.deals[indexPath.row].numberOfPeople != ""){
+                cell.numOfPeople = Int(cell.deal!.numberOfPeople)! 
+            } else {
+                cell.numOfPeople = 1
+            }
         }
-     
+        
         if (self.owners.count > 0 && self.users.count == 0 ) {
             cell.owner = self.owners[indexPath.row]
         } else if (self.users.count > 0) {
             let foundItems = self.users[indexPath.row].filter { ($0 ).status == "Accepted"}
-            if ( (foundItems.count + 1) == cell.numOfPeople && self.owners[indexPath.row].id == self.user.id) {
+            if ( (foundItems.count + 1) == cell.numOfPeople && self.owners[indexPath.row].id == self.user.id && self.owners[indexPath.row].id == self.user.id) {
                 cell.redeemButton.isEnabled = true
             }
             cell.owner = self.owners[indexPath.row]
             cell.users = self.users[indexPath.row]
         }
+        
         
 
         cell.usersCollectionView.reloadData()
@@ -157,24 +164,14 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
             self.groups.remove(at: row)
             self.collectionView?.deleteItems(at: [indexPath])
         }, completion: { (isComplete) in
-            Database.database().reference().child("groups/\(id)").removeValue()
-            Database.database().reference().child("users/\(self.user.id)/groups/\(id)").removeValue()
+            
+            if (self.user!.id == self.owners[row].id) {
+                Database.database().reference().child("groups/\(id)").removeValue()
+                Database.database().reference().child("users/\(self.user.id)/groups/\(id)").removeValue()
+            } else {
+                Database.database().reference().child("users/\(self.user.id)/groups/\(id)").removeValue()
+            }
         })
-        
-        
-        
-        
-        //        self.getUsers(index: i-1) { (isComplete, users) in
-        //            if (isComplete) {
-        //                for user in users {
-        //                    Database.database().reference().child("users/\((user as! UserInfo).id )/groups/\(id)").removeValue()
-        //                }
-        //                Database.database().reference().child("users/\(self.user.id)/groups/\(id)").removeValue()
-        //                //             self.collectionView?.reloadData()
-        //            }
-        //        }
-        //
-        
     }
     
     
@@ -184,6 +181,8 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         return CGSize(width: view.frame.width - 30, height: 180)
     }
     
+    
+    //MARK: UserCollectionViewCellDelegate
     func invite(index : Int, deal : Deal) {
         self.performSegue(withIdentifier: "FriendsTableVewControllerSegue", sender: [deal, self.groups[index]])
     }
@@ -209,11 +208,12 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     
     func getUsers(completionHandler: @escaping (_ isComplete: Bool, _ users:Array<Any>) -> ()) {
         if (self.groups.count > 0) {
-            Database.database().reference().child("users").observe(DataEventType.value, with: { (snapshot) in
+            Database.database().reference().child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                 self.users = []
                 for val in self.groups {
                     var group = val as! Dictionary<String, Any>
                     var userInfos : Array<UserInfo> = []
+                   
                     if (group["users"] != nil) {
                         let users = group["users"] as! Dictionary<String, Any>
                         for (key, val) in users {
@@ -253,7 +253,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     func getOwners(completionHandler: @escaping (_ isComplete: Bool, _ owner: Array<UserInfo>) -> ()) {
         let ref = Database.database().reference().child("users")
         var owners : Array<UserInfo> = []
-        ref.observe(DataEventType.value, with:{ (snapshot: DataSnapshot) in
+        ref.observeSingleEvent(of: DataEventType.value, with:{ (snapshot: DataSnapshot) in
             owners = []
             for val in self.groups {
                 var group = val as! Dictionary<String, Any>
@@ -286,17 +286,25 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     func getGroups(ids : NSDictionary, completionHandler: @escaping (_ isComplete: Bool, _ groups:Array<Any>) -> ()){
         var groups : Array<Any> = []
         // Query for the groups of this venue
-        let ref = Database.database().reference().child("groups").queryOrdered(byChild: "deal").queryEqual(toValue : self.deal!.id)
+        var ref = Database.database().reference().child("groups").queryOrdered(byChild: "deal-id").queryEqual(toValue : self.deal!.id)
+        
+        if (isGroupPage) {
+            ref = Database.database().reference().child("groups").queryOrdered(byChild: "venue-id").queryEqual(toValue : self.venue!.id)
+        }
+        
         ref.observe(DataEventType.value, with:{ (snapshot: DataSnapshot) in
             groups = []
             for (key, _) in ids {
+
                 var dict = [String: Any]()
                 for child in snapshot.childSnapshot(forPath: key as! String).children {
                     let key = (child as! DataSnapshot).key
-                    
-                    if (key == "deal") {
+               
+                    if (key == "deal-id") {
                         let value = (child as! DataSnapshot).value as! String
-                        dict["deal"] = value
+                        dict["deal-id"] = value
+                        self.getDeal(id: value, completionHandler: { (isComplete) in
+                        })
                     } else if (key == "id") {
                         let value = (child as! DataSnapshot).value as! String
                         dict["id"] = value
@@ -312,18 +320,101 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                     } else if (key == "owner") {
                         let value = (child as! DataSnapshot).value as! String
                         dict["owner"] = value
+                    } else if (key == "venue-id") {
+                        let value = (child as! DataSnapshot).value as! String
+                        dict["venue-id"] = value
                     }
                 }
                 
                 if (dict.count > 0) {
                     groups.append(dict)
-                    groups = groups.sorted { (($0 as! Dictionary<String, Any>)["created"] as! Int)  > (($1 as! Dictionary<String, Any>)["created"] as! Int) }
+                    if (!self.isGroupPage) {
+                        groups = groups.sorted { (($0 as! Dictionary<String, Any>)["created"] as! Int)  > (($1 as! Dictionary<String, Any>)["created"] as! Int) }
+                    }
+                    
                 }
             }
             completionHandler(true, groups)
         })
         
     }
+    
+    func getDeal(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
+        if (id != "") {
+            Database.database().reference().child("deal/\(id)").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+                let value = snapshot.value as? NSDictionary
+                let title = value?["title"] ?? ""
+                let shortDescription = value?["short-description"] ?? ""
+                let longDescription = value?["long-description"] ?? ""
+                let numberOfPeople = value?["number-of-people"] ?? ""
+                let id = value?["id"] ?? ""
+                let validFrom = value?["valid-from"] ?? ""
+                let validTo = value?["valid-to"] ?? ""
+                let recurringFrom = value?["recurring-from"] ?? ""
+                let recurringTo = value?["recurring-to"] ?? ""
+                
+                let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: self.parseDate(date: validFrom as! String), validTo: self.parseDate(date: validTo as! String), recurringFrom: self.parseTime(time: recurringFrom as! String), recurringTo: self.parseTime(time: recurringTo as! String))
+                
+                if (self.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
+                    self.deals.append(deal)
+                }
+                completionHandler(true)
+            })
+        }
+        
+    }
+    
+    func parseDate(date : String) -> String {
+        let format = DateFormatter()
+        format.dateFormat = "yyyy-MM-dd'T'HH:mm"
+        let date = format.date(from: date)
+        format.dateFormat = "EEEE, MMM d, yyyy"
+        if (date != nil) {
+            var returnDate = format.string(from: date!)
+            format.dateFormat = "h:mm a"
+            returnDate = returnDate + " at " + format.string(from: date!)
+            return  returnDate
+        }
+        
+        return ""
+    }
+    
+    func parseTime(time : String) -> String {
+        let format = DateFormatter()
+        format.dateFormat = "HH:mm"
+        let time = format.date(from: time)
+        format.dateFormat =  "h:mm a"
+        if (time != nil) {
+            return format.string(from: time!)
+        }
+        
+        return ""
+    }
+    
+    func checkDateValidity(validFrom: String, validTo: String, recurringFrom: String, recurringTo: String) -> Bool {
+        if (validFrom != "" && validTo != "") {
+            let date = Date()
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+            let result = formatter.string(from: date)
+            let currentDate = formatter.date(from: result)!
+            let dealFirstDate = formatter.date(from: validFrom)!
+            let dealLastDate = formatter.date(from: validTo)!
+            if (recurringFrom != "" && recurringTo != "") {
+                let date = Date()
+                let formatter = DateFormatter()
+                formatter.dateFormat = "HH:mm"
+                let result = formatter.string(from: date)
+                let currentTime = formatter.date(from: result)!
+                let dealFirstTime = formatter.date(from: recurringFrom)!
+                let dealLastTime = formatter.date(from: recurringTo)!
+                return currentDate > dealFirstDate && currentDate < dealLastDate && currentTime > dealFirstTime && currentTime < dealLastTime
+            }
+            return currentDate > dealFirstDate && currentDate < dealLastDate
+        }
+        return false
+    }
+
     
     
     // MARK: - Navigation
@@ -338,7 +429,8 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         } else if (segue.identifier == "RedemptionViewControllerSegue") {
             let destVC = segue.destination as? RedemptionViewController
             let index = sender as! Int
-            destVC?.deal = self.deal
+
+            destVC?.deal = self.deals[index]
             destVC?.venue = self.venue
             destVC?.owner = self.owners[index]
             destVC?.users = self.users[index]

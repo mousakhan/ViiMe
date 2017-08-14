@@ -30,7 +30,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     var userInfo : UserInfo!
     var groups : Array<Any>! = []
     var deals : Array<Deal>! = []
+    var deal : Deal! = nil
     var venues : Array<Venue>! = []
+    var venue : Venue! = nil
     var benefits : Array<Any>! = []
     let genders = ["", "Male", "Female"]
     var profileURL = ""
@@ -41,6 +43,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         super.viewDidLoad()
         
         self.view.backgroundColor = FlatBlack()
+        self.navigationController?.navigationBar.tintColor = FlatWhite()
         
         user = Auth.auth().currentUser
         ref = Database.database().reference()
@@ -98,16 +101,29 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         cell.backgroundColor = FlatBlack()
         cell.textLabel?.textColor  = FlatWhite()
-        
         if (self.deals.count > 0) {
-            cell.textLabel?.text = self.deals[indexPath.row].title
-            print(self.venues)
-            if (self.venues.count > 0) {
-                cell.detailTextLabel?.text = self.venues[indexPath.row].name
-            }
+            cell.textLabel?.text = self.deals[indexPath.row].shortDescription
+            cell.textLabel?.lineBreakMode = .byWordWrapping
+            cell.textLabel?.numberOfLines = 0
+            cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
         }
+        
+        let bgColorView = UIView()
+        bgColorView.backgroundColor = FlatPurpleDark()
+        cell.selectedBackgroundView = bgColorView
+        
+        
         return cell
         
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if (tableView == self.benefitsTableView) {
+            self.deal = self.deals[indexPath.row]
+            self.venue = self.venues[indexPath.row]
+            tableView.deselectRow(at: tableView.indexPathForSelectedRow!, animated: true)
+            self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
+        }
     }
     
     //MARK: Image Picker
@@ -368,9 +384,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 var dict = [String: Any]()
                 for child in snapshot.childSnapshot(forPath: key ).children {
                     let key = (child as! DataSnapshot).key
-                    if (key == "deal") {
+                    if (key == "deal-id") {
                         let value = (child as! DataSnapshot).value as! String
-                        dict["deal"] = value
+                        dict["deal-id"] = value
                         self.getDeal(id: value, completionHandler: { (isComplete) in
     
                             if (isComplete) {
@@ -392,9 +408,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                     } else if (key == "owner") {
                         let value = (child as! DataSnapshot).value as! String
                         dict["owner"] = value
-                    } else if (key == "venueId") {
+                    } else if (key == "venue-id") {
                         let value = (child as! DataSnapshot).value as! String
-                        dict["venue"] = value
+                        dict["venue-id"] = value
                         self.getVenue(id: value, completionHandler: { (isComplete) in
                             if (isComplete) {
                                 self.benefitsTableView.reloadData()
@@ -416,11 +432,11 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     }
     
     func getDeal(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
+        print("Deal " + id)
         if (id != "") {
             Database.database().reference().child("deal/\(id)").observe(DataEventType.value, with: { (snapshot) in
                 let deal = snapshot.value as? NSDictionary
-                //TODO: Change this to 'title'
-                let title = deal?["name"] ?? ""
+                let title = deal?["title"] ?? ""
                 let numberOfPeople = deal?["number-of-people"] ?? ""
                 let id = deal?["id"] ?? ""
                 
@@ -435,6 +451,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     
     func getVenue(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
         if (id != "") {
+            print(id)
             Database.database().reference().child("venue/\(id)").observe(DataEventType.value, with: { (snapshot) in
                 let value = snapshot.value as? NSDictionary
                 let name = value?["name"] ?? ""
@@ -449,7 +466,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 let type = value?["type"] ?? ""
                 let deals = value?["deals"] ?? {}
                 let profile = value?["profileUrl"] ?? ""
-                var venue = Venue(name: name as! String, id: id as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
+                let venue = Venue(name: name as! String, id: id as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
                 self.venues.append(venue)
                 completionHandler(true)
             })
@@ -498,10 +515,14 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     // MARK: Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "FriendsTableViewControllerSegue") {
-//            let destVC = segue.destination as? FriendsTableViewController
-//            destVC?.user = self.userInfo
+        if (segue.identifier == "GroupCollectionViewSegue") {
+            let destVC = segue.destination as? GroupCollectionViewController
+            destVC?.ids = self.userInfo!.groups
+            destVC?.venue = self.venue!
+            destVC?.deal = self.deal!
+            destVC?.user = self.userInfo!
         }
     }
+    
 
 }

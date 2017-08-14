@@ -15,10 +15,11 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     let reuseIdentifier = "UITableViewCell"
     var venue : Venue?
-    var deal : Deal?
+    var deal : Deal? = nil
     var user : UserInfo?
     var ref: DatabaseReference!
     var groups: Array<Any>?
+    var deals : Array<Deal>?
     
     @IBOutlet weak var venueInfoView: UIView!
     @IBOutlet weak var aboutThisVenueLabel: UILabel!
@@ -46,7 +47,9 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         setupUser()
         initDealsView()
+ 
     }
+    
     
     
     //MARK: UITableView DataSource
@@ -69,7 +72,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
         
         cell.backgroundColor = FlatBlackDark()
-        cell.textLabel?.text = venue?.deals[indexPath.row].title
+        cell.textLabel?.text = venue?.deals[indexPath.row].shortDescription
         cell.textLabel?.textColor = FlatWhite()
         cell.textLabel?.lineBreakMode = .byWordWrapping
         cell.textLabel?.numberOfLines = 0
@@ -83,8 +86,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        
         // Create custom alert view
         let appearance = SCLAlertView.SCLAppearance(
             kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
@@ -101,11 +102,12 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let groupRef = self.ref.child("groups")
             let id = groupRef.childByAutoId()
             
-            self.ref.child("groups/\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue": self.venue!.id])
+            self.ref.child("groups/\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue-id": self.venue!.id])
             let userRef = self.ref.child("users/\(self.user!.id)/groups/\(id.key)")
             userRef.setValue(true)
             
             self.user!.groups[id.key] = true
+            
             self.deal = self.venue!.deals[indexPath.row]
             
             self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
@@ -115,8 +117,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         
         // Create the message to show
-        let title = "Create Group"
-        var subTitle = "\(venue!.deals[indexPath.row].title) \n\n Valid from \(venue!.deals[indexPath.row].validFrom) to \(venue!.deals[indexPath.row].validTo)"
+        let title = venue!.deals[indexPath.row].title
+        var subTitle = "\(venue!.deals[indexPath.row].shortDescription) \n\n Valid from \(venue!.deals[indexPath.row].validFrom) to \(venue!.deals[indexPath.row].validTo)"
         
         let recurringTo = venue!.deals[indexPath.row].recurringTo
         let recurringFrom = venue!.deals[indexPath.row].recurringFrom
@@ -136,8 +138,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         imageView.image = imageView.image?.withRenderingMode(.alwaysTemplate)
         imageView.tintColor = FlatGray()
     }
-    
- 
     
     func initDealsView() {
         self.navigationController?.navigationBar.tintColor = FlatWhite()
@@ -232,7 +232,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     //MARK: IBActions
     @IBAction func groupBarButtonItemPressed(_ sender: Any) {
-        self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
+        self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: true)
     }
     
     // MARK: - Navigation
@@ -242,8 +242,17 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let destVC = segue.destination as? GroupCollectionViewController
             destVC?.ids = self.user!.groups
             destVC?.venue = self.venue!
-            destVC?.deal = self.deal!
+            if (self.deal == nil) {
+                destVC?.deal = Deal(title: "", shortDescription: "", longDescription: "", id: "", numberOfPeople: "", validFrom: "", validTo: "", recurringFrom: "", recurringTo: "")
+            } else {
+                destVC?.deal = self.deal!
+            }
             destVC?.user = self.user!
+            if (sender != nil) {
+                destVC?.isGroupPage = true
+            } else {
+                destVC?.isGroupPage = false
+            }
         }
     }
     
