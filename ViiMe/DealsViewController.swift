@@ -102,8 +102,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let groupRef = self.ref.child("groups")
             let id = groupRef.childByAutoId()
             
-            print(self.venue!)
-            
             self.ref.child("groups/\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue-id": self.venue!.id])
             let userRef = self.ref.child("users/\(self.user!.id)/groups/\(id.key)")
             userRef.setValue(true)
@@ -120,10 +118,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         // Create the message to show
         let title = venue!.deals[indexPath.row].title
-        var subTitle = "\(venue!.deals[indexPath.row].shortDescription) \n\n Valid from \(venue!.deals[indexPath.row].validFrom) to \(venue!.deals[indexPath.row].validTo)"
+        var subTitle = "\(venue!.deals[indexPath.row].shortDescription) \n\n Valid from \(DateHelper.parseDate(date: venue!.deals[indexPath.row].validFrom)) to \(DateHelper.parseDate(date: venue!.deals[indexPath.row].validTo))"
         
-        let recurringTo = venue!.deals[indexPath.row].recurringTo
-        let recurringFrom = venue!.deals[indexPath.row].recurringFrom
+        let recurringTo = DateHelper.parseTime(time: venue!.deals[indexPath.row].recurringTo)
+        let recurringFrom = DateHelper.parseTime(time: venue!.deals[indexPath.row].recurringFrom)
         
         // If it's a deal that only recurs from certain times, show it
         if (recurringTo != "" && recurringFrom != "") {
@@ -245,7 +243,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             destVC?.ids = self.user!.groups
             destVC?.venue = self.venue!
             if (self.deal == nil) {
-                destVC?.deal = Deal(title: "", shortDescription: "", longDescription: "", id: "", numberOfPeople: "", validFrom: "", validTo: "", recurringFrom: "", recurringTo: "")
+                destVC?.deal = Deal(title: "", shortDescription: "", longDescription: "", id: "", numberOfPeople: "", numberOfRedemptions: "", validFrom: "", validTo: "", recurringFrom: "", recurringTo: "")
             } else {
                 destVC?.deal = self.deal!
             }

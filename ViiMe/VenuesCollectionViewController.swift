@@ -101,7 +101,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! VenueCollectionViewCell
         
         
-        var venue = Venue(name: "", id: "", price: "", cuisine: "", type: "", address: "", description: "", distance: "", logo: "", website: "", number: "", deals: [])
+        var venue = Venue(name: "", id: "", price: "", code: "", cuisine: "", type: "", address: "", description: "", distance: "", logo: "", website: "", number: "", deals: [])
         
         if searchController.isActive && searchController.searchBar.text != "" {
             venue = filteredVenues[indexPath.row]
@@ -209,15 +209,15 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 let website = value?["website"] ?? " "
                 let number = value?["number"] ?? " "
                 let type = value?["type"] ?? ""
+                let code = value?["code"] ?? ""
                 let deals = value?["deals"] ?? {}
       
                 //TODO: change this naming in the back-end
                 let profile = value?["logo"] ?? ""
-                var venue = Venue(name: name as! String, id: id as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
+                var venue = Venue(name: name as! String, id: id as! String, price: price as! String, code: code as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
                 if let deals = deals as? NSDictionary {
                 self.getDeals(ids: deals , completionHandler: { (isComplete, deals) in
                     if (isComplete) {
-                        print(deals)
                         venue.deals = deals
                         
                         self.venues.append(venue)
@@ -257,13 +257,14 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                     let shortDescription = value?["short-description"] ?? ""
                     let longDescription = value?["long-description"] ?? ""
                     let numberOfPeople = value?["number-of-people"] ?? ""
+                    let numberOfRedemptions = value?["num-redemptions"] ?? ""
                     let id = value?["id"] ?? ""
                     let validFrom = value?["valid-from"] ?? ""
                     let validTo = value?["valid-to"] ?? ""
                     let recurringFrom = value?["recurring-from"] ?? ""
                     let recurringTo = value?["recurring-to"] ?? ""
                 
-                    let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: DateHelper.parseDate(date: validFrom as! String), validTo: DateHelper.parseDate(date: validTo as! String), recurringFrom: DateHelper.parseTime(time: recurringFrom as! String), recurringTo: DateHelper.parseTime(time: recurringTo as! String))
+                    let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, numberOfRedemptions: numberOfRedemptions as! String, validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)
                 
                 if (DateHelper.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
                     deals.append(deal)

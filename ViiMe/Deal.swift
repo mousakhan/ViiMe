@@ -14,6 +14,7 @@ struct Deal {
     var longDescription : String
     var id : String
     var numberOfPeople : String
+    var numberOfRedemptions : String
     var validFrom : String
     var validTo : String
     var recurringFrom : String

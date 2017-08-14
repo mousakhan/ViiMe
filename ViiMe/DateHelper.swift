@@ -25,6 +25,7 @@ class DateHelper {
         return ""
     }
     
+  
     static func parseTime(time : String) -> String {
         let format = DateFormatter()
         format.dateFormat = "HH:mm"

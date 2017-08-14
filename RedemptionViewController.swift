@@ -8,8 +8,10 @@
 
 import UIKit
 import ChameleonFramework
+import CoreLocation
+import Firebase
 
-class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, CLLocationManagerDelegate {
     
     private let reusableIdentifier = "cell"
     
@@ -23,9 +25,24 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
     var venue : Venue!
     var owner : UserInfo!
     var users : Array<UserInfo>!
+    var group : Dictionary<String, Any>!
+    let locationManager = CLLocationManager()
+    var currentLocation = CLLocationCoordinate2D()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Ask for Authorisation from the User.
+        self.locationManager.requestAlwaysAuthorization()
+        
+        // For use in foreground
+        self.locationManager.requestWhenInUseAuthorization()
+        
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager.startUpdatingLocation()
+        }
         
         // Change color of icon button, could probably make this into it's own helper function
         let origImage = UIImage(named: "cancel.png")
@@ -37,10 +54,10 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         self.dealTitleLabel.text = deal.shortDescription
         
         // Create the message to show
-        var subTitle = "Valid from \(deal.validFrom) to \(deal.validTo)"
+        var subTitle = "Valid from \(DateHelper.parseDate(date: deal.validFrom)) to \(DateHelper.parseDate(date: deal.validTo))"
         
-        let recurringTo = deal.recurringTo
-        let recurringFrom = deal.recurringFrom
+        let recurringTo = DateHelper.parseTime(time: deal.recurringTo)
+        let recurringFrom = DateHelper.parseTime(time: deal.recurringFrom)
         
         // If it's a deal that only recurs from certain times, show it
         if (recurringTo != "" && recurringFrom != "") {
@@ -55,6 +72,8 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         collectionView.register(UserCollectionViewCell.self, forCellWithReuseIdentifier: reusableIdentifier)
         
         self.users = self.users.filter { $0.id != "" }
+        
+        print(group)
     }
     
     //MARK: UICollectionView Datasource
@@ -127,6 +146,42 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         self.dismiss(animated: true) {
             
         }
+    }
+    
+    @IBAction func redeemButtonClicked(_ sender: Any) {
+        
+        
+        if (self.venue!.code != self.codeTextField.text) {
+            BannerHelper.showBanner(title: "Incorrect Code Entered", type: .danger)
+        } else {
+            BannerHelper.showBanner(title: "Deal Redeemed", type: .success)
+            
+            let id = self.group["id"] as! String
+            
+            // Set value on the group redemption object
+            Database.database().reference().child("groups/\(id)/redemptions").setValue(["title": deal.title, "short-description": deal.shortDescription, "num-people": deal.numberOfPeople, "valid-from": deal.validFrom, "valid-to": deal.validTo, "recurring-from": deal.recurringFrom, "recurring-to": deal.recurringTo, "num-redemptions": deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude
+                ])
+            
+            
+            // Remove group id from owner
+            Database.database().reference().child("users/\(owner.id)/groups/\(id)").removeValue()
+            
+            // Remove group id from users
+            for user in users {
+                 Database.database().reference().child("users/\(user.id)/groups/\(id)").removeValue()
+            }
+            
+            
+            self.dismiss(animated: true, completion: { 
+                
+            })
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let locValue:CLLocationCoordinate2D = manager.location!.coordinate
+        print("locations = \(locValue.latitude) \(locValue.longitude)")
+        self.currentLocation = locValue
     }
     
     /*

@@ -12,6 +12,7 @@ struct Venue {
     var name : String
     var id : String
     var price : String
+    var code : String
     var cuisine : String
     var type : String
     var address : String

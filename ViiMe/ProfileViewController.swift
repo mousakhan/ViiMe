@@ -438,6 +438,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 let title = value?["title"] ?? ""
                 let shortDescription = value?["short-description"] ?? ""
                 let longDescription = value?["long-description"] ?? ""
+                let numberOfRedemptions = value?["num-redemptions"] ?? ""
                 let numberOfPeople = value?["number-of-people"] ?? ""
                 let id = value?["id"] ?? ""
                 let validFrom = value?["valid-from"] ?? ""
@@ -445,7 +446,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 let recurringFrom = value?["recurring-from"] ?? ""
                 let recurringTo = value?["recurring-to"] ?? ""
                 
-                let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: DateHelper.parseDate(date: validFrom as! String), validTo: DateHelper.parseDate(date: validTo as! String), recurringFrom: DateHelper.parseTime(time: recurringFrom as! String), recurringTo: DateHelper.parseTime(time: recurringTo as! String))
+                let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, numberOfRedemptions: numberOfRedemptions as! String, validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)
                 
                 if (DateHelper.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
                     self.deals.append(deal)
@@ -471,9 +472,10 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 let website = value?["website"] ?? " "
                 let number = value?["number"] ?? " "
                 let type = value?["type"] ?? ""
+                let code = value?["code"] ?? ""
                 let deals = value?["deals"] ?? {}
                 let profile = value?["logo"] ?? ""
-                let venue = Venue(name: name as! String, id: id as! String, price: price as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
+                let venue = Venue(name: name as! String, id: id as! String, price: price as! String, code: code as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
                 self.venues.append(venue)
                 completionHandler(true)
             })

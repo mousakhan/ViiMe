@@ -170,10 +170,16 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
             if (self.user!.id == self.owners[row].id) {
                 Database.database().reference().child("groups/\(id)").removeValue()
                 Database.database().reference().child("users/\(self.user.id)/groups/\(id)").removeValue()
+                
+                for user in self.users[row] {
+                    Database.database().reference().child("users/\(user.id)/groups/\(id)").removeValue()
+                }
+                
             } else {
                 // Else just remove yourself from the group
                 Database.database().reference().child("users/\(self.user.id)/groups/\(id)").removeValue()
             }
+            
         })
     }
     
@@ -307,6 +313,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
             groups = []
             for (key, _) in ids {
                 var dict = [String: Any]()
+                var isRedeemed = false
                 for child in snapshot.childSnapshot(forPath: key as! String).children {
                     let key = (child as! DataSnapshot).key
                
@@ -333,10 +340,12 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                     } else if (key == "venue-id") {
                         let value = (child as! DataSnapshot).value as! String
                         dict["venue-id"] = value
+                    } else if (key == "redemptions") {
+                        isRedeemed = true
                     }
                 }
                 
-                if (dict.count > 0) {
+                if (dict.count > 0 && !isRedeemed) {
                     groups.append(dict)
                     if (!self.isGroupPage) {
                         groups = groups.sorted { (($0 as! Dictionary<String, Any>)["created"] as! Int)  > (($1 as! Dictionary<String, Any>)["created"] as! Int) }
@@ -357,13 +366,14 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                 let shortDescription = value?["short-description"] ?? ""
                 let longDescription = value?["long-description"] ?? ""
                 let numberOfPeople = value?["number-of-people"] ?? ""
+                let numberOfRedemptions = value?["num-redemptions"] ?? ""
                 let id = value?["id"] ?? ""
                 let validFrom = value?["valid-from"] ?? ""
                 let validTo = value?["valid-to"] ?? ""
                 let recurringFrom = value?["recurring-from"] ?? ""
                 let recurringTo = value?["recurring-to"] ?? ""
                 
-                let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, validFrom: DateHelper.parseDate(date: validFrom as! String), validTo: DateHelper.parseDate(date: validTo as! String), recurringFrom: DateHelper.parseTime(time: recurringFrom as! String), recurringTo: DateHelper.parseTime(time: recurringTo as! String))
+                let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, numberOfRedemptions: numberOfRedemptions as! String, validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)
                 
                 if (DateHelper.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
                     self.deals.append(deal)
@@ -387,7 +397,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         } else if (segue.identifier == "RedemptionViewControllerSegue") {
             let destVC = segue.destination as? RedemptionViewController
             let index = sender as! Int
-
+            destVC?.group = self.groups[index] as! Dictionary<String, Any>
             destVC?.deal = self.deals[index]
             destVC?.venue = self.venue
             destVC?.owner = self.owners[index]
