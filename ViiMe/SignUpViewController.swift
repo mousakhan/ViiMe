@@ -134,6 +134,10 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    @IBAction func cancelButtonPressed(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     // MARK: Helper Functions
     func hideKeyboard(sender: AnyObject) {
         nameTextField.resignFirstResponder()

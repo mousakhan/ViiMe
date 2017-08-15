@@ -437,7 +437,7 @@
                                         </constraints>
                                         <state key="normal" image="cancel"/>
                                         <connections>
-                                            <segue destination="BYZ-38-t0r" kind="show" id="aO0-DF-dPH"/>
+                                            <action selector="cancelButtonPressed:" destination="J5Z-Oc-1zO" eventType="touchUpInside" id="aYr-Pg-wJi"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -1504,7 +1504,6 @@
         <image name="website" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="aO0-DF-dPH"/>
         <segue reference="Ds3-bh-ybB"/>
         <segue reference="PqW-eF-h9j"/>
     </inferredMetricsTieBreakers>
