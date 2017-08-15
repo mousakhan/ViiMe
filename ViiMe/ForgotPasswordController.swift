@@ -58,7 +58,6 @@ class ForgotPasswordViewController: UIViewController, UITextFieldDelegate {
     // Specifically to remove keyboard when not interacting with textfield
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
-        
     }
     
 }

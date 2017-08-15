@@ -11,8 +11,10 @@ import ChameleonFramework
 import Firebase
 import FBSDKLoginKit
 import FirebaseStorage
+import SCLAlertView
+import CoreLocation
 
-class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource {
+class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var profilePicture: UIImageView!
@@ -24,12 +26,13 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     @IBOutlet weak var benefitsTableView: UITableView!
     
     @IBOutlet weak var usernameTextField: UITextField!
-   
+    
     var ref: DatabaseReference!
     var user: User!
     var userInfo : UserInfo!
     var groups : Array<Any>! = []
     var deals : Array<Deal>! = []
+    var personalDeals : Array<Deal>! = []
     var deal : Deal! = nil
     var venues : Array<Venue>! = []
     var venue : Venue! = nil
@@ -38,6 +41,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     var profileURL = ""
     var imagePicker: UIImagePickerController!
 
+    let locationManager = CLLocationManager()
+    var currentLocation = CLLocationCoordinate2D()
+    
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +53,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         user = Auth.auth().currentUser
         ref = Database.database().reference()
-    
+        
         setupData()
         getGroups { (isComplete) in
             self.benefitsTableView.reloadData()
@@ -60,7 +66,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         let photoTapGesture = UITapGestureRecognizer(target: self, action: #selector(takePhoto))
         profilePicture.addGestureRecognizer(photoTapGesture)
         
-  
+        
         // Textfield setup
         setupTextField(textfield: usernameTextField)
         setupTextField(textfield: nameTextField)
@@ -72,13 +78,36 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         setupTableview(tableView: benefitsTableView)
         setupTableview(tableView: couponsTableView)
         
+        
+        self.getPersonalDeals()
+        
         // Keyboard Set up
         let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(hideKeyboard(sender:)))
         tapGesture.cancelsTouchesInView = false
         scrollView.addGestureRecognizer(tapGesture)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
+        // Ask for Authorisation from the User.
+        self.locationManager.requestAlwaysAuthorization()
+        
+        // For use in foreground
+        self.locationManager.requestWhenInUseAuthorization()
+        
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager.startUpdatingLocation()
+        }
     }
+    
+    //MARK: CLLocationManagerDelegate
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let locValue:CLLocationCoordinate2D = manager.location!.coordinate
+        print("locations = \(locValue.latitude) \(locValue.longitude)")
+        self.currentLocation = locValue
+    }
+    
     
     //MARK: UITableViewDataSource
     
@@ -92,7 +121,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             return self.deals.count
         }
         
-        return self.benefits.count
+        return self.personalDeals.count
     }
     
     //MARK: UITableViewDelegate
@@ -101,13 +130,21 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         cell.backgroundColor = FlatBlack()
         cell.textLabel?.textColor  = FlatWhite()
-        if (self.deals.count > 0) {
-            cell.textLabel?.text = self.deals[indexPath.row].shortDescription
-            cell.textLabel?.lineBreakMode = .byWordWrapping
-            cell.textLabel?.numberOfLines = 0
-            cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
-        }
+        cell.textLabel?.lineBreakMode = .byWordWrapping
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
         
+        if (tableView == self.benefitsTableView) {
+            
+            if (self.deals.count > 0) {
+                cell.textLabel?.text = self.deals[indexPath.row].shortDescription
+                
+            }
+        } else {
+            if (self.personalDeals.count > 0) {
+                cell.textLabel?.text = self.personalDeals[indexPath.row].shortDescription
+            }
+        }
         let bgColorView = UIView()
         bgColorView.backgroundColor = FlatPurpleDark()
         cell.selectedBackgroundView = bgColorView
@@ -121,11 +158,54 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         if (tableView == self.benefitsTableView) {
             self.deal = self.deals[indexPath.row]
             self.venue = self.venues[indexPath.row]
-            tableView.deselectRow(at: tableView.indexPathForSelectedRow!, animated: true)
             self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
+        } else if (tableView == self.couponsTableView) {
+            
+            self.deal = self.deals[indexPath.row]
+            self.venue = self.venues[indexPath.row]
+            let appearance = SCLAlertView.SCLAppearance(
+                kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+                kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+                kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+                showCloseButton: false,
+                showCircularIcon: false
+            )
+            
+            
+            let alertView = SCLAlertView(appearance: appearance)
+            
+            let redemptionTextField = alertView.addTextField("Enter redemption code")
+            
+            alertView.addButton("Redeem", backgroundColor: FlatPurple(), action: {
+                if (CLLocationManager.locationServicesEnabled() && redemptionTextField.text == self.venues[indexPath.row].code) {
+                    switch(CLLocationManager.authorizationStatus()) {
+                    case .notDetermined, .restricted, .denied:
+                        BannerHelper.showBanner(title: "Location services must be enabled to redeem deal", type: .danger)
+                    case .authorizedAlways, .authorizedWhenInUse:
+                        // Set value on the group redemption object
+                        Database.database().reference().child("groups").childByAutoId().child("redemptions").setValue(["title": self.deal.title, "short-description": self.deal.shortDescription, "num-people": self.deal.numberOfPeople, "valid-from": self.deal.validFrom, "valid-to": self.deal.validTo, "recurring-from": self.deal.recurringFrom, "recurring-to": self.deal.recurringTo, "num-redemptions": self.deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude, "users": [self.user.uid : true]
+                            ])
+                        self.personalDeals.remove(at: indexPath.row)
+                        self.couponsTableView.reloadData()
+                        BannerHelper.showBanner(title: "Redemption Succesful", type: .danger)
+                    }
+                } else {
+                        BannerHelper.showBanner(title: "Incorrect redemption code entered", type: .danger)
+                }
+            })
+            
+            alertView.addButton("Cancel", backgroundColor: FlatRed(), action: {
+                
+            })
+            
+            alertView.showInfo("Redeem Personal Deal", subTitle: "Please pass it to the merchant to enter the redemption code")
+            
         }
+        
+        tableView.deselectRow(at: tableView.indexPathForSelectedRow!, animated: true)
     }
     
+
     //MARK: Image Picker
     func takePhoto() {
         imagePicker =  UIImagePickerController()
@@ -178,7 +258,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         if (profilePicture.image != nil) {
             
             let storageRef = Storage.storage().reference().child("profile/ " + userInfo.id + ".png")
-    
+            
             storageRef.delete { error in
                 if let error = error {
                     print(error)
@@ -194,7 +274,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                     if error != nil {
                         print(error!)
                         return
-                    }                    
+                    }
                     Database.database().reference().root.child("users").child(self.userInfo.id).updateChildValues(["profile": metadata?.downloadURL()?.absoluteString ?? ""])
                     
                     
@@ -278,7 +358,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         ageTextField.text = formatter.string(from: sender.date)
     }
     
-  
+    
     func setupTextField(textfield: UITextField) {
         textfield.backgroundColor = FlatBlackDark()
         textfield.layer.borderColor = FlatGrayDark().cgColor
@@ -296,7 +376,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         tableView.delegate = self
         tableView.dataSource = self
     }
-
+    
     
     func getDateFromString(date: String)-> Date {
         let formatter = DateFormatter()
@@ -307,7 +387,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         }
         return formatter.date(from: date)!
     }
-
+    
     func keyboardWillShow(notification:NSNotification){
         //give room at the bottom of the scroll view, so it doesn't cover up anything the user needs to tap
         var userInfo = notification.userInfo!
@@ -387,8 +467,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                     if (key == "deal-id") {
                         let value = (child as! DataSnapshot).value as! String
                         dict["deal-id"] = value
-                        self.getDeal(id: value, completionHandler: { (isComplete) in
-    
+                        self.getDeal(id: value, isPersonalDeal: false, completionHandler: { (isComplete) in
+                            
                             if (isComplete) {
                                 self.benefitsTableView.reloadData()
                             }
@@ -428,10 +508,30 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             completionHandler(true)
         })
         
-    
+        
     }
     
-    func getDeal(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
+    func getPersonalDeals() {
+        Database.database().reference().child("users/\(self.user.uid)").observe(DataEventType.value, with: { (snapshot) in
+            let value = snapshot.value as? NSDictionary
+            let deals = value?["personal-deals"] ?? [:]
+            self.personalDeals = []
+            if ( (deals as! Dictionary<String, Any>).count > 0) {
+                for (key, _) in (deals as! Dictionary<String, Any>) {
+                    print(key)
+                    self.getDeal(id: key, isPersonalDeal: true, completionHandler: { (isComplete) in
+                        if (isComplete) {
+                            self.couponsTableView.reloadData()
+                        }
+                    })
+                }
+            }
+        })
+        
+        
+    }
+    
+    func getDeal(id : String, isPersonalDeal: Bool, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
         if (id != "") {
             Database.database().reference().child("deal/\(id)").observe(DataEventType.value, with: { (snapshot) in
                 let value = snapshot.value as? NSDictionary
@@ -449,7 +549,11 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, numberOfRedemptions: numberOfRedemptions as! String, validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)
                 
                 if (DateHelper.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
-                    self.deals.append(deal)
+                    if (isPersonalDeal) {
+                        self.personalDeals.append(deal)
+                    } else {
+                        self.deals.append(deal)
+                    }
                 }
                 completionHandler(true)
             })
@@ -533,5 +637,5 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         }
     }
     
-
+    
 }

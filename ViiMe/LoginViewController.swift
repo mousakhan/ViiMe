@@ -11,7 +11,8 @@ import Firebase
 import FirebaseDatabase
 import FacebookLogin
 import FBSDKLoginKit
-import NotificationBannerSwift
+import SCLAlertView
+import ChameleonFramework
 
 class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate{
     
@@ -30,27 +31,33 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         TextFieldHelper.addIconToTextField(imageName: "password.png", textfield: passwordTextField)
         createFacebookButton()
         
-        // User is logged in
-        if ((FBSDKAccessToken.current()) != nil) {
-            // User is logged in, do work such as go to next view controller.
-            self.performSegue(withIdentifier: "VenuesView", sender: nil)
-        }
         
         usernameTextField.delegate = self
         passwordTextField.delegate = self
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // User is logged in
+        if ((FBSDKAccessToken.current()) != nil) {
+            let credential = FacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
+            
+            Auth.auth().signIn(with: credential) { (user, error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                // User is logged in, do work such as go to next view controller.
+                self.performSegue(withIdentifier: "VenuesView", sender: nil)
+            }
+        }
+        
+    }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         ref = Database.database().reference()
         Auth.auth().addStateDidChangeListener { auth, user in
             if user != nil && user!.isEmailVerified {
-//                self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-//                    if !(snapshot.hasChild("\(user!.uid)")){
-//                        self.ref.child("users/\(user!.uid)").setValue(["name": user!.displayName, "age": "", "email": user!.email, "id": user!.uid])
-//                    }
-//                })
                 self.performSegue(withIdentifier: "VenuesView", sender: nil)
             } else {
                 // No User is signed in. Show user the login screen
@@ -65,7 +72,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         let password = passwordTextField.text!
         if ValidationHelper.validateEmail(textfield: usernameTextField) {
             Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
-                
                 if let error = error {
                     BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
                     return
@@ -131,12 +137,60 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 BannerHelper.showBanner(title: error!.localizedDescription, type: .danger)
                 return
             }
+      
+            let appearance = SCLAlertView.SCLAppearance(
+                kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+                kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+                kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+                showCloseButton: false,
+                showCircularIcon: false
+            )
+            
+            
+            let alertView = SCLAlertView(appearance: appearance)
+            
             
             self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+                
+                // Check if the user already exists in our database.
                 if !(snapshot.hasChild("\(user!.uid)")){
-                    self.ref.child("users/\(user!.uid)").setValue(["name": user!.displayName ?? "", "age": "", "email": user!.email ?? "", "id": user!.uid, "profile": user!.photoURL?.absoluteString ?? "" ])
+                    let usernameTextField = alertView.addTextField("Enter a username")
+                    alertView.addButton("Create Account") {
+                        let userValidation = ValidationHelper.validateUsername(textfield: usernameTextField)
+                        if (userValidation != "") {
+                            BannerHelper.showBanner(title: userValidation, type: .danger)
+                        } else {
+                            self.ref.child("users/\(user!.uid)").setValue(["username": "\(usernameTextField.text!)", "name": user!.displayName ?? "", "age": "", "email": user!.email ?? "", "id": user!.uid, "profile": user!.photoURL?.absoluteString ?? "" ])
+                            self.performSegue(withIdentifier: "VenuesView", sender: nil)
+                        }
+                    }
+                    
+                    alertView.addButton("Cancel", backgroundColor: FlatRed())   {
+                        let firebaseAuth = Auth.auth()
+                        do {
+                            try firebaseAuth.signOut()
+                        } catch let signOutError as NSError {
+                            print ("Error signing out: %@", signOutError)
+                        }
+                        
+                        let loginManager = FBSDKLoginManager()
+                        loginManager.logOut()
+                    }
+                    
+                    DispatchQueue.main.async {
+                        alertView.showInfo("Username", subTitle: "Please enter a username to be used in the application. The username cannot start or end with -, _, . or a number, can contain no white spaces, emojis, or special characters and must be 3-15 characters long")
+                    }
+                    
+                    
+                } else {
+                    self.performSegue(withIdentifier: "VenuesView", sender: nil)
                 }
+
             })
+
+            
+            
+            
         }
     }
     

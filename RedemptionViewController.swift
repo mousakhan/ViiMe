@@ -149,33 +149,43 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     @IBAction func redeemButtonClicked(_ sender: Any) {
-        
-        
-        if (self.venue!.code != self.codeTextField.text) {
-            BannerHelper.showBanner(title: "Incorrect Code Entered", type: .danger)
-        } else {
-            BannerHelper.showBanner(title: "Deal Redeemed", type: .success)
-            
-            let id = self.group["id"] as! String
-            
-            // Set value on the group redemption object
-            Database.database().reference().child("groups/\(id)/redemptions").setValue(["title": deal.title, "short-description": deal.shortDescription, "num-people": deal.numberOfPeople, "valid-from": deal.validFrom, "valid-to": deal.validTo, "recurring-from": deal.recurringFrom, "recurring-to": deal.recurringTo, "num-redemptions": deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude
-                ])
-            
-            
-            // Remove group id from owner
-            Database.database().reference().child("users/\(owner.id)/groups/\(id)").removeValue()
-            
-            // Remove group id from users
-            for user in users {
-                 Database.database().reference().child("users/\(user.id)/groups/\(id)").removeValue()
+        if CLLocationManager.locationServicesEnabled() {
+            switch(CLLocationManager.authorizationStatus()) {
+            case .notDetermined, .restricted, .denied:
+                 BannerHelper.showBanner(title: "Location services must be enabled to redeem deal", type: .danger)
+            case .authorizedAlways, .authorizedWhenInUse:
+                if (self.venue!.code != self.codeTextField.text) {
+                    BannerHelper.showBanner(title: "Incorrect Code Entered", type: .danger)
+                } else {
+                    BannerHelper.showBanner(title: "Deal Redeemed", type: .success)
+                    
+                    let id = self.group["id"] as! String
+                    
+                    // Set value on the group redemption object
+                    Database.database().reference().child("groups/\(id)/redemptions").setValue(["title": deal.title, "short-description": deal.shortDescription, "num-people": deal.numberOfPeople, "valid-from": deal.validFrom, "valid-to": deal.validTo, "recurring-from": deal.recurringFrom, "recurring-to": deal.recurringTo, "num-redemptions": deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude
+                        ])
+                    
+                    
+                    // Remove group id from owner
+                    Database.database().reference().child("users/\(owner.id)/groups/\(id)").removeValue()
+                    
+                    // Remove group id from users
+                    for user in users {
+                        Database.database().reference().child("users/\(user.id)/groups/\(id)").removeValue()
+                    }
+                    
+                    
+                    self.dismiss(animated: true, completion: { 
+                        
+                    })
+                }
             }
-            
-            
-            self.dismiss(animated: true, completion: { 
-                
-            })
+        } else {
+            BannerHelper.showBanner(title: "Location services must be enabled to redeem deal", type: .danger)
         }
+        
+        
+
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

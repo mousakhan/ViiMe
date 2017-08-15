@@ -17,7 +17,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     @IBOutlet weak var searchBar: UISearchBar!
     
-    var user : User? = nil
+    var user : User? = Auth.auth().currentUser
     var deal : Deal? = nil
     var group : Dictionary<String, Any>? = nil
     var contacts = [Dictionary<String, Any>]()
@@ -33,10 +33,19 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         
-        user = Auth.auth().currentUser
         // Check to see if there are any friend invitations
         ref = Database.database().reference()
         // Check to see if there are any friends
+        
+        initContacts()
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        print("Heeree")
+        print(user!.uid)
         let friendsRef = ref.child("users/\(user!.uid)/friends")
         friendsRef.observe(DataEventType.value, with: { (snapshot) in
             self.friends = []
@@ -54,6 +63,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     let gender = value?["gender"] as? String ?? ""
                     let profile = value?["profile"] as? String ?? ""
                     
+                    print(snapshot)
+                    
                     let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile, status: "", groups: [:], friends: [])
                     
                     
@@ -70,13 +81,14 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                 }) { (error) in
                     print(error.localizedDescription)
                 }
-                
             }
             self.tableView.reloadData()
         })
-        
-        initContacts()
-        
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        Database.database().reference().removeAllObservers()
     }
     
     override func didReceiveMemoryWarning() {

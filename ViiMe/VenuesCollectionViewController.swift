@@ -33,8 +33,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        initVenues()
-        
         // Ask for Authorisation from the User.
         self.locationManager.requestAlwaysAuthorization()
         
@@ -62,6 +60,15 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
         // Register cell classes
         self.collectionView!.register(VenueCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        initVenues()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        Database.database().reference().removeAllObservers()
     }
     
     // MARK: UICollectionViewDataSource

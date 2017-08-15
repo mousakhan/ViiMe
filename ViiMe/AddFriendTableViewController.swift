@@ -118,7 +118,6 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
             let path = "users/\(id)/friends"
             ref.child(path + "/" + user!.uid).setValue(false)
             BannerHelper.showBanner(title: "Friend Invitation Sent to \(username)", type: .success)
-          
         } else {
             delegate?.sendSmsClick(recipient: self.filteredContacts[indexPath.row]["number"] as! String, vc: self)
         }

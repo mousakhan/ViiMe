@@ -30,8 +30,6 @@ class VenueCollectionViewCell: UICollectionViewCell {
         self.contentView.layer.borderWidth = 0.5
         self.contentView.layer.borderColor = FlatGrayDark().cgColor
 
-        
-        
         // TODO: Clean up these magic numbers for the label frames
         // Venue Name
         nameLabel = UILabel(frame: CGRect(x: 5, y: offset * 2.0, width: self.contentView.frame.size.width - 5, height: 15))

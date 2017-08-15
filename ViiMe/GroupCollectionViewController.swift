@@ -29,30 +29,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Get all the groups
-        self.getGroups(ids: self.ids as NSDictionary, completionHandler: { (isComplete, groups) in
-            if (isComplete) {
-                self.groups = groups
-                self.collectionView?.reloadData()
-                self.users = []
-                // When the group's are done loading, get all the group owners
-                self.getOwners { (isComplete, owners) in
-                    if (isComplete) {
-                        self.owners = owners
-                        // When the group owners are done loading, get all the users
-                        self.getUsers(completionHandler: { (isComplete, users) in
-                            if (isComplete) {
-                                self.users.append(users as! Array<UserInfo>)
-                                self.collectionView?.reloadData()
-                            }
-                        })
-                        
-                    }
-                }
-                
-                
-            }
-        })
+      
         
         self.collectionView?.backgroundColor = FlatBlack()
         self.view.backgroundColor = FlatBlack()
@@ -81,12 +58,37 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
             self.groups = self.groups.filter { ($0 as AnyObject).count > 0 }
             shouldDeleteGroups = true
         }
+        
+        Database.database().reference().removeAllObservers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // This is for when you invite someone, and go back to the groups page
-        self.collectionView?.reloadData()
+        // Get all the groups
+        self.getGroups(ids: self.ids as NSDictionary, completionHandler: { (isComplete, groups) in
+            if (isComplete) {
+                self.groups = groups
+                self.collectionView?.reloadData()
+                self.users = []
+                // When the group's are done loading, get all the group owners
+                self.getOwners { (isComplete, owners) in
+                    if (isComplete) {
+                        self.owners = owners
+                        // When the group owners are done loading, get all the users
+                        self.getUsers(completionHandler: { (isComplete, users) in
+                            if (isComplete) {
+                                self.users.append(users as! Array<UserInfo>)
+                                self.collectionView?.reloadData()
+                            }
+                        })
+                        
+                    }
+                }
+                
+                
+            }
+        })
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -131,7 +133,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
             }
         }
         
-        if (self.owners.count > 0 && self.users.count == 0 ) {
+        if (self.owners.count > 0 && self.users.count == 0 && self.owners.count >= (indexPath.row+1)) {
             cell.owner = self.owners[indexPath.row]
         } else if (self.users.count > 0) {
             let foundItems = self.users[indexPath.row].filter { ($0 ).status == "Accepted"}
