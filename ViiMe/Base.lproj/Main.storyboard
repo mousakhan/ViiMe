@@ -324,17 +324,6 @@
                                         <rect key="frame" x="-1" y="50" width="420" height="736"/>
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                     </view>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ebu-cG-JSy">
-                                        <rect key="frame" x="30" y="80" width="25" height="25"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="25" id="a1Z-xh-79c"/>
-                                            <constraint firstAttribute="height" constant="25" id="kzw-7G-cSx"/>
-                                        </constraints>
-                                        <state key="normal" image="cancel"/>
-                                        <connections>
-                                            <segue destination="BYZ-38-t0r" kind="show" id="aO0-DF-dPH"/>
-                                        </connections>
-                                    </button>
                                     <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="PwL-Dh-Acf">
                                         <rect key="frame" x="40" y="80" width="334" height="524"/>
                                         <subviews>
@@ -373,7 +362,7 @@
                                                                                     <constraint firstAttribute="height" relation="lessThanOrEqual" constant="50" id="E3s-JK-6A7"/>
                                                                                 </constraints>
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardAppearance="alert" returnKeyType="next"/>
+                                                                                <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" spellCheckingType="no" keyboardAppearance="alert" returnKeyType="next"/>
                                                                             </textField>
                                                                             <textField opaque="NO" clipsSubviews="YES" alpha="0.89999997615814209" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Age" textAlignment="natural" minimumFontSize="13" translatesAutoresizingMaskIntoConstraints="NO" id="6Kg-HO-IGs" userLabel="Age">
                                                                                 <rect key="frame" x="0.0" y="106" width="334" height="40"/>
@@ -388,7 +377,7 @@
                                                                                     <constraint firstAttribute="height" relation="lessThanOrEqual" constant="50" id="dr8-Hm-8M3"/>
                                                                                 </constraints>
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" keyboardAppearance="alert"/>
+                                                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="emailAddress" keyboardAppearance="alert" returnKeyType="next"/>
                                                                             </textField>
                                                                             <textField opaque="NO" clipsSubviews="YES" alpha="0.89999997615814209" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="13" translatesAutoresizingMaskIntoConstraints="NO" id="nrq-7W-fSa">
                                                                                 <rect key="frame" x="0.0" y="212" width="334" height="40"/>
@@ -440,6 +429,17 @@
                                             </stackView>
                                         </subviews>
                                     </stackView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ebu-cG-JSy">
+                                        <rect key="frame" x="30" y="80" width="25" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="25" id="a1Z-xh-79c"/>
+                                            <constraint firstAttribute="height" constant="25" id="kzw-7G-cSx"/>
+                                        </constraints>
+                                        <state key="normal" image="cancel"/>
+                                        <connections>
+                                            <segue destination="BYZ-38-t0r" kind="show" id="aO0-DF-dPH"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="PwL-Dh-Acf" firstAttribute="top" secondItem="M2H-Vl-l62" secondAttribute="top" constant="80" id="7VN-Vh-SRp"/>

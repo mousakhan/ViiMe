@@ -56,12 +56,14 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     // MARK: UITextFieldDelegate Functions
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
-        if (textField == nameTextField) {
+        if (textField == usernameTextField) {
+            nameTextField.becomeFirstResponder()
+        } else if (textField == nameTextField) {
             ageTextField.becomeFirstResponder()
         } else if (textField == ageTextField) {
-            ageTextField.becomeFirstResponder()
-        } else if (textField == emailTextField) {
             emailTextField.becomeFirstResponder()
+        } else if (textField == emailTextField) {
+            passwordTextField.becomeFirstResponder()
         } else if (textField == passwordTextField) {
             signUp(self)
         }
