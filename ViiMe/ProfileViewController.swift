@@ -40,7 +40,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     let genders = ["", "Male", "Female"]
     var profileURL = ""
     var imagePicker: UIImagePickerController!
-
     let locationManager = CLLocationManager()
     var currentLocation = CLLocationCoordinate2D()
     
