@@ -147,7 +147,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         Auth.auth().signIn(with: credential) { (user, error) in
             if error != nil {
-                print(error!)
                 BannerHelper.showBanner(title: error!.localizedDescription, type: .danger)
                 return
             }
@@ -163,9 +162,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
             let alertView = SCLAlertView(appearance: appearance)
             
-            
+
             self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-                
                 // Check if the user already exists in our database.
                 if !(snapshot.hasChild("\(user!.uid)")){
                     let usernameTextField = alertView.addTextField("Enter a username")
