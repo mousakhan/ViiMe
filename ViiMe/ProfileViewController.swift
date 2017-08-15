@@ -185,9 +185,12 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                         // Set value on the group redemption object
                         Database.database().reference().child("groups").childByAutoId().child("redemptions").setValue(["title": self.deal.title, "short-description": self.deal.shortDescription, "num-people": self.deal.numberOfPeople, "valid-from": self.deal.validFrom, "valid-to": self.deal.validTo, "recurring-from": self.deal.recurringFrom, "recurring-to": self.deal.recurringTo, "num-redemptions": self.deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude, "users": [self.user.uid : true]
                             ])
+                        
+                        Database.database().reference().child("users/\(self.user.uid)/personal-deals/\(self.personalDeals[indexPath.row].id)").removeValue()
+                        
                         self.personalDeals.remove(at: indexPath.row)
                         self.couponsTableView.reloadData()
-                        BannerHelper.showBanner(title: "Redemption Succesful", type: .danger)
+                        BannerHelper.showBanner(title: "Redemption Succesful", type: .success)
                     }
                 } else {
                         BannerHelper.showBanner(title: "Incorrect redemption code entered", type: .danger)
