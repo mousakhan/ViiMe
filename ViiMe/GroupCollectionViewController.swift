@@ -28,14 +28,9 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-      
-        
         self.collectionView?.backgroundColor = FlatBlack()
         self.view.backgroundColor = FlatBlack()
-        
     }
-    
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -97,7 +92,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     }
     
     
-    // MARK: UICollectionViewDataSource
+    //MARK: UICollectionViewDataSource
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -108,10 +103,10 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     }
     
     
+    //MARK: UICollectionViewDelegate
     // This is for the group cards specifically, and the cell contains another collection view
     // to show the users
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! GroupCollectionViewCell
         
         cell.delegate = self
@@ -143,7 +138,6 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
             cell.owner = self.owners[indexPath.row]
             cell.users = self.users[indexPath.row]
         }
-        
         
 
         cell.usersCollectionView.reloadData()

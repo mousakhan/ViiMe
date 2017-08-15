@@ -21,7 +21,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     @IBOutlet weak var facebookSignInButton: FBSDKLoginButton!
     @IBOutlet weak var signInButton: UIButton!
     var ref: DatabaseReference!
-    
+    var token = Messaging.messaging().fcmToken
     
     // View Lifecycle
     override func viewDidLoad() {
@@ -47,6 +47,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     print(error)
                     return
                 }
+                
+                self.token = Messaging.messaging().fcmToken
+                if (self.token != nil) {
+                    self.ref.child("users/\(user!.uid)/notifications").setValue([self.token!: true])
+                }
+                
                 // User is logged in, do work such as go to next view controller.
                 self.performSegue(withIdentifier: "VenuesView", sender: nil)
             }
@@ -58,6 +64,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         ref = Database.database().reference()
         Auth.auth().addStateDidChangeListener { auth, user in
             if user != nil && user!.isEmailVerified {
+                self.token = Messaging.messaging().fcmToken
+                if (self.token != nil) {
+                    self.ref.child("users/\(user!.uid)/notifications").setValue([self.token!: true])
+                }
                 self.performSegue(withIdentifier: "VenuesView", sender: nil)
             } else {
                 // No User is signed in. Show user the login screen
@@ -88,6 +98,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         alertVC.addAction(alertActionCancel)
                         self.present(alertVC, animated: true, completion: nil)
                     } else {
+                        if (self.token != nil) {
+                            self.ref.child("users/\(user!.uid)/notifications").setValue([self.token!: true])
+                        }
                         let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
                         let nextViewController = storyBoard.instantiateViewController(withIdentifier: "VenuesNavigation") as! UINavigationController
                         self.present(nextViewController, animated:true, completion:nil)
@@ -134,6 +147,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         Auth.auth().signIn(with: credential) { (user, error) in
             if error != nil {
+                print(error!)
                 BannerHelper.showBanner(title: error!.localizedDescription, type: .danger)
                 return
             }
@@ -161,6 +175,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                             BannerHelper.showBanner(title: userValidation, type: .danger)
                         } else {
                             self.ref.child("users/\(user!.uid)").setValue(["username": "\(usernameTextField.text!)", "name": user!.displayName ?? "", "age": "", "email": user!.email ?? "", "id": user!.uid, "profile": user!.photoURL?.absoluteString ?? "" ])
+                            
+                            if (self.token != nil) {
+                                self.ref.child("users/\(user!.uid)/notifications").setValue([self.token!: true])
+                            }
                             self.performSegue(withIdentifier: "VenuesView", sender: nil)
                         }
                     }

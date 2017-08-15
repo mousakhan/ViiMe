@@ -157,7 +157,6 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
         return 60.0
     }
     
-    
     //MARK: Helper Functions
     func getSearchResults(query: String) {
         if (query.characters.count > 2) {

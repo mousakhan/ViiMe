@@ -616,6 +616,11 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             loginManager.logOut()
         }
         
+        let token = Messaging.messaging().fcmToken
+        if (token != nil) {
+            self.ref.child("users/\(user!.uid)/notifications/\(token!)").removeValue()
+        }
+        
         
         let presentingViewController = self.presentingViewController
         self.dismiss(animated: false, completion: {

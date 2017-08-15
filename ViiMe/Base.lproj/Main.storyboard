@@ -608,7 +608,7 @@
                                                                         <rect key="frame" x="0.0" y="21" width="178" height="30"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
+                                                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress" keyboardAppearance="alert"/>
                                                                     </textField>
                                                                 </subviews>
                                                             </stackView>
@@ -653,7 +653,7 @@
                                                                         <rect key="frame" x="0.0" y="21" width="179" height="30"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                        <textInputTraits key="textInputTraits" spellCheckingType="no" keyboardType="numberPad"/>
+                                                                        <textInputTraits key="textInputTraits" spellCheckingType="no" keyboardType="numberPad" keyboardAppearance="alert"/>
                                                                     </textField>
                                                                 </subviews>
                                                             </stackView>
@@ -670,7 +670,7 @@
                                                                         <rect key="frame" x="0.0" y="21" width="178" height="30"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                        <textInputTraits key="textInputTraits"/>
+                                                                        <textInputTraits key="textInputTraits" keyboardAppearance="alert"/>
                                                                     </textField>
                                                                 </subviews>
                                                             </stackView>

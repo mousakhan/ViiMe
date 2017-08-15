@@ -8,9 +8,9 @@ PODS:
   - ChameleonFramework/Default (2.1.0)
   - ChameleonFramework/Swift (2.1.0):
     - ChameleonFramework/Default
-  - Crashlytics (3.8.4):
+  - Crashlytics (3.8.5):
     - Fabric (~> 1.6.3)
-  - Fabric (1.6.11)
+  - Fabric (1.6.12)
   - FacebookCore (0.2.0):
     - Bolts (~> 1.8)
     - FBSDKCoreKit (~> 4.15)
@@ -19,46 +19,50 @@ PODS:
     - FacebookCore (~> 0.2)
     - FBSDKCoreKit (~> 4.15)
     - FBSDKLoginKit (~> 4.15)
-  - FBSDKCoreKit (4.23.0):
+  - FBSDKCoreKit (4.25.0):
     - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.23.0):
+  - FBSDKLoginKit (4.25.0):
     - FBSDKCoreKit
-  - Firebase/Auth (4.0.2):
+  - Firebase/Auth (4.1.0):
     - Firebase/Core
-    - FirebaseAuth (= 4.0.0)
-  - Firebase/Core (4.0.2):
-    - FirebaseAnalytics (= 4.0.1)
-    - FirebaseCore (= 4.0.2)
-  - Firebase/Database (4.0.2):
+    - FirebaseAuth (= 4.1.0)
+  - Firebase/Core (4.1.0):
+    - FirebaseAnalytics (= 4.0.3)
+    - FirebaseCore (= 4.0.5)
+  - Firebase/Database (4.1.0):
     - Firebase/Core
-    - FirebaseDatabase (= 4.0.0)
-  - Firebase/Messaging (4.0.2):
+    - FirebaseDatabase (= 4.0.1)
+  - Firebase/Messaging (4.1.0):
     - Firebase/Core
-    - FirebaseMessaging (= 2.0.0)
-  - Firebase/Storage (4.0.2):
+    - FirebaseMessaging (= 2.0.1)
+  - Firebase/Storage (4.1.0):
     - Firebase/Core
-    - FirebaseStorage (= 2.0.0)
-  - FirebaseAnalytics (4.0.1):
+    - FirebaseStorage (= 2.0.1)
+  - FirebaseAnalytics (4.0.3):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
-  - FirebaseAuth (4.0.0):
+    - nanopb (~> 0.3)
+  - FirebaseAuth (4.1.0):
     - FirebaseAnalytics (~> 4.0)
     - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseCore (4.0.2):
+  - FirebaseCore (4.0.5):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
-  - FirebaseDatabase (4.0.0):
+    - nanopb (~> 0.3)
+  - FirebaseDatabase (4.0.1):
     - FirebaseAnalytics (~> 4.0)
+    - FirebaseCore (~> 4.0)
+    - leveldb-library (~> 1.18)
   - FirebaseInstanceID (2.0.0):
     - FirebaseCore (~> 4.0)
-  - FirebaseMessaging (2.0.0):
+  - FirebaseMessaging (2.0.1):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
     - Protobuf (~> 3.1)
-  - FirebaseStorage (2.0.0):
+  - FirebaseStorage (2.0.1):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - GTMSessionFetcher/Core (~> 1.1)
@@ -74,11 +78,17 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.1.1)
     - GoogleToolboxForMac/NSString+URLArguments (= 2.1.1)
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
-  - GTMSessionFetcher/Core (1.1.10)
+  - GTMSessionFetcher/Core (1.1.11)
   - ImagePicker (2.1.1)
-  - Kingfisher (3.10.1)
-  - MarqueeLabel/Swift (3.0.5)
-  - NotificationBannerSwift (1.3.0):
+  - Kingfisher (3.10.4)
+  - leveldb-library (1.18.3)
+  - MarqueeLabel/Swift (3.1.2)
+  - nanopb (0.3.8):
+    - nanopb/decode (= 0.3.8)
+    - nanopb/encode (= 0.3.8)
+  - nanopb/decode (0.3.8)
+  - nanopb/encode (0.3.8)
+  - NotificationBannerSwift (1.4.2):
     - MarqueeLabel/Swift
     - SnapKit (~> 3.2)
   - Protobuf (3.3.0)
@@ -107,32 +117,34 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   ChameleonFramework:
-    :commit: 2dff644cc729cfe4b743d13389eeeeda24e5e79d
+    :commit: 6dd284bde21ea2e7f9fd89bc36f40df16e16369d
     :git: https://github.com/ViccAlexander/Chameleon.git
 
 SPEC CHECKSUMS:
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   ChameleonFramework: d21a3cc247abfe5e37609a283a8238b03575cf64
-  Crashlytics: 79e236942ca1e7fc641df1feb9a275360a78ab6a
-  Fabric: 5911403591946b8228ab1c51d98f1d7137e863c6
+  Crashlytics: dfbae35ef22ca189240d230ad501feea4ee85d2d
+  Fabric: f050464eac45a2ce5a8e6e6a07e977c0df32fe28
   FacebookCore: 2cb3f0fbff218e9d3119cec84bae983b232412de
   FacebookLogin: c9d606504735780a9e3002465a615512e0a691a5
-  FBSDKCoreKit: d7829f5a69901cd7296105328e4c3c3fc7da6518
-  FBSDKLoginKit: 6b92bd65f319d669d2b0730e49db495ef1660566
-  Firebase: c7ad0731eab26d18a3fc547dd048b0f7cd9c63ae
-  FirebaseAnalytics: 4d7040fefc3cd8b291cde35f12cf063d7963f15d
-  FirebaseAuth: ebb6abcbabae00fc47446d690c19ce68d8484fde
-  FirebaseCore: 1a8bf6c795ad07d2918278657954ffd2552e9c17
-  FirebaseDatabase: d829b3a8c3e2ac7a16773c5df226966b0805dfc2
+  FBSDKCoreKit: 53e3f4bfb64e80c5f229dd30ae33ff57fbbbd2d1
+  FBSDKLoginKit: f628c09684dae9c17f071cf90b014e886f5093ea
+  Firebase: ebebf41db7f10e0c7668b6eaaa857fbe599aa478
+  FirebaseAnalytics: 76f754d37ca5b04f36856729b6af3ca0152d1069
+  FirebaseAuth: 8d1d2389cf82f891048d6d50d27d044f55ae09a6
+  FirebaseCore: 7d876ea97a830cbe62ba7fbbe7670c833a324ba0
+  FirebaseDatabase: 94c38c783d23dc6679441050772d42e801d06e9e
   FirebaseInstanceID: 9fbf536668f4d3f0880e7438456dabd1376e294b
-  FirebaseMessaging: 227406c05b0dc9290702d2e9f18ab5528f0c2cf2
-  FirebaseStorage: 8110a1ed2034c8fbfd83890d2acc9cdbbd99afec
+  FirebaseMessaging: b45ff9ef5d932600d3f78ff43168e7c5707aa7dc
+  FirebaseStorage: 661fc1f8d4131891d256b62e82a45ace8b3f0c3b
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
-  GTMSessionFetcher: 30d874b96d0d76028f61fbd122801e3f030d47db
+  GTMSessionFetcher: 5ad62e8200fa00ed011fe5e08d27fef72c5b1429
   ImagePicker: fe4c699abb56ff03994fa98d8b02e3883ee118be
-  Kingfisher: 33a1b82140fcb14a9fc13f78dfde2a03ff8de8cb
-  MarqueeLabel: 8a25b2cf02cf52165022f01369e63536c58fcc00
-  NotificationBannerSwift: 3eb1b6b8ebf70157eaec5b09756f71173f6ba0e5
+  Kingfisher: dc3a4983e86d2dfa89513664983a82340c11a289
+  leveldb-library: 10fb39c39e243db4af1828441162405bbcec1404
+  MarqueeLabel: fcd7057a779422d86589be759036f1510b08c6a0
+  nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
+  NotificationBannerSwift: 23be55635199b78cd34ea63f980718f85011ad73
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
   SCLAlertView: 8a14ffc40590c619e183eed2298b854385f30be1
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7

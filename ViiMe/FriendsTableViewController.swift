@@ -233,6 +233,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             alertView.addButton("Accept", backgroundColor: FlatGreen())   {
                 self.ref.child("users/\(self.user!.uid)/friends/\(self.invites[indexPath.row].id)").setValue(true)
                 self.ref.child("users/\(self.invites[indexPath.row].id)/friends/\(self.user!.uid)").setValue(true)
+                
             }
             
             alertView.addButton("Decline", backgroundColor: FlatRed()) {
