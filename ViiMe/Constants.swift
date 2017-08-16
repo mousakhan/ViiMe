@@ -16,6 +16,6 @@ struct Constants
         static let users = root.child("users")
         static let groups = root.child("groups")
         static let venues = root.child("venue")
-        static let deals = root.child("deals")
+        static let deals = root.child("deal")
     }
 }

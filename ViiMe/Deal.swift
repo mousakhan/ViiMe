@@ -26,14 +26,14 @@ struct Deal {
         let value = snapshot.value as? NSDictionary
         title = value?["title"] as? String ?? ""
         shortDescription = value?["short-description"] as? String ?? ""
-        longDescription = value?["long-description"] as! String 
-        numberOfPeople = value?["number-of-people"] as! String 
-        numberOfRedemptions = value?["num-redemptions"] as! String 
-        id = value?["id"] as! String 
+        longDescription = value?["long-description"] as? String ?? ""
+        numberOfPeople = value?["number-of-people"] as? String ?? ""
+        numberOfRedemptions = value?["num-redemptions"] as? String ?? ""
+        id = value?["id"] as? String ?? ""
         validFrom = value?["valid-from"] as? String ?? ""
         validTo = value?["valid-to"] as? String ?? ""
         recurringFrom = value?["recurring-from"] as? String ?? ""
-        recurringTo = value?["recurring-to"] as! String 
+        recurringTo = value?["recurring-to"] as? String ?? ""
     }
     
     

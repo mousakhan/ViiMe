@@ -59,6 +59,6 @@ class DateHelper {
             }
             return currentDate > dealFirstDate && currentDate < dealLastDate
         }
-        return false
+        return true
     }
 }

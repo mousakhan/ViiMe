@@ -538,7 +538,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             Constants.refs.root.child("deal/\(id)").observe(DataEventType.value, with: { (snapshot) in
                 let deal = Deal(snapshot: snapshot)
                 
-                if (DateHelper.checkDateValidity(validFrom: deal.validFrom as! String, validTo: deal.validTo as! String, recurringFrom: deal.recurringFrom as! String, recurringTo: deal.recurringTo as! String)) {
+                if (DateHelper.checkDateValidity(validFrom: deal.validFrom, validTo: deal.validTo, recurringFrom: deal.recurringFrom, recurringTo: deal.recurringTo)) {
                     if (isPersonalDeal) {
                         self.personalDeals.append(deal)
                     } else {
@@ -555,21 +555,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     func getVenue(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
         if (id != "") {
             Constants.refs.root.child("venue/\(id)").observe(DataEventType.value, with: { (snapshot) in
-                let value = snapshot.value as? NSDictionary
-                let name = value?["name"] ?? ""
-                let id = value?["id"] ?? ""
-                _ = value?["cuisine"] ?? []
-                let cuisine =  ""
-                let description = value?["description"] ?? ""
-                let price = value?["price"] ?? ""
-                let address = value?["address"] ?? ""
-                let website = value?["website"] ?? " "
-                let number = value?["number"] ?? " "
-                let type = value?["type"] ?? ""
-                let code = value?["code"] ?? ""
-                let deals = value?["deals"] ?? {}
-                let profile = value?["logo"] ?? ""
-                let venue = Venue(name: name as! String, id: id as! String, price: price as! String, code: code as! String, cuisine: cuisine , type: type as! String, address: address as! String, description: description as! String, distance: "", logo: profile as! String, website: website as! String, number: number as! String, deals: [])
+                let venue = Venue(snapshot: snapshot)
                 self.venues.append(venue)
                 completionHandler(true)
             })
