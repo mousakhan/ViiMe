@@ -32,7 +32,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         self.collectionView?.backgroundColor = FlatBlack()
         self.view.backgroundColor = FlatBlack()
     }
-
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         // This is to deal with the case where someone creates a group, then leaves the page.
@@ -51,10 +51,10 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                     }
                 }
             }
-
+            
             shouldDeleteGroups = true
         }
-
+        
         Constants.refs.root.removeAllObservers()
     }
     
@@ -142,10 +142,10 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         } else {
             cell.group = nil
         }
-      
         
         
-     
+        
+        
         if (self.owners.count > 0) {
             // Check if the user is not the owner of the group
             if (self.owners[indexPath.row].id != self.user.id) {
@@ -178,34 +178,49 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         let indexPath = IndexPath(row: row, section: section)
         let group = self.groups[row]
         let id = group.id
+        let ownerId =  group.ownerId
+        let userId = self.user.id
+        
         
         //Setup alert
-        let alertView = SCLAlertView()
-        
+        let appearance = SCLAlertView.SCLAppearance(
+            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+            showCloseButton: false,
+            showCircularIcon: false
+        )
+        let alertView = SCLAlertView(appearance: appearance)
         self.collectionView?.performBatchUpdates({
-            self.groups.remove(at: row)
-            self.collectionView?.deleteItems(at: [indexPath])
-        }, completion: { (isComplete) in
-            let userId = self.user?.id ?? ""
-            let ownerId = group.owner?.id ?? ""
-            // Only remove the entire group if you're the owner
-            if (userId == ownerId) {
-                alertView.addButton("Yes", backgroundColor: FlatRed())   {
+            
+            alertView.addButton("Yes", backgroundColor: FlatRed(), action: {
+                
+                // Remove users from group and from collectionview
+                self.groups.remove(at: row)
+                self.collectionView?.deleteItems(at: [indexPath])
+                
+                // Only remove the entire group from back-end if you're the owner
+                if (userId == ownerId) {
                     Constants.refs.groups.child("\(id)").removeValue()
-                    Constants.refs.root.child("users/\(self.user.id)/groups/\(id)").removeValue()
-                    for user in self.users[row] {
+                    Constants.refs.users.child("\(self.user.id)/groups/\(id)").removeValue()
+                    for user in group.users {
                         Constants.refs.root.child("users/\(user.id)/groups/\(id)").removeValue()
                     }
+                    // If not, only remove yourself from the group in back-end
+                } else {
+                    Constants.refs.users.child("groups/\(id)/users/\(self.user.id)/").removeValue()
+                    Constants.refs.users.child("\(self.user.id)/groups/\(id)").removeValue()
                 }
-                alertView.showWarning("Warning", subTitle: "This will delete the group permanently for all members. Are you sure you want to continue?")
-            } else {
-                // If not, only remove yourself from the group
-                alertView.addButton("Yes", backgroundColor: FlatRed())   {
-                    Constants.refs.root.child("users/\(self.user.id)/groups/\(id)").removeValue()
-                }
-                alertView.showWarning("Warning", subTitle: "This will delete the group permanently for all members. Are you sure you want to continue?")
-            }
+            })
             
+            alertView.addButton("No thanks", backgroundColor: FlatBlue(), action: {})
+            
+            if (userId == ownerId) {
+                alertView.showInfo("Warning", subTitle: "This will permanently delete the group for all members.\n Are you sure you want to continue?")
+            } else {
+                alertView.showInfo("Warning", subTitle: "This will remove you from the group completely. \n Are you sure you want to continue?")
+            }
+        }, completion: { (isComplete) in
         })
     }
     
@@ -300,7 +315,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                 } else {
                     count = count + 1
                 }
-               
+                
                 // Sort the groups by when they were created
                 self.groups = self.groups.sorted { ($0 .created )  > ($1.created ) }
                 
