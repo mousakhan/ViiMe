@@ -259,7 +259,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         for (key, _) in ids {
             let ref = Constants.refs.root.child("deal/\(key)")
             ref.observe( DataEventType.value, with: { snapshot in
-               let deal = Deal(snapshot)
+               let deal = Deal(snapshot: snapshot)
                 if (DateHelper.checkDateValidity(validFrom: deal.validFrom as! String, validTo: deal.validTo as! String, recurringFrom: deal.recurringFrom as! String, recurringTo: deal.recurringTo as! String)) {
                     deals.append(deal)
                 }

@@ -357,7 +357,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     func getDeal(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
         if (id != "") {
             Constants.refs.root.child("deal/\(id)").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-                let deal = Deal(snapshot)
+                let deal = Deal(snapshot: snapshot)
                 if (DateHelper.checkDateValidity(validFrom: deal.validFrom as! String, validTo: deal.validTo as! String, recurringFrom: deal.recurringFrom as! String, recurringTo: deal.recurringTo as! String)) {
                     self.deals.append(deal)
                 }
