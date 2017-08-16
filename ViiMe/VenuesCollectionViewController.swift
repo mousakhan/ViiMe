@@ -17,18 +17,13 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     @IBOutlet var searchBarButtonItem: UIBarButtonItem!
     @IBOutlet var profileBarButtonItem: UIBarButtonItem!
-    var searchController : UISearchController!
     
+    var searchController : UISearchController!
     let reuseIdentifier = "VenueCell"
-    let sectionInsets = UIEdgeInsets(top: 25.0, left: 10.0, bottom: 25.0, right: 10.0)
-    let iconSize = CGFloat(12.0)
-    let offset = CGFloat(5.0)
-    let labelWidth = CGFloat(35.0)
     let locationManager = CLLocationManager()
     var currCoordinate = CLLocation(latitude: 0.0, longitude: 0.0)
     var filteredVenues = [Venue]()
     var venues = [Venue]()
-    var deals = [Deal]()
     
     //MARK: View Lifecycle
     override func viewDidLoad() {
@@ -92,6 +87,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
+        let sectionInsets = UIEdgeInsets(top: 25.0, left: 10.0, bottom: 25.0, right: 10.0)
         flowLayout.sectionInset = sectionInsets
         let numberOfItemsPerRow = 2
         let totalSpace = flowLayout.sectionInset.left
@@ -200,7 +196,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     func initVenues () {
         // Go to back-end 'venue' node and fetch every venue
         Constants.refs.venues.observe(DataEventType.value, with: { (snapshot) in
-            print("reload")
             self.venues = []
             let enumerator = snapshot.children
             //Iterate through the venues, keep track of an index

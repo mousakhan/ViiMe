@@ -38,7 +38,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     var venue : Venue! = nil
     var benefits : Array<Any>! = []
     let genders = ["", "Male", "Female"]
-    var profileURL = ""
     var imagePicker: UIImagePickerController!
     let locationManager = CLLocationManager()
     var currentLocation = CLLocationCoordinate2D()
@@ -103,7 +102,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     //MARK: CLLocationManagerDelegate
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let locValue:CLLocationCoordinate2D = manager.location!.coordinate
-        print("locations = \(locValue.latitude) \(locValue.longitude)")
         self.currentLocation = locValue
     }
     
@@ -410,48 +408,20 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         // Check back end to see if user exists
         let productRef = ref.child("users/\(user!.uid)")
         productRef.observe(DataEventType.value, with: { (snapshot) in
-            let postDict = snapshot.value as? [String : AnyObject] ?? [:]
-            let username = postDict["username"] as? String ?? ""
-            let name = postDict["name"] as? String ?? ""
-            let age = postDict["age"] as? String ?? ""
-            let gender = postDict["gender"] as? String ?? ""
-            let email = postDict["email"] as? String ?? ""
-            let profile = postDict["profile"] as? String ?? ""
-            let groups = postDict["groups"] as? Dictionary<String, Any> ?? [:]
-            let friends = postDict["friends"] as? Array<String> ?? []
-            
-            if (username != "") {
-                self.usernameTextField.text = postDict["username"] as? String
-            }
-            
-            if (name != "") {
-                self.nameTextField.text = postDict["name"] as? String
-            }
-            
-            
-            if (profile != "") {
-                self.profileURL = profile
-                let url = URL(string: profile)
+            let user = UserInfo(snapshot: snapshot)
+            self.usernameTextField.text = user.username
+            self.nameTextField.text = user.name
+            self.emailTextField.text = user.email
+            self.ageTextField.text = user.age
+            self.genderTextField.text = user.gender
+            if (user.profile != "") {
+                let url = URL(string: user.profile)
                 self.profilePicture.kf.indicatorType = .activity
                 self.profilePicture.kf.setImage(with: url)
             } else {
                 self.profilePicture.image = UIImage(named: "empty_profile")
             }
-            
-            if (email != "") {
-                self.emailTextField.text = postDict["email"] as? String
-            }
-            
-            if (age != "") {
-                self.ageTextField.text = postDict["age"] as? String
-            }
-            
-            if (gender != "") {
-                self.genderTextField.text = postDict["gender"] as? String
-            }
-            
-            self.userInfo = UserInfo(username: username, name: name, id: self.user.uid, age: age, email: email, gender: gender, profile: profile, status: "", groups: groups, friends: friends)
-            
+            self.userInfo = user
         })
     }
     
@@ -462,7 +432,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             self.groups = []
             self.deals = []
             self.venues = []
-            for (key, _) in self.userInfo.groups {
+            for (key, _) in self.userInfo.groupIds {
                 var dict = [String: Any]()
                 for child in snapshot.childSnapshot(forPath: key ).children {
                     let key = (child as! DataSnapshot).key
@@ -611,7 +581,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "GroupCollectionViewSegue") {
             let destVC = segue.destination as? GroupCollectionViewController
-            destVC?.ids = self.userInfo!.groups
+            destVC?.ids = self.userInfo!.groupIds
             destVC?.venue = self.venue!
             destVC?.deal = self.deal!
             destVC?.user = self.userInfo!

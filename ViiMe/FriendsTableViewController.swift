@@ -18,8 +18,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     @IBOutlet weak var searchBar: UISearchBar!
     
     var user : User? = Auth.auth().currentUser
-    var deal : Deal? = nil
-    var group : Dictionary<String, Any>? = nil
+    var group : Group? = nil
     var contacts = [Dictionary<String, Any>]()
     var searchController : UISearchController!
     var invites : Array<UserInfo> = []
@@ -43,9 +42,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        print("Heeree")
-        print(user!.uid)
         let friendsRef = ref.child("users/\(user!.uid)/friends")
         friendsRef.observe(DataEventType.value, with: { (snapshot) in
             self.friends = []
@@ -54,19 +50,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             while let friend = enumerator.nextObject() as? DataSnapshot {
                 self.ref.child("users").child(friend.key).observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                     let isFriend = friend.value as? Bool
-                    let value = snapshot.value as? NSDictionary
-                    let username = value?["username"] as? String ?? ""
-                    let name = value?["name"] as? String ?? ""
-                    let id = value?["id"] as? String ?? ""
-                    let age = value?["age"] as? String ?? ""
-                    let email = value?["email"] as? String ?? ""
-                    let gender = value?["gender"] as? String ?? ""
-                    let profile = value?["profile"] as? String ?? ""
-                    
-                    print(snapshot)
-                    
-                    let user = UserInfo(username: username, name: name, id: id, age: age, email: email, gender: gender, profile: profile, status: "", groups: [:], friends: [])
-                    
+                    let user = UserInfo(snapshot: snapshot)
                     
                     if (!self.friends.contains(where: { $0.id == user.id }) && isFriend!) {
                         self.friends.append(user)
@@ -172,7 +156,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             
             let bgColorView = UIView()
             
-            if (deal != nil) {
+            if (self.group != nil) {
                 bgColorView.backgroundColor = .clear
             } else {
                 bgColorView.backgroundColor = FlatPurpleDark()
@@ -249,11 +233,10 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             
             self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
         } else if (indexPath.section == 1) {
-            if (deal != nil) {
-                let id = self.group?["id"] as! String
-                Constants.refs.root.child("groups/\(id)/users/\(self.friends[indexPath.row].id)").setValue(false)
-                Constants.refs.root.child("users/\(self.friends[indexPath.row].id)/groups/\(id)").setValue(false)
-                
+            if (self.group != nil) {
+                let id = self.group?.id ?? ""
+                Constants.refs.groups.child("\(id)/users/\(self.friends[indexPath.row].id)").setValue(false)
+                Constants.refs.users.child("\(self.friends[indexPath.row].id)/groups/\(id)").setValue(false)
                 self.navigationController?.popViewController(animated: true)
             }
         } else if (indexPath.section == 2) {

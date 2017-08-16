@@ -9,13 +9,14 @@
 import UIKit
 import ChameleonFramework
 import Firebase
+import SCLAlertView
 
 private let reuseIdentifier = "GroupCategoryCell"
 
 class GroupCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UserCollectionViewCellDelegate {
     
-    var ids : Dictionary<String, Any>!
-    var groups : Array<Any> = []
+    var ids : Dictionary<String, Bool>? = nil
+    var groups : [Group] = []
     var users : [[UserInfo]]! = []
     var owners: Array<UserInfo>! = []
     var deal: Deal! = nil
@@ -31,58 +32,69 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         self.collectionView?.backgroundColor = FlatBlack()
         self.view.backgroundColor = FlatBlack()
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        // This is to deal with the case where someone creates a group, then leaves the page. 
+        // This is to deal with the case where someone creates a group, then leaves the page.
         // The group should be deleted unless it's to redeem a deal, or to invite someone, and
         // that's what the shouldDeleteGroups bool is keeping track of
         if (shouldDeleteGroups) {
-            for (index, group) in self.groups.enumerated() {
-                var dict = group as! Dictionary<String, Any>
-                if (dict["users"] == nil) {
-                    var group = self.groups[index] as! Dictionary<String, Any>
-                    let id = group["id"] as! String
-                    Constants.refs.root.child("groups/\(id)").removeValue()
-                    Constants.refs.root.child("users/\(self.user.id)/groups/\(id)").removeValue()
-                    self.groups[index] = []
+            // Loop through all the groups
+            for (_, group) in self.groups.enumerated() {
+                // If there are no users, then remove the group from the back-end, which will trigger
+                // the group observor and update the array
+                if (group.users.count == 0 && self.groups.count > 0) {
+                    let id = group.id
+                    if (id != "") {
+                        Constants.refs.groups.child(id).removeValue()
+                        Constants.refs.users.child("\(self.user.id)/groups/\(id)").removeValue()
+                    }
                 }
             }
-            
-            // Filter out any empty groups
-            self.groups = self.groups.filter { ($0 as AnyObject).count > 0 }
+
             shouldDeleteGroups = true
         }
-        
+
         Constants.refs.root.removeAllObservers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // Get all the groups
-        self.getGroups(ids: self.ids as NSDictionary, completionHandler: { (isComplete, groups) in
+        self.groups = []
+        self.getGroups(ids: ids!, completionHandler: { (isComplete, groups) in
             if (isComplete) {
-                self.groups = groups
-                self.collectionView?.reloadData()
-                self.users = []
-                // When the group's are done loading, get all the group owners
-                self.getOwners { (isComplete, owners) in
-                    if (isComplete) {
-                        self.owners = owners
-                        // When the group owners are done loading, get all the users
-                        self.getUsers(completionHandler: { (isComplete, users) in
-                            if (isComplete) {
-                                self.users.append(users as! Array<UserInfo>)
+                for (index, group) in self.groups.enumerated() {
+                    self.getDeal(id: group.dealId, completionHandler: { (isComplete, deal) in
+                        if (isComplete) {
+                            self.groups[index].deal = deal
+                            DispatchQueue.main.async {
                                 self.collectionView?.reloadData()
                             }
-                        })
-                        
-                    }
+                        }
+                    })
+                    
+                    self.getOwner(id: group.ownerId, completionHandler: { (isComplete, owner) in
+                        if (isComplete) {
+                            self.groups[index].owner = owner
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
+                    
+                    self.getUsers(ids: group.userIds, completionHandler: { (isComplete, users) in
+                        if (isComplete) {
+                            self.groups[index].users = users
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
                 }
-                
-                
             }
         })
+        
         
     }
     
@@ -111,6 +123,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         
         cell.delegate = self
         cell.redeemButton.isEnabled = false
+        cell.groupTag = indexPath.row
         
         // Set the index value for the cancel and redeem button, so we know which group is being removed
         cell.redeemButton.layer.setValue(indexPath.row, forKey: "row")
@@ -118,37 +131,43 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         cell.cancelButton.layer.setValue(indexPath.section, forKey: "section")
         cell.cancelButton.addTarget(self, action: #selector(removeGroup(sender:)), for: .touchUpInside)
         
-        if (self.deals.count > 0 && (self.deals.count-1) >= indexPath.row) {
-            cell.dealLabel.text = self.deals[indexPath.row].shortDescription
-            cell.deal = self.deals[indexPath.row]
-            if (self.deals[indexPath.row].numberOfPeople != ""){
-                cell.numOfPeople = Int(cell.deal!.numberOfPeople)! 
+        
+        if (self.groups.count > 0) {
+            if (self.groups[indexPath.row].deal != nil) {
+                cell.group = self.groups[indexPath.row]
+                cell.usersCollectionView.reloadData()
             } else {
-                cell.numOfPeople = 1
+                cell.group = nil
+            }
+        } else {
+            cell.group = nil
+        }
+      
+        
+        
+     
+        if (self.owners.count > 0) {
+            // Check if the user is not the owner of the group
+            if (self.owners[indexPath.row].id != self.user.id) {
+                
+                // Check if user is part of the group already, and adjust button accordingly
+                if (self.groups[indexPath.row].userIds[self.user.id] != nil) {
+                    cell.redeemButton.setTitle("GROUP OWNER MUST REDEEM", for: .normal)
+                    cell.redeemButton.backgroundColor = FlatRed()
+                    cell.redeemButton.isEnabled = false
+                } else {
+                    // If he is not part of the group, then s/he can accept invitation since they must
+                    // have been invited, and adjust button accordingly
+                    cell.redeemButton.setTitle("RESPOND TO INVITATION", for: .normal)
+                    cell.redeemButton.backgroundColor = FlatGreenDark()
+                    cell.redeemButton.isEnabled = true
+                }
             }
         }
         
-        if (self.owners.count > 0 && self.users.count == 0 && self.owners.count >= (indexPath.row+1)) {
-            cell.owner = self.owners[indexPath.row]
-        } else if (self.users.count > 0) {
-            let foundItems = self.users[indexPath.row].filter { ($0 ).status == "Accepted"}
-            if ( (foundItems.count + 1) == cell.numOfPeople && self.owners[indexPath.row].id == self.user.id && self.owners[indexPath.row].id == self.user.id) {
-                cell.redeemButton.isEnabled = true
-            }
-            cell.owner = self.owners[indexPath.row]
-            cell.users = self.users[indexPath.row]
-        }
-        
-
-        cell.usersCollectionView.reloadData()
-        
-        // Set the group tag so we know which group corresponds to the users
-        cell.groupTag = indexPath.row
-        cell.user = self.user
         
         return cell
     }
-    
     
     
     // This is called when the 'x' button is clicked on the group cards
@@ -157,23 +176,34 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         let row : Int = (sender.layer.value(forKey: "row")) as! Int
         let section : Int = (sender.layer.value(forKey: "section")) as! Int
         let indexPath = IndexPath(row: row, section: section)
-        let group = self.groups[row] as! Dictionary<String, Any>
-        let id = group["id"]!
+        let group = self.groups[row]
+        let id = group.id
+        
+        //Setup alert
+        let alertView = SCLAlertView()
         
         self.collectionView?.performBatchUpdates({
             self.groups.remove(at: row)
             self.collectionView?.deleteItems(at: [indexPath])
         }, completion: { (isComplete) in
+            let userId = self.user?.id ?? ""
+            let ownerId = group.owner?.id ?? ""
             // Only remove the entire group if you're the owner
-            if (self.user!.id == self.owners[row].id) {
-                Constants.refs.root.child("groups/\(id)").removeValue()
-                Constants.refs.root.child("users/\(self.user.id)/groups/\(id)").removeValue()
-                for user in self.users[row] {
-                    Constants.refs.root.child("users/\(user.id)/groups/\(id)").removeValue()
+            if (userId == ownerId) {
+                alertView.addButton("Yes", backgroundColor: FlatRed())   {
+                    Constants.refs.groups.child("\(id)").removeValue()
+                    Constants.refs.root.child("users/\(self.user.id)/groups/\(id)").removeValue()
+                    for user in self.users[row] {
+                        Constants.refs.root.child("users/\(user.id)/groups/\(id)").removeValue()
+                    }
                 }
-            // If not, only remove yourself from the group
+                alertView.showWarning("Warning", subTitle: "This will delete the group permanently for all members. Are you sure you want to continue?")
             } else {
-                Constants.refs.root.child("users/\(self.user.id)/groups/\(id)").removeValue()
+                // If not, only remove yourself from the group
+                alertView.addButton("Yes", backgroundColor: FlatRed())   {
+                    Constants.refs.root.child("users/\(self.user.id)/groups/\(id)").removeValue()
+                }
+                alertView.showWarning("Warning", subTitle: "This will delete the group permanently for all members. Are you sure you want to continue?")
             }
             
         })
@@ -188,22 +218,22 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     
     
     //MARK: UserCollectionViewCellDelegate
-    func invite(index : Int, deal : Deal) {
-        self.performSegue(withIdentifier: "FriendsTableVewControllerSegue", sender: [deal, self.groups[index]])
+    func invite(index : Int) {
+        self.performSegue(withIdentifier: "FriendsTableVewControllerSegue", sender: index)
     }
     
     func acceptGroupInvitation(groupIndex : Int) {
-        let group = self.groups[groupIndex] as! Dictionary<String, Any>
-        let id = group["id"]!
+        let group = self.groups[groupIndex]
+        let id = group.id
         Constants.refs.root.child("users/\(self.user.id)/groups/\(id)").setValue(true)
-        Constants.refs.root.child("groups/\(id)/users/\(self.user.id)").setValue(true)
+        Constants.refs.groups.child("\(id)/users/\(self.user.id)").setValue(true)
     }
     
     func declineGroupInvitation(groupIndex : Int) {
-        let group = self.groups[groupIndex] as! Dictionary<String, Any>
-        let id = group["id"]!
+        let group = self.groups[groupIndex]
+        let id = group.id
         Constants.refs.root.child("users/\(self.user.id)/groups/\(id)").removeValue()
-        Constants.refs.root.child("groups/\(id)/users/\(self.user.id)").removeValue()
+        Constants.refs.groups.child("\(id)/users/\(self.user.id)").removeValue()
     }
     
     func redeem(index: Int) {
@@ -211,157 +241,88 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         shouldDeleteGroups = false
     }
     
-    func getUsers(completionHandler: @escaping (_ isComplete: Bool, _ users:Array<Any>) -> ()) {
-        if (self.groups.count > 0) {
-            Constants.refs.root.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-                self.users = []
-                for val in self.groups {
-                    var group = val as! Dictionary<String, Any>
-                    var userInfos : Array<UserInfo> = []
-                   
-                    if (group["users"] != nil) {
-                        let users = group["users"] as! Dictionary<String, Any>
-                        
-                        // Loop through all the user ids
-                        for (key, val) in users {
-                            var user = UserInfo(username: "", name: "", id: "'", age: "'", email: "", gender: "'", profile: "", status: "", groups: [String: Any](), friends: [])
-                            
-                            // Check if the user value is true or false.
-                            // If it is false, the user is still in the invited status
-                            if (!(val as! Bool)) {
-                                user.status = "Invited"
-                            } else {
-                            // Else they have accepted
-                                user.status = "Accepted"
-                            }
-                            
-                            // Go into firebase and loop through every key for the user path
-                            for child in snapshot.childSnapshot(forPath: key).children {
-                                let key = (child as! DataSnapshot).key
-                                if (key == "name") {
-                                    let value = (child as! DataSnapshot).value as! String
-                                    user.name = value
-                                } else if (key == "id") {
-                                    let value = (child as! DataSnapshot).value as! String
-                                    user.id = value
-                                } else if (key == "profile"){
-                                    let value = (child as! DataSnapshot).value as! String
-                                    user.profile = value
-                                }
-                                
-                            }
-                            userInfos.append(user)
-                        }
-                        
-                    }
-                    completionHandler(true, userInfos)
-                }
-            })
-        }
+    func getUsers(ids : Dictionary<String, Bool>, completionHandler: @escaping (_ isComplete: Bool, _ users: [UserInfo]) -> ()) {
+        var users : [UserInfo] = []
         
-    }
-    
-    func getOwners(completionHandler: @escaping (_ isComplete: Bool, _ owner: Array<UserInfo>) -> ()) {
-        let ref = Constants.refs.root.child("users")
-        var owners : Array<UserInfo> = []
-        ref.observeSingleEvent(of: DataEventType.value, with:{ (snapshot: DataSnapshot) in
-            owners = []
-            for val in self.groups {
-                var group = val as! Dictionary<String, Any>
-                if (group["owner"] as! String != "") {
-                    var user = UserInfo(username: "", name: "", id: "'", age: "'", email: "", gender: "'", profile: "", status: "", groups: [String: Any](), friends: [])
-                    for child in snapshot.childSnapshot(forPath: group["owner"] as! String).children {
-                        let key = (child as! DataSnapshot).key
-                        if (key == "name") {
-                            let value = (child as! DataSnapshot).value as! String
-                            user.name = value
-                        } else if (key == "id") {
-                            let value = (child as! DataSnapshot).value as! String
-                            user.id = value
-                        } else if (key == "profile"){
-                            let value = (child as! DataSnapshot).value as! String
-                            user.profile = value
-                        }
-                        
-                    }
-                    owners.append(user)
-                }
-            }
-            completionHandler(true, owners)
-        })
-        
-    }
-    
-    
-    // This'll fetch all the informationg relating to the groups of this venue for the user
-    func getGroups(ids : NSDictionary, completionHandler: @escaping (_ isComplete: Bool, _ groups:Array<Any>) -> ()){
-        var groups : Array<Any> = []
-        
-        // Query for the groups of this venue
-        var ref = Constants.refs.root.child("groups").queryOrdered(byChild: "deal-id").queryEqual(toValue : self.deal!.id)
-        
-        // If it is the group page, where all groups are shown, query by venue-id instead
-        if (isGroupPage) {
-            ref = Constants.refs.root.child("groups").queryOrdered(byChild: "venue-id").queryEqual(toValue : self.venue!.id)
-        }
-        
-        ref.observe(DataEventType.value, with:{ (snapshot: DataSnapshot) in
-            groups = []
-            for (key, _) in ids {
-                var dict = [String: Any]()
-                var isRedeemed = false
-                for child in snapshot.childSnapshot(forPath: key as! String).children {
-                    let key = (child as! DataSnapshot).key
-               
-                    if (key == "deal-id") {
-                        let value = (child as! DataSnapshot).value as! String
-                        dict["deal-id"] = value
-                        self.getDeal(id: value, completionHandler: { (isComplete) in
-                        })
-                    } else if (key == "id") {
-                        let value = (child as! DataSnapshot).value as! String
-                        dict["id"] = value
-                    } else if (key == "users") {
-                        let value = (child as! DataSnapshot).value as! NSDictionary
-                        dict["users"] = value
-                    } else if (key == "usersStatuses") {
-                        let value = (child as! DataSnapshot).value as! Array<Bool>
-                        dict["usersStatuses"] = value
-                    } else if (key == "created") {
-                        let value = (child as! DataSnapshot).value as! Int
-                        dict["created"] = value
-                    } else if (key == "owner") {
-                        let value = (child as! DataSnapshot).value as! String
-                        dict["owner"] = value
-                    } else if (key == "venue-id") {
-                        let value = (child as! DataSnapshot).value as! String
-                        dict["venue-id"] = value
-                    } else if (key == "redemptions") {
-                        isRedeemed = true
-                    }
+        for (key, val) in ids {
+            Constants.refs.users.child(key).observeSingleEvent(of: .value, with: { (snapshot) in
+                var user = UserInfo(snapshot: snapshot)
+                // Check if the user value is true or false.
+                // If it is false, the user is still in the invited status
+                if (!(val )) {
+                    user.status = "Invited"
+                } else {
+                    // Else they have accepted
+                    user.status = "Accepted"
                 }
                 
-                if (dict.count > 0 && !isRedeemed) {
-                    groups.append(dict)
-                    if (!self.isGroupPage) {
-                        groups = groups.sorted { (($0 as! Dictionary<String, Any>)["created"] as! Int)  > (($1 as! Dictionary<String, Any>)["created"] as! Int) }
-                    }
-                    
+                users.append(user)
+                
+                if (users.count == ids.count) {
+                    completionHandler(true, users)
                 }
-            }
-            completionHandler(true, groups)
-        })
+            })
+            
+        }
+        
+        
         
     }
     
-    func getDeal(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
+    // This will loop through all the groups, find the owner user id's and fetch them
+    func getOwner(id : String, completionHandler: @escaping (_ isComplete: Bool, _ owner: UserInfo) -> ()) {
+        // Make sure there actually is a owner
+        if (id != "") {
+            // Fetch it from the back-end
+            Constants.refs.users.child(id).observeSingleEvent(of: .value, with: { (ownerSnapshot) in
+                let user = UserInfo(snapshot: ownerSnapshot)
+                completionHandler(true, user)
+                
+                
+            })
+        }
+    }
+    
+    
+    // This'll fetch all the information relating to the groups of this venue for the user
+    func getGroups(ids : Dictionary<String, Bool>, completionHandler: @escaping (_ isComplete: Bool, _ groups:Array<Any>) -> ()){
+        
+        // Loop through group idss
+        for (key, _) in ids {
+            var count = 0
+            // Fetch it from the back-end
+            Constants.refs.groups.child(key).observe(.value, with: { (snapshot) in
+                let group = Group(snapshot: snapshot)
+                // Make sure group isn't already redeemed, not already in array and actually exists
+                if (!group.redeemed && group.id != "" && !self.groups.contains(where: { $0.id == group.id })) {
+                    // If it isn't, add it to the array, and if it isn't group page, sort it by creation date
+                    self.groups.append(group)
+                } else {
+                    count = count + 1
+                }
+               
+                // Sort the groups by when they were created
+                self.groups = self.groups.sorted { ($0 .created )  > ($1.created ) }
+                
+                // It's complete when the count is equal
+                if (ids.count == self.groups.count - count) {
+                    completionHandler(true, self.groups)
+                }
+                
+            })
+            
+        }
+        
+        
+    }
+    
+    func getDeal(id : String, completionHandler: @escaping (_ isComplete: Bool, _ deal: Deal) -> ()) {
         if (id != "") {
             Constants.refs.root.child("deal/\(id)").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                 let deal = Deal(snapshot: snapshot)
-                if (DateHelper.checkDateValidity(validFrom: deal.validFrom as! String, validTo: deal.validTo as! String, recurringFrom: deal.recurringFrom as! String, recurringTo: deal.recurringTo )) {
-                    self.deals.append(deal)
-                }
-                completionHandler(true)
+                completionHandler(true, deal)
+                
+                //TODO: If deal is invalid, then group probably should be removed
             })
         }
         
@@ -373,9 +334,8 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "FriendsTableVewControllerSegue") {
             let destVC = segue.destination as? FriendsTableViewController
-            var infoArray = sender as! Array<Any>
-            destVC?.deal = infoArray[0] as? Deal
-            destVC?.group = infoArray[1] as? Dictionary<String, Any>
+            let index = sender as? Int ?? 0
+            destVC?.group = self.groups[index]
             shouldDeleteGroups = false
         } else if (segue.identifier == "RedemptionViewControllerSegue") {
             let destVC = segue.destination as? RedemptionViewController
@@ -388,5 +348,5 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         }
         
         
-    }    
+    }
 }

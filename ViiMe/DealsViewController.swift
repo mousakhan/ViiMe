@@ -102,11 +102,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let groupRef = self.ref.child("groups")
             let id = groupRef.childByAutoId()
             
-            self.ref.child("groups/\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue-id": self.venue!.id])
-            let userRef = self.ref.child("users/\(self.user!.id)/groups/\(id.key)")
-            userRef.setValue(true)
+            Constants.refs.groups.child("\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue-id": self.venue!.id])
+            Constants.refs.users.child("\(self.user!.id)/groups/\(id.key)").setValue(true)
             
-            self.user!.groups[id.key] = true
+            self.user!.groupIds[id.key] = true
             
             self.deal = self.venue!.deals[indexPath.row]
             
@@ -212,23 +211,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     func setupUser() {
         let currentUser = Auth.auth().currentUser
-        let userRef = ref.child("users/\(currentUser!.uid)")
-        
-        userRef.observe(DataEventType.value, with: { (snapshot) in
-            let postDict = snapshot.value as? [String : AnyObject] ?? [:]
-            let username = postDict["username"] as? String ?? ""
-            let name = postDict["name"] as? String ?? ""
-            let age = postDict["age"] as? String ?? ""
-            let gender = postDict["gender"] as? String ?? ""
-            let email = postDict["email"] as? String ?? ""
-            let profile = postDict["profile"] as? String ?? ""
-            let friends = postDict["friends"] as? Array<String> ?? []
-            let groupIDs = postDict["groups"] as? Dictionary<String, Any> ?? [:]
-            
-            self.user = UserInfo(username: username, name: name, id: currentUser!.uid, age: age, email: email, gender: gender, profile: profile, status: "", groups: groupIDs, friends: friends)
+        Constants.refs.users.child(currentUser!.uid).observe(DataEventType.value, with: { (snapshot) in
+            self.user = UserInfo(snapshot: snapshot)
         })
     }
-    
     
     //MARK: IBActions
     @IBAction func groupBarButtonItemPressed(_ sender: Any) {
@@ -240,7 +226,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "GroupCollectionViewSegue") {
             let destVC = segue.destination as? GroupCollectionViewController
-            destVC?.ids = self.user!.groups
+            destVC?.ids = self.user!.groupIds
             destVC?.venue = self.venue!
             if (self.deal != nil) {
                 destVC?.deal = self.deal!

@@ -12,7 +12,7 @@ import SCLAlertView
 import Firebase
 
 protocol UserCollectionViewCellDelegate {
-    func invite(index : Int, deal: Deal)
+    func invite(index : Int)
     func redeem(index : Int)
     func acceptGroupInvitation(groupIndex : Int)
     func declineGroupInvitation(groupIndex : Int)
@@ -23,16 +23,12 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     private let reusableIdentifier = "GroupCollectionViewCell"
     
     var delegate: UserCollectionViewCellDelegate?
-    var owner : UserInfo? = nil
-    var users : Array<UserInfo> = []
-    var deal : Deal? = nil
-    var numOfPeople = 0
-    
+    var group : Group? = nil
+    var groupTag = 0
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
         setupViews()
-        self.users = []
     }
     
  
@@ -84,7 +80,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         view.backgroundColor = UIColor(white: 0.4, alpha: 0.5)
         return view
     }()
-    
+
     func setupViews() {
         backgroundColor = FlatBlackDark()
         
@@ -96,13 +92,6 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         
         usersCollectionView.dataSource = self
         usersCollectionView.delegate = self
-        
-        
-        if #available(iOS 10.0, *) {
-            usersCollectionView.isPrefetchingEnabled = false
-        } else {
-            // Fallback on earlier versions
-        }
         
         usersCollectionView.register(UserCollectionViewCell.self, forCellWithReuseIdentifier: reusableIdentifier)
         
@@ -145,87 +134,148 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return numOfPeople
+        if let count = self.group?.deal?.numberOfPeople {
+            return Int(count) ?? 0
+        }
+        return 0
     }
-    
-    var groupTag = 0
-    var user : UserInfo? = nil
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reusableIdentifier, for: indexPath) as! UserCollectionViewCell
-        cell.tag = groupTag
-        cell.profilePicture.image = nil
         
-        if (owner != nil && indexPath.row == 0) {
-            let name =  owner?.name
-            let profile =  owner?.profile
-            if (profile != "") {
-                let url = URL(string: profile!)
-                cell.profilePicture.kf.indicatorType = .activity
-                cell.profilePicture.kf.setImage(with: url)
-            } else {
-                cell.profilePicture.image = UIImage(named: "empty_profile")
+        cell.profilePicture.image = nil
+        cell.statusLabel.text = nil
+        cell.nameLabel.text = nil
+
+        // Disable and then re-enable depending on the user
+        cell.isUserInteractionEnabled = false
+        
+        // Set the tag for later user
+        cell.tag = groupTag
+        
+        // Check if the group exists
+        if (self.group != nil) {
+            if (self.group?.deal != nil) {
+                dealLabel.text = self.group?.deal?.shortDescription
             }
-            cell.nameLabel.text = name
-            cell.profilePicture.contentMode = .scaleToFill
-            cell.statusLabel.text = "Group Owner"
-            cell.isUserInteractionEnabled = false
-        } else if (self.users.count > 0) {
-            if ((self.users.count) >= indexPath.row) {
-                let index = indexPath.row - 1
-                let name =  self.users[index].name
-                let profile =  self.users[index].profile
-                if (profile != "") {
-                    let url = URL(string: profile)
-                    cell.profilePicture.kf.indicatorType = .activity
-                    cell.profilePicture.kf.setImage(with: url)
-                } else {
-                    cell.profilePicture.image = UIImage(named: "empty_profile")
-                }
-                cell.nameLabel.text = name
+            
+            // The first cell should always be the group owner
+            if (indexPath.row == 0 && group?.owner != nil) {
+                cell.nameLabel.text = group?.owner?.name
                 cell.profilePicture.contentMode = .scaleToFill
-                cell.isUserInteractionEnabled = true
-                
-                if (owner?.id != self.user?.id) {
-                    cell.isUserInteractionEnabled = false
-                }
-                
-                if (self.users[index].id == self.user?.id) {
-                    cell.isUserInteractionEnabled = true
-                }
-                
-                if (self.users[index].status != "") {
-                    cell.statusLabel.text = self.users[index].status
-                    if (self.users[index].status == "Accepted") {
-                        cell.isUserInteractionEnabled = false
+                cell.statusLabel.text = "Group Owner"
+                // Should not be able to click the group owner cell
+                cell.isUserInteractionEnabled = false
+                if let profile = self.group?.owner?.profile {
+                    if (profile != "") {
+                        let url = URL(string: profile)
+                        cell.profilePicture.kf.indicatorType = .activity
+                        cell.profilePicture.kf.setImage(with: url)
+                    } else {
+                        cell.profilePicture.image = UIImage(named: "empty_profile")
                     }
                 }
             } else {
-                cell.nameLabel.text = "Invite"
-                cell.profilePicture.image = UIImage(named: "invite")
-                cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
-                cell.profilePicture.tintColor = FlatGray()
-                cell.profilePicture.contentMode = .center
-                cell.isUserInteractionEnabled = true
-                if (owner?.id != self.user?.id) {
-                    cell.isUserInteractionEnabled = false
+                // Otherwise, check if there are users
+                if (self.group!.users.count > 0 && self.group!.users.count >= indexPath.row) {
+                    // This is because the owner isn't included in the users array, need to adjust the index
+                    let index = indexPath.row - 1
+                    let users = self.group?.users
+                    let profile =  users?[index].profile
+                    cell.nameLabel.text = users?[index].name
+                    if (profile != "") {
+                        let url = URL(string: profile!)
+                        cell.profilePicture.kf.indicatorType = .activity
+                        cell.profilePicture.kf.setImage(with: url)
+                    } else {
+                        cell.profilePicture.image = UIImage(named: "empty_profile")
+                    }
+                    cell.profilePicture.contentMode = .scaleToFill
+                } else {
+                    // If there are no users, then invite
+                    cell.nameLabel.text = "Invite"
+                    cell.profilePicture.image = UIImage(named: "invite")
+                    cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
+                    cell.profilePicture.tintColor = FlatGray()
+                    cell.profilePicture.contentMode = .center
+                    cell.statusLabel.text = ""
+                    cell.isUserInteractionEnabled = true
+                    
                 }
-                
-                cell.statusLabel.text = ""
             }
-        } else {
-            cell.nameLabel.text = "Invite"
-            cell.profilePicture.image = UIImage(named: "invite")
-            cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
-            cell.profilePicture.tintColor = FlatGray()
-            cell.profilePicture.contentMode = .center
-            cell.statusLabel.text = ""
-            cell.isUserInteractionEnabled = true
-            if (owner?.id != self.user?.id) {
-                cell.isUserInteractionEnabled = false
-            }
-            cell.statusLabel.text = ""
         }
+        //        cell.tag = groupTag
+        //        cell.profilePicture.image = nil
+        //        if (owner != nil && indexPath.row == 0) {
+        //            let name =  owner?.name
+        //            let profile =  owner?.profile
+        //            if (profile != "") {
+        //                let url = URL(string: profile!)
+        //                cell.profilePicture.kf.indicatorType = .activity
+        //                cell.profilePicture.kf.setImage(with: url)
+        //            } else {
+        //                cell.profilePicture.image = UIImage(named: "empty_profile")
+        //            }
+        //            cell.nameLabel.text = name
+        //            cell.profilePicture.contentMode = .scaleToFill
+        //            cell.statusLabel.text = "Group Owner"
+        //            cell.isUserInteractionEnabled = false
+        //        } else if (self.users.count > 0) {
+        //            if ((self.users.count) >= indexPath.row) {
+        //                let index = indexPath.row - 1
+        //                let name =  self.users[index].name
+        //                let profile =  self.users[index].profile
+        //                if (profile != "") {
+        //                    let url = URL(string: profile)
+        //                    cell.profilePicture.kf.indicatorType = .activity
+        //                    cell.profilePicture.kf.setImage(with: url)
+        //                } else {
+        //                    cell.profilePicture.image = UIImage(named: "empty_profile")
+        //                }
+        //                cell.nameLabel.text = name
+        //                cell.profilePicture.contentMode = .scaleToFill
+        //                cell.isUserInteractionEnabled = true
+        //
+        //                if (owner?.id != self.user?.id) {
+        //                    cell.isUserInteractionEnabled = false
+        //                }
+        //
+        //                if (self.users[index].id == self.user?.id) {
+        //                    cell.isUserInteractionEnabled = true
+        //                }
+        //
+        //                if (self.users[index].status != "") {
+        //                    cell.statusLabel.text = self.users[index].status
+        //                    if (self.users[index].status == "Accepted") {
+        //                        cell.isUserInteractionEnabled = false
+        //                    }
+        //                }
+        //            } else {
+        //                cell.nameLabel.text = "Invite"
+        //                cell.profilePicture.image = UIImage(named: "invite")
+        //                cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
+        //                cell.profilePicture.tintColor = FlatGray()
+        //                cell.profilePicture.contentMode = .center
+        //                cell.isUserInteractionEnabled = true
+        //                if (owner?.id != self.user?.id) {
+        //                    cell.isUserInteractionEnabled = false
+        //                }
+        //
+        //                cell.statusLabel.text = ""
+        //            }
+        //        } else {
+        //            cell.nameLabel.text = "Invite"
+        //            cell.profilePicture.image = UIImage(named: "invite")
+        //            cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
+        //            cell.profilePicture.tintColor = FlatGray()
+        //            cell.profilePicture.contentMode = .center
+        //            cell.statusLabel.text = ""
+        //            cell.isUserInteractionEnabled = true
+        //            if (owner?.id != self.user?.id) {
+        //                cell.isUserInteractionEnabled = false
+        //            }
+        //            cell.statusLabel.text = ""
+        //        }
         
         return cell
     }
@@ -236,40 +286,43 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = self.usersCollectionView.cellForItem(at: indexPath)
+        // Invite the user to the group
+        delegate?.invite(index: cell!.tag)
         
-        var userIndex = -1
         
-        for (index, user) in self.users.enumerated() {
-            if user.id == self.user?.id && user.status != "" {
-                userIndex = index
-            }
-        }
-        
-        if (self.users.count > 0 && userIndex == (indexPath.row - 1)) {
-            
-            let appearance = SCLAlertView.SCLAppearance(
-                showCloseButton: false,
-                showCircularIcon: false
-            )
-            
-            let alertView = SCLAlertView(appearance: appearance)
-            
-            alertView.addButton("Accept", backgroundColor: FlatGreen())   {
-                self.delegate?.acceptGroupInvitation(groupIndex: cell!.tag)
-                cell?.isUserInteractionEnabled = false
-            }
-            
-            alertView.addButton("Decline", backgroundColor: FlatRed()) {
-                self.delegate?.declineGroupInvitation(groupIndex: cell!.tag)
-            }
-            
-            
-            alertView.addButton("Later") {}
-            
-            alertView.showInfo("Invitation", subTitle: "Accept Invitation")
-        } else {
-            delegate?.invite(index: cell!.tag, deal: self.deal!)
-        }
+//        var userIndex = -1
+//        
+//        for (index, user) in self.users.enumerated() {
+//            if user.id == self.user?.id && user.status != "" {
+//                userIndex = index
+//            }
+//        }
+//        
+//        if (self.users.count > 0 && userIndex == (indexPath.row - 1)) {
+//            
+//            let appearance = SCLAlertView.SCLAppearance(
+//                showCloseButton: false,
+//                showCircularIcon: false
+//            )
+//            
+//            let alertView = SCLAlertView(appearance: appearance)
+//            
+//            alertView.addButton("Accept", backgroundColor: FlatGreen())   {
+//                self.delegate?.acceptGroupInvitation(groupIndex: cell!.tag)
+//                cell?.isUserInteractionEnabled = false
+//            }
+//            
+//            alertView.addButton("Decline", backgroundColor: FlatRed()) {
+//                self.delegate?.declineGroupInvitation(groupIndex: cell!.tag)
+//            }
+//            
+//            
+//            alertView.addButton("Later") {}
+//            
+//            alertView.showInfo("Invitation", subTitle: "Accept Invitation")
+//        } else {
+//            delegate?.invite(index: cell!.tag, deal: self.deal!)
+//        }
         
     }
     
@@ -307,6 +360,7 @@ class UserCollectionViewCell: UICollectionViewCell {
     func setupViews(){
         backgroundColor = UIColor.clear
         
+        removeFromSuperview()
         addSubview(profilePicture)
         addSubview(nameLabel)
         addSubview(statusLabel)
@@ -349,5 +403,13 @@ class UserCollectionViewCell: UICollectionViewCell {
         profilePicture.backgroundColor = UIColor.clear
         
         
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        profilePicture.image = nil
+        nameLabel.text = nil
+        statusLabel.text = nil
+
     }
 }

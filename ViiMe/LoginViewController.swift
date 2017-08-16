@@ -32,6 +32,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         TextFieldHelper.addIconToTextField(imageName: "password.png", textfield: passwordTextField)
         createFacebookButton()
         
+        
         usernameTextField.delegate = self
         passwordTextField.delegate = self
     }
@@ -223,7 +224,13 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     
                     
                 } else {
-                    // If the user exists, then just segue
+                    // Add their FCM ID to the back-end for push notifications
+                    self.token = Messaging.messaging().fcmToken
+                    if (self.token != nil) {
+                        Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
+                    }
+                    
+                    // If the user exists, then just segue!
                     self.performSegue(withIdentifier: "VenuesView", sender: nil)
                 }
                 
