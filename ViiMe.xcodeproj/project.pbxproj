@@ -25,6 +25,7 @@
 		4C7EDE0B1EEB01BD001A9B81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C7EDE091EEB01BD001A9B81 /* LaunchScreen.storyboard */; };
 		4C8C0FAC1F3BA9F300B23D37 /* CALayer+BorderProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8C0FAB1F3BA9F300B23D37 /* CALayer+BorderProperties.swift */; };
 		4C8C0FAE1F3BC17F00B23D37 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8C0FAD1F3BC17F00B23D37 /* Group.swift */; };
+		4CB59C0E1F43942800B5CC70 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB59C0D1F43942800B5CC70 /* Constants.swift */; };
 		4CB6AD601F2A3F91004EB393 /* FriendsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD5F1F2A3F91004EB393 /* FriendsTableViewController.swift */; };
 		4CB6AD621F2A6D22004EB393 /* UITextField+Border.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD611F2A6D22004EB393 /* UITextField+Border.swift */; };
 		4CB6AD701F2BC779004EB393 /* DealsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB6AD6F1F2BC779004EB393 /* DealsViewController.swift */; };
@@ -61,6 +62,7 @@
 		4C7EDE0C1EEB01BD001A9B81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C8C0FAB1F3BA9F300B23D37 /* CALayer+BorderProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+BorderProperties.swift"; sourceTree = "<group>"; };
 		4C8C0FAD1F3BC17F00B23D37 /* Group.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		4CB59C0D1F43942800B5CC70 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		4CB6AD5F1F2A3F91004EB393 /* FriendsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendsTableViewController.swift; sourceTree = "<group>"; };
 		4CB6AD611F2A6D22004EB393 /* UITextField+Border.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Border.swift"; sourceTree = "<group>"; };
 		4CB6AD6F1F2BC779004EB393 /* DealsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DealsViewController.swift; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 		4CB6AD771F2CC573004EB393 /* Data Model */ = {
 			isa = PBXGroup;
 			children = (
+				4CB59C0D1F43942800B5CC70 /* Constants.swift */,
 				4CB6AD751F2CC2CF004EB393 /* UserInfo.swift */,
 				4C8C0FAD1F3BC17F00B23D37 /* Group.swift */,
 				4CB6AD7D1F2D4F8E004EB393 /* Deal.swift */,
@@ -277,6 +280,9 @@
 						DevelopmentTeam = 3L8HKMPJ68;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.Keychain = {
+								enabled = 0;
+							};
 							com.apple.Push = {
 								enabled = 1;
 							};
@@ -409,6 +415,7 @@
 				4CB6AD601F2A3F91004EB393 /* FriendsTableViewController.swift in Sources */,
 				4CB6AD761F2CC2CF004EB393 /* UserInfo.swift in Sources */,
 				4C75AE861F3788BD002E518E /* String+Emoji.swift in Sources */,
+				4CB59C0E1F43942800B5CC70 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

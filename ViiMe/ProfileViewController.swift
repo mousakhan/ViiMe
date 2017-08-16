@@ -51,7 +51,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         
         user = Auth.auth().currentUser
-        ref = Database.database().reference()
+        ref = Constants.refs.root
         
         setupData()
         getGroups { (isComplete) in
@@ -182,10 +182,10 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                         BannerHelper.showBanner(title: "Location services must be enabled to redeem deal", type: .danger)
                     case .authorizedAlways, .authorizedWhenInUse:
                         // Set value on the group redemption object
-                        Database.database().reference().child("groups").childByAutoId().child("redemptions").setValue(["title": self.deal.title, "short-description": self.deal.shortDescription, "num-people": self.deal.numberOfPeople, "valid-from": self.deal.validFrom, "valid-to": self.deal.validTo, "recurring-from": self.deal.recurringFrom, "recurring-to": self.deal.recurringTo, "num-redemptions": self.deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude, "users": [self.user.uid : true]
+                        Constants.refs.root.child("groups").childByAutoId().child("redemptions").setValue(["title": self.deal.title, "short-description": self.deal.shortDescription, "num-people": self.deal.numberOfPeople, "valid-from": self.deal.validFrom, "valid-to": self.deal.validTo, "recurring-from": self.deal.recurringFrom, "recurring-to": self.deal.recurringTo, "num-redemptions": self.deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude, "users": [self.user.uid : true]
                             ])
                         
-                        Database.database().reference().child("users/\(self.user.uid)/personal-deals/\(self.personalDeals[indexPath.row].id)").removeValue()
+                        Constants.refs.root.child("users/\(self.user.uid)/personal-deals/\(self.personalDeals[indexPath.row].id)").removeValue()
                         
                         self.personalDeals.remove(at: indexPath.row)
                         self.couponsTableView.reloadData()
@@ -277,7 +277,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                         print(error!)
                         return
                     }
-                    Database.database().reference().root.child("users").child(self.userInfo.id).updateChildValues(["profile": metadata?.downloadURL()?.absoluteString ?? ""])
+                    Constants.refs.root.root.child("users").child(self.userInfo.id).updateChildValues(["profile": metadata?.downloadURL()?.absoluteString ?? ""])
                     
                     
                 })
@@ -457,7 +457,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     
     // This'll fetch all the informationg relating to the groups of this venue for the user
     func getGroups(completionHandler: @escaping (_ isComplete: Bool) -> ()){
-        let ref = Database.database().reference().child("groups")
+        let ref = Constants.refs.root.child("groups")
         ref.observe(DataEventType.value, with:{ (snapshot: DataSnapshot) in
             self.groups = []
             self.deals = []
@@ -514,7 +514,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     }
     
     func getPersonalDeals() {
-        Database.database().reference().child("users/\(self.user.uid)").observe(DataEventType.value, with: { (snapshot) in
+        Constants.refs.root.child("users/\(self.user.uid)").observe(DataEventType.value, with: { (snapshot) in
             let value = snapshot.value as? NSDictionary
             let deals = value?["personal-deals"] ?? [:]
             self.personalDeals = []
@@ -535,22 +535,10 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     
     func getDeal(id : String, isPersonalDeal: Bool, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
         if (id != "") {
-            Database.database().reference().child("deal/\(id)").observe(DataEventType.value, with: { (snapshot) in
-                let value = snapshot.value as? NSDictionary
-                let title = value?["title"] ?? ""
-                let shortDescription = value?["short-description"] ?? ""
-                let longDescription = value?["long-description"] ?? ""
-                let numberOfRedemptions = value?["num-redemptions"] ?? ""
-                let numberOfPeople = value?["number-of-people"] ?? ""
-                let id = value?["id"] ?? ""
-                let validFrom = value?["valid-from"] ?? ""
-                let validTo = value?["valid-to"] ?? ""
-                let recurringFrom = value?["recurring-from"] ?? ""
-                let recurringTo = value?["recurring-to"] ?? ""
+            Constants.refs.root.child("deal/\(id)").observe(DataEventType.value, with: { (snapshot) in
+                let deal = Deal(snapshot: snapshot)
                 
-                let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, numberOfRedemptions: numberOfRedemptions as! String, validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)
-                
-                if (DateHelper.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
+                if (DateHelper.checkDateValidity(validFrom: deal.validFrom as! String, validTo: deal.validTo as! String, recurringFrom: deal.recurringFrom as! String, recurringTo: deal.recurringTo as! String)) {
                     if (isPersonalDeal) {
                         self.personalDeals.append(deal)
                     } else {
@@ -566,7 +554,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     
     func getVenue(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
         if (id != "") {
-            Database.database().reference().child("venue/\(id)").observe(DataEventType.value, with: { (snapshot) in
+            Constants.refs.root.child("venue/\(id)").observe(DataEventType.value, with: { (snapshot) in
                 let value = snapshot.value as? NSDictionary
                 let name = value?["name"] ?? ""
                 let id = value?["id"] ?? ""

@@ -162,16 +162,16 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
                     let id = self.group["id"] as! String
                     
                     // Set value on the group redemption object
-                    Database.database().reference().child("groups/\(id)/redemptions").setValue(["title": deal.title, "short-description": deal.shortDescription, "num-people": deal.numberOfPeople, "valid-from": deal.validFrom, "valid-to": deal.validTo, "recurring-from": deal.recurringFrom, "recurring-to": deal.recurringTo, "num-redemptions": deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude
+                    Constants.refs.root.child("groups/\(id)/redemptions").setValue(["title": deal.title, "short-description": deal.shortDescription, "num-people": deal.numberOfPeople, "valid-from": deal.validFrom, "valid-to": deal.validTo, "recurring-from": deal.recurringFrom, "recurring-to": deal.recurringTo, "num-redemptions": deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude
                         ])
                     
                     
                     // Remove group id from owner
-                    Database.database().reference().child("users/\(owner.id)/groups/\(id)").removeValue()
+                    Constants.refs.root.child("users/\(owner.id)/groups/\(id)").removeValue()
                     
                     // Remove group id from users
                     for user in users {
-                        Database.database().reference().child("users/\(user.id)/groups/\(id)").removeValue()
+                        Constants.refs.root.child("users/\(user.id)/groups/\(id)").removeValue()
                     }
                     
                     

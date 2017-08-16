@@ -40,7 +40,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        ref = Database.database().reference()
+        ref = Constants.refs.root
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -242,9 +242,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let destVC = segue.destination as? GroupCollectionViewController
             destVC?.ids = self.user!.groups
             destVC?.venue = self.venue!
-            if (self.deal == nil) {
-                destVC?.deal = Deal(title: "", shortDescription: "", longDescription: "", id: "", numberOfPeople: "", numberOfRedemptions: "", validFrom: "", validTo: "", recurringFrom: "", recurringTo: "")
-            } else {
+            if (self.deal != nil) {
                 destVC?.deal = self.deal!
             }
             destVC?.user = self.user!

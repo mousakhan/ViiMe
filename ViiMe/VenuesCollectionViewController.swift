@@ -68,7 +68,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        Database.database().reference().removeAllObservers()
+        Constants.refs.root.removeAllObservers()
     }
     
     // MARK: UICollectionViewDataSource
@@ -197,7 +197,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     //MARK: Helpers
     func initVenues () {
-        let ref = Database.database().reference().child("venue")
+        let ref = Constants.refs.root.child("venue")
         ref.observe(DataEventType.value, with: { (snapshot) in
             self.venues = []
             let enumerator = snapshot.children
@@ -257,23 +257,10 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     func getDeals(ids : NSDictionary, completionHandler: @escaping (_ isComplete: Bool, _ deal: Array<Deal>) -> ()){
         var deals : Array<Deal> = []
         for (key, _) in ids {
-            let ref = Database.database().reference().child("deal/\(key)")
+            let ref = Constants.refs.root.child("deal/\(key)")
             ref.observe( DataEventType.value, with: { snapshot in
-                    let value = snapshot.value as? NSDictionary
-                    let title = value?["title"] ?? ""
-                    let shortDescription = value?["short-description"] ?? ""
-                    let longDescription = value?["long-description"] ?? ""
-                    let numberOfPeople = value?["number-of-people"] ?? ""
-                    let numberOfRedemptions = value?["num-redemptions"] ?? ""
-                    let id = value?["id"] ?? ""
-                    let validFrom = value?["valid-from"] ?? ""
-                    let validTo = value?["valid-to"] ?? ""
-                    let recurringFrom = value?["recurring-from"] ?? ""
-                    let recurringTo = value?["recurring-to"] ?? ""
-                
-                    let deal = Deal(title: title as! String, shortDescription: shortDescription as! String, longDescription: longDescription as! String, id: id as! String, numberOfPeople: numberOfPeople as! String, numberOfRedemptions: numberOfRedemptions as! String, validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)
-                
-                if (DateHelper.checkDateValidity(validFrom: validFrom as! String, validTo: validTo as! String, recurringFrom: recurringFrom as! String, recurringTo: recurringTo as! String)) {
+               let deal = Deal(snapshot)
+                if (DateHelper.checkDateValidity(validFrom: deal.validFrom as! String, validTo: deal.validTo as! String, recurringFrom: deal.recurringFrom as! String, recurringTo: deal.recurringTo as! String)) {
                     deals.append(deal)
                 }
                 

@@ -93,7 +93,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let email = emailTextField.text!
         let password = passwordTextField.text!
         
-        ref = Database.database().reference()
+        ref = Constants.refs.root
         
         let userValidation = ValidationHelper.validateUsername(textfield: self.usernameTextField)
         

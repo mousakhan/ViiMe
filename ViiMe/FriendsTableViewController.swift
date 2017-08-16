@@ -34,7 +34,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         
         // Check to see if there are any friend invitations
-        ref = Database.database().reference()
+        ref = Constants.refs.root
         // Check to see if there are any friends
         
         initContacts()
@@ -88,7 +88,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        Database.database().reference().removeAllObservers()
+        Constants.refs.root.removeAllObservers()
     }
     
     override func didReceiveMemoryWarning() {
@@ -251,8 +251,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         } else if (indexPath.section == 1) {
             if (deal != nil) {
                 let id = self.group?["id"] as! String
-                Database.database().reference().child("groups/\(id)/users/\(self.friends[indexPath.row].id)").setValue(false)
-                Database.database().reference().child("users/\(self.friends[indexPath.row].id)/groups/\(id)").setValue(false)
+                Constants.refs.root.child("groups/\(id)/users/\(self.friends[indexPath.row].id)").setValue(false)
+                Constants.refs.root.child("users/\(self.friends[indexPath.row].id)/groups/\(id)").setValue(false)
                 
                 self.navigationController?.popViewController(animated: true)
             }

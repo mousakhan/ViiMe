@@ -20,9 +20,14 @@ protocol UserCollectionViewCellDelegate {
 
 class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    private let reusableIdentifier = "cell"
+    private let reusableIdentifier = "GroupCollectionViewCell"
     
     var delegate: UserCollectionViewCellDelegate?
+    var owner : UserInfo? = nil
+    var users : Array<UserInfo> = []
+    var deal : Deal? = nil
+    var numOfPeople = 0
+    
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)
@@ -30,11 +35,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         self.users = []
     }
     
-    var owner : UserInfo? = nil
-    var users : Array<UserInfo> = []
-    var deal : Deal? = nil
-    var numOfPeople = 0
-    
+ 
     let cancelButton: UIButton = {
         let button = UIButton()
         // Change color of icon button, could probably make this into it's own helper function
@@ -62,13 +63,10 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        
         collectionView.backgroundColor = UIColor.clear
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        
         return collectionView
     }()
-    
     
     let redeemButton: UIButton = {
         let button = UIButton()
@@ -110,6 +108,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         
         self.layer.borderWidth = 0.5
         self.layer.borderColor = FlatGrayDark().cgColor
+        
         
         // Setting up all the constraints
         self.translatesAutoresizingMaskIntoConstraints = false
