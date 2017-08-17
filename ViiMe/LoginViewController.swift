@@ -48,6 +48,16 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     print(error)
                     return
                 }
+                
+                // Add their id to user defaults for future use
+                let userId = UserDefaults.standard.object(forKey: "uid") as? String
+                if (userId != "") {
+                    if let id = Auth.auth().currentUser?.uid {
+                        UserDefaults.standard.set(id, forKey: "uid")
+                        UserDefaults.standard.synchronize()
+                    }
+                }
+                
                 // Add their FCM ID to the back-end for push notifications
                 self.token = Messaging.messaging().fcmToken
                 if (self.token != nil) {
@@ -66,6 +76,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         Auth.auth().addStateDidChangeListener { auth, user in
             // Check if user is logged in, and if their email is actually verified
             if user != nil && user!.isEmailVerified {
+                // Add their id to user defaults for future use
+                let userId = UserDefaults.standard.object(forKey: "uid") as? String
+                if (userId != "") {
+                    if let id = Auth.auth().currentUser?.uid {
+                        UserDefaults.standard.set(id, forKey: "uid")
+                        UserDefaults.standard.synchronize()
+                    }
+                }
                 // Add their FCM ID to the back-end for push notifications
                 self.token = Messaging.messaging().fcmToken
                 if (self.token != nil) {
@@ -114,6 +132,16 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     if (self.token != nil) {
                         Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
                     }
+                    
+                    // Add their id to user defaults for future use
+                    let userId = UserDefaults.standard.object(forKey: "uid") as? String
+                    if (userId != "") {
+                        if let id = Auth.auth().currentUser?.uid {
+                            UserDefaults.standard.set(id, forKey: "uid")
+                            UserDefaults.standard.synchronize()
+                        }
+                    }
+                    
                     self.performSegue(withIdentifier: "VenuesView", sender: nil)
                 }
             }
@@ -224,6 +252,15 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     
                     
                 } else {
+                    
+                    // Add their id to user defaults for future use
+                    let userId = UserDefaults.standard.object(forKey: "uid") as? String
+                    if (userId != "") {
+                        if let id = Auth.auth().currentUser?.uid {
+                            UserDefaults.standard.set(id, forKey: "uid")
+                            UserDefaults.standard.synchronize()
+                        }
+                    }
                     // Add their FCM ID to the back-end for push notifications
                     self.token = Messaging.messaging().fcmToken
                     if (self.token != nil) {

@@ -584,7 +584,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             destVC?.ids = self.userInfo!.groupIds
             destVC?.venue = self.venue!
             destVC?.deal = self.deal!
-            destVC?.user = self.userInfo!
         }
     }
     

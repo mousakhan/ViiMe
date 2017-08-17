@@ -25,6 +25,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     var friends : Array<UserInfo> = []
     var ref: DatabaseReference!
     
+    // This is for when you invite someone to a deal, if there already is a user in that cell, then we need
+    // a way to remove the user if you invite someone else
+    var userToDeleteId : String?
     
     //MARK: View Lifecycle
     override func viewDidLoad() {
@@ -235,6 +238,14 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         } else if (indexPath.section == 1) {
             if (self.group != nil) {
                 let id = self.group?.id ?? ""
+                // Check if there is a user to delete, and if so, remove them from backend
+                if (self.userToDeleteId != "") {
+                    let userId = self.userToDeleteId ?? ""
+                    Constants.refs.users.child("\(userId)/groups/\(id)").removeValue()
+                    Constants.refs.groups.child("\(id)/users/\(userId)").removeValue()
+                    self.userToDeleteId = ""
+                }
+                
                 Constants.refs.groups.child("\(id)/users/\(self.friends[indexPath.row].id)").setValue(false)
                 Constants.refs.users.child("\(self.friends[indexPath.row].id)/groups/\(id)").setValue(false)
                 self.navigationController?.popViewController(animated: true)

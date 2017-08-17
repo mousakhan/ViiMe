@@ -16,10 +16,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     let reuseIdentifier = "UITableViewCell"
     var venue : Venue?
     var deal : Deal? = nil
-    var user : UserInfo?
     var ref: DatabaseReference!
     var groups: Array<Any>?
     var deals : Array<Deal>?
+    var userId = ""
     
     @IBOutlet weak var venueInfoView: UIView!
     @IBOutlet weak var aboutThisVenueLabel: UILabel!
@@ -45,8 +45,12 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         tableView.delegate = self
         tableView.dataSource = self
         
-        setupUser()
         initDealsView()
+        
+        // Grab uid in defaults
+        if let userId = UserDefaults.standard.object(forKey: "uid") as? String {
+            self.userId = userId
+        }
  
     }
     
@@ -102,10 +106,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let groupRef = self.ref.child("groups")
             let id = groupRef.childByAutoId()
             
-            Constants.refs.groups.child("\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": self.user!.id, "venue-id": self.venue!.id])
-            Constants.refs.users.child("\(self.user!.id)/groups/\(id.key)").setValue(true)
-            
-            self.user!.groupIds[id.key] = true
+            Constants.refs.groups.child("\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": self.userId, "venue-id": self.venue!.id])
+            Constants.refs.users.child("\(self.userId)/groups/\(id.key)").setValue(true)
             
             self.deal = self.venue!.deals[indexPath.row]
             
@@ -209,12 +211,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         }
     }
     
-    func setupUser() {
-        let currentUser = Auth.auth().currentUser
-        Constants.refs.users.child(currentUser!.uid).observe(DataEventType.value, with: { (snapshot) in
-            self.user = UserInfo(snapshot: snapshot)
-        })
-    }
     
     //MARK: IBActions
     @IBAction func groupBarButtonItemPressed(_ sender: Any) {
@@ -226,12 +222,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "GroupCollectionViewSegue") {
             let destVC = segue.destination as? GroupCollectionViewController
-            destVC?.ids = self.user!.groupIds
             destVC?.venue = self.venue!
             if (self.deal != nil) {
                 destVC?.deal = self.deal!
             }
-            destVC?.user = self.user!
             if (sender != nil) {
                 destVC?.isGroupPage = true
             } else {
