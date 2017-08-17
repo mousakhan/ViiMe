@@ -16,7 +16,6 @@ import CoreLocation
 class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate, CLLocationManagerDelegate  {
     
     @IBOutlet var searchBarButtonItem: UIBarButtonItem!
-    @IBOutlet var profileBarButtonItem: UIBarButtonItem!
     
     var searchController : UISearchController!
     let reuseIdentifier = "VenueCell"
@@ -137,8 +136,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     //MARK: UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredVenues = venues.filter { venue in
-            // Search by name, venue type or venue cuisine
-            return venue.name.lowercased().contains(searchText.lowercased()) || venue.type.lowercased().contains(searchText.lowercased()) || venue.cuisine.lowercased().contains(searchText.lowercased())
+            // Search by name, venue type, venue cuisine or price
+            return venue.name.lowercased().contains(searchText.lowercased()) || venue.type.lowercased().contains(searchText.lowercased()) || venue.cuisine.lowercased().contains(searchText.lowercased()) ||  venue.price.lowercased().contains(searchText.lowercased())
         }
         
         collectionView?.reloadData()
@@ -151,15 +150,15 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         self.navigationItem.titleView = nil
+        self.navigationItem.setHidesBackButton(false, animated:true)
         self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
-        self.navigationItem.leftBarButtonItem = self.profileBarButtonItem
         searchController.searchBar.text = ""
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.navigationItem.titleView = nil
         self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
-        self.navigationItem.leftBarButtonItem = self.profileBarButtonItem
+        self.navigationItem.setHidesBackButton(false, animated:true)
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -169,7 +168,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     //MARK: IBActions
     @IBAction func searchBarButtonClicked(_ sender: Any) {
         self.navigationItem.rightBarButtonItem = nil
-        self.navigationItem.leftBarButtonItem = nil
+        self.navigationItem.setHidesBackButton(true, animated:true)
         self.navigationItem.titleView = searchController.searchBar
         self.searchController.searchBar.becomeFirstResponder()
     }
