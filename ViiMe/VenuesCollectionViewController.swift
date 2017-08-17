@@ -137,7 +137,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     //MARK: UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate
     func filterContentForSearchText(searchText: String, scope: String = "All") {
         filteredVenues = venues.filter { venue in
-            return venue.name.lowercased().contains(searchText.lowercased())
+            // Search by name, venue type or venue cuisine
+            return venue.name.lowercased().contains(searchText.lowercased()) || venue.type.lowercased().contains(searchText.lowercased()) || venue.cuisine.lowercased().contains(searchText.lowercased())
         }
         
         collectionView?.reloadData()
