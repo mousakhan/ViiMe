@@ -22,9 +22,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var genderTextField: UITextField!
     @IBOutlet weak var ageTextField: UITextField!
-    @IBOutlet weak var couponsTableView: UITableView!
-    @IBOutlet weak var benefitsTableView: UITableView!
-    
+    @IBOutlet weak var rewardsTableView: UITableView!
     @IBOutlet weak var usernameTextField: UITextField!
     
     var ref: DatabaseReference!
@@ -42,6 +40,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     let locationManager = CLLocationManager()
     var currentLocation = CLLocationCoordinate2D()
     
+    
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,9 +52,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         ref = Constants.refs.root
         
         setupData()
-        getGroups { (isComplete) in
-            self.benefitsTableView.reloadData()
-        }
+       
         //Profile Image Setup
         profilePicture.layer.cornerRadius = profilePicture.frame.size.width/2.0
         profilePicture.layer.borderWidth = 1.0
@@ -73,8 +70,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         setupTextField(textfield: genderTextField)
         
         // Tableview set up
-        setupTableview(tableView: benefitsTableView)
-        setupTableview(tableView: couponsTableView)
+        setupTableview(tableView: rewardsTableView)
         
         
         self.getPersonalDeals()
@@ -114,9 +110,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if (tableView == self.benefitsTableView) {
-            return self.deals.count
-        }
         
         return self.personalDeals.count
     }
@@ -130,18 +123,11 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         cell.textLabel?.lineBreakMode = .byWordWrapping
         cell.textLabel?.numberOfLines = 0
         cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
-        
-        if (tableView == self.benefitsTableView) {
-            
-            if (self.deals.count > 0) {
-                cell.textLabel?.text = self.deals[indexPath.row].shortDescription
-                
-            }
-        } else {
+      
             if (self.personalDeals.count > 0) {
                 cell.textLabel?.text = self.personalDeals[indexPath.row].shortDescription
             }
-        }
+        
         let bgColorView = UIView()
         bgColorView.backgroundColor = FlatPurpleDark()
         cell.selectedBackgroundView = bgColorView
@@ -152,11 +138,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (tableView == self.benefitsTableView) {
-            self.deal = self.deals[indexPath.row]
-            self.venue = self.venues[indexPath.row]
-            self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
-        } else if (tableView == self.couponsTableView) {
+        if (tableView == self.rewardsTableView) {
             
             self.deal = self.deals[indexPath.row]
             self.venue = self.venues[indexPath.row]
@@ -186,7 +168,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                         Constants.refs.root.child("users/\(self.user.uid)/personal-deals/\(self.personalDeals[indexPath.row].id)").removeValue()
                         
                         self.personalDeals.remove(at: indexPath.row)
-                        self.couponsTableView.reloadData()
+                        self.rewardsTableView.reloadData()
                         BannerHelper.showBanner(title: "Redemption Succesful", type: .success)
                     }
                 } else {
@@ -424,64 +406,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             self.userInfo = user
         })
     }
-    
-    // This'll fetch all the informationg relating to the groups of this venue for the user
-    func getGroups(completionHandler: @escaping (_ isComplete: Bool) -> ()){
-        let ref = Constants.refs.root.child("groups")
-        ref.observe(DataEventType.value, with:{ (snapshot: DataSnapshot) in
-            self.groups = []
-            self.deals = []
-            self.venues = []
-            for (key, _) in self.userInfo.groupIds {
-                var dict = [String: Any]()
-                for child in snapshot.childSnapshot(forPath: key ).children {
-                    let key = (child as! DataSnapshot).key
-                    if (key == "deal-id") {
-                        let value = (child as! DataSnapshot).value as! String
-                        dict["deal-id"] = value
-                        self.getDeal(id: value, isPersonalDeal: false, completionHandler: { (isComplete) in
-                            
-                            if (isComplete) {
-                                self.benefitsTableView.reloadData()
-                            }
-                        })
-                    } else if (key == "id") {
-                        let value = (child as! DataSnapshot).value as! String
-                        dict["id"] = value
-                    } else if (key == "users") {
-                        let value = (child as! DataSnapshot).value as! NSDictionary
-                        dict["users"] = value
-                    } else if (key == "usersStatuses") {
-                        let value = (child as! DataSnapshot).value as! Array<Bool>
-                        dict["usersStatuses"] = value
-                    } else if (key == "created") {
-                        let value = (child as! DataSnapshot).value as! Int
-                        dict["created"] = value
-                    } else if (key == "owner") {
-                        let value = (child as! DataSnapshot).value as! String
-                        dict["owner"] = value
-                    } else if (key == "venue-id") {
-                        let value = (child as! DataSnapshot).value as! String
-                        dict["venue-id"] = value
-                        self.getVenue(id: value, completionHandler: { (isComplete) in
-                            if (isComplete) {
-                                self.benefitsTableView.reloadData()
-                            }
-                        })
-                        
-                    }
-                }
-                
-                if (dict.count > 0) {
-                    self.groups.append(dict)
-                    self.groups = self.groups.sorted { (($0 as! Dictionary<String, Any>)["created"] as! Int)  > (($1 as! Dictionary<String, Any>)["created"] as! Int) }
-                }
-            }
-            completionHandler(true)
-        })
-        
-        
-    }
+   
     
     func getPersonalDeals() {
         Constants.refs.root.child("users/\(self.user.uid)").observe(DataEventType.value, with: { (snapshot) in
@@ -493,7 +418,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                     print(key)
                     self.getDeal(id: key, isPersonalDeal: true, completionHandler: { (isComplete) in
                         if (isComplete) {
-                            self.couponsTableView.reloadData()
+                            self.rewardsTableView.reloadData()
                         }
                     })
                 }

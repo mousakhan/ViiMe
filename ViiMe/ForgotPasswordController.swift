@@ -48,6 +48,12 @@ class ForgotPasswordViewController: UIViewController, UITextFieldDelegate {
         
     }
     
+    @IBAction func cancelButtonPressed(_ sender: Any) {
+        
+        self.dismiss(animated: true) { 
+            
+        }
+    }
     //MARK: UITextFieldDelegate
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         emailTextField.resignFirstResponder()

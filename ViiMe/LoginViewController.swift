@@ -14,7 +14,7 @@ import FBSDKLoginKit
 import SCLAlertView
 import ChameleonFramework
 
-class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate{
+class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButtonDelegate {
     
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
@@ -63,7 +63,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 if (self.token != nil) {
                     Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
                 }
-                
                 // User is logged in, go to the venues page
                 self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
             }
@@ -73,6 +72,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+    
         Auth.auth().addStateDidChangeListener { auth, user in
             // Check if user is logged in, and if their email is actually verified
             if user != nil && user!.isEmailVerified {
@@ -142,7 +142,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         }
                     }
                     
-                    self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
                 }
             }
         }
