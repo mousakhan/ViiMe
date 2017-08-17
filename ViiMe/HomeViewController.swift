@@ -1,10 +1,12 @@
 //
-//  GroupCollectionViewController.swift
+//  HomeViewController.swift
 //  ViiMe
 //
-//  Created by Mousa Khan on 2017-08-08.
+//  Created by Mousa Khan on 2017-08-17.
 //  Copyright © 2017 Venture Lifestyles. All rights reserved.
 //
+
+import UIKit
 
 import UIKit
 import ChameleonFramework
@@ -12,11 +14,17 @@ import Firebase
 import SCLAlertView
 
 private let reuseIdentifier = "GroupCategoryCell"
+private let headerIdentifier = "GroupHeader"
 
-class GroupCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UserCollectionViewCellDelegate {
+class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, UserCollectionViewCellDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
     
     var ids : Dictionary<String, Bool>? = nil
+    // All groups
     var groups : [Group] = []
+    // Groups you're invited to
+    var invitedGroups : [Group] = []
+    // All other groups
+    var activeGroups : [Group] = []
     var users : [[UserInfo]]! = []
     var owners: Array<UserInfo>! = []
     var deal: Deal! = nil
@@ -24,18 +32,15 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     var venue : Venue!
     var shouldDeleteGroups = true
     var isGroupPage = false
-    var userId = ""
     
+    @IBOutlet weak var collectionView: UICollectionView!
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         self.collectionView?.backgroundColor = FlatBlack()
+        self.collectionView?.delegate = self
+        self.collectionView.dataSource = self
         self.view.backgroundColor = FlatBlack()
-        
-        // Grab uid in defaults
-        if let userId = UserDefaults.standard.object(forKey: "uid") as? String {
-            self.userId = userId
-        }
         
     }
     
@@ -46,23 +51,25 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         // The group should be deleted unless it's to redeem a deal, or to invite someone, and
         // that's what the shouldDeleteGroups bool is keeping track of
         if (shouldDeleteGroups) {
+            print("Now")
             // Loop through all the groups
             for (_, group) in self.groups.enumerated() {
+                print("Group \(group.users.count)")
                 // If there are no users, then remove the group from the back-end, which will trigger
                 // the group observor and update the array
                 if (group.users.count == 0 && self.groups.count > 0) {
                     let id = group.id
                     if (id != "") {
                         Constants.refs.groups.child(id).removeValue()
-                        Constants.refs.users.child("\(userId)/groups/\(id)").removeValue()
+                        Constants.refs.users.child("\(Constants.getUserId())/groups/\(id)").removeValue()
                     }
                 }
             }
-            
+            self.collectionView.reloadData()
             shouldDeleteGroups = true
         }
         
-
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,6 +80,36 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                 DispatchQueue.main.async {
                     self.collectionView?.reloadData()
                 }
+                
+                for (index, group) in self.invitedGroups.enumerated() {
+                    self.getDeal(id: group.dealId, completionHandler: { (isComplete, deal) in
+                        if (isComplete) {
+                            self.invitedGroups[index].deal = deal
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
+                    
+                    self.getOwner(id: group.ownerId, completionHandler: { (isComplete, owner) in
+                        if (isComplete) {
+                            self.invitedGroups[index].owner = owner
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
+                    
+                    self.getUsers(ids: group.userIds, completionHandler: { (isComplete, users) in
+                        if (isComplete) {
+                            self.invitedGroups[index].users = users
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
+                }
+                
                 for (index, group) in self.groups.enumerated() {
                     self.getDeal(id: group.dealId, completionHandler: { (isComplete, deal) in
                         if (isComplete) {
@@ -114,12 +151,43 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     
     
     //MARK: UICollectionViewDataSource
-    override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 2
     }
     
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! GroupCollectionViewHeader
+        
+        if (indexPath.section == 0) {
+            headerView.sectionTitleLabel.text = "GROUP INVITATIONS"
+        } else {
+            headerView.sectionTitleLabel.text = "ACTIVE GROUPS"
+        }
+        
+        
+        return headerView
+    }
     
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 10.0, left: 1.0, bottom: 10.0, right: 1.0)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        
+        // If there are no items in section, then don't show section by
+        // setting size to 0
+        if (collectionView.dataSource?.collectionView(collectionView, numberOfItemsInSection: section) == 0) {
+            return CGSize.zero
+        }
+        
+        let headerView = self.view.subviews[0].subviews[0] as! UICollectionReusableView
+        let existingSize = headerView.frame.size
+        return existingSize
+    }
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if (section == 0) {
+            return self.invitedGroups.count
+        }
         return self.groups.count
     }
     
@@ -127,7 +195,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     //MARK: UICollectionViewDelegate
     // This is for the group cards specifically, and the cell contains another collection view
     // to show the users
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! GroupCollectionViewCell
         
         cell.delegate = self
@@ -141,37 +209,68 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         cell.cancelButton.addTarget(self, action: #selector(removeGroup(sender:)), for: .touchUpInside)
         
         
-        if (self.groups.count > 0) {
-            if (self.groups[indexPath.row].deal != nil) {
-                cell.group = self.groups[indexPath.row]
-                cell.usersCollectionView.reloadData()
+        if (indexPath.section == 1) {
+            if (self.groups.count > 0) {
+                if (self.groups[indexPath.row].deal != nil) {
+                    cell.group = self.groups[indexPath.row]
+                    cell.usersCollectionView.reloadData()
+                } else {
+                    cell.group = nil
+                }
+                
+                if (self.groups[indexPath.row].ownerId != "") {
+                    // Check if the user is not the owner of the group
+                    if (self.groups[indexPath.row].ownerId != Constants.getUserId()) {
+                        // If he is not part of the group, then s/he can accept invitation since they must
+                        // have been invited, and adjust button accordingly
+                        if (self.groups[indexPath.row].userIds[Constants.getUserId()] != nil) {
+                            // Check if user is part of the group already, and adjust button accordingly
+                            cell.redeemButton.setTitle("\(self.groups[indexPath.row].owner?.username ?? "") must redeem", for: .normal)
+                            cell.redeemButton.backgroundColor = FlatPurple()
+                            cell.redeemButton.isEnabled = false
+                        }
+                    }
+                } else {
+                    cell.group = nil
+                }
+            }
+        } else {
+            
+            if (self.invitedGroups.count > 0) {
+                if (self.invitedGroups[indexPath.row].deal != nil) {
+                    cell.group = self.invitedGroups[indexPath.row]
+                    cell.usersCollectionView.reloadData()
+                } else {
+                    cell.group = nil
+                }
+                
+                if (self.invitedGroups[indexPath.row].ownerId != "") {
+                    // Check if the user is not the owner of the group
+                    if (self.invitedGroups[indexPath.row].ownerId != Constants.getUserId()) {
+                        // If he is not part of the group, then s/he can accept invitation since they must
+                        // have been invited, and adjust button accordingly
+                        if (self.invitedGroups[indexPath.row].userIds[Constants.getUserId()] != nil) {
+                            cell.redeemButton.setTitle("Respond to invitation", for: .normal)
+                            cell.redeemButton.backgroundColor = FlatGreenDark()
+                            cell.redeemButton.isEnabled = true
+                            cell.redeemButton.addTarget(cell, action: #selector(cell.respondToInvitation(sender:)), for: .touchUpInside)
+                        } else {
+                            // Check if user is part of the group already, and adjust button accordingly
+                            cell.redeemButton.setTitle("GROUP OWNER MUST REDEEM", for: .normal)
+                            cell.redeemButton.backgroundColor = FlatPurple()
+                            cell.redeemButton.isEnabled = false
+                        }
+                    }
+                }
+                
             } else {
                 cell.group = nil
             }
-        } else {
-            cell.group = nil
+            
         }
         
         
         
-        
-        if (self.groups[indexPath.row].ownerId != "") {
-            // Check if the user is not the owner of the group
-            if (self.groups[indexPath.row].ownerId != userId) {
-                // If he is not part of the group, then s/he can accept invitation since they must
-                // have been invited, and adjust button accordingly
-                if (self.groups[indexPath.row].userIds[userId] != nil) {
-                    cell.redeemButton.setTitle("RESPOND TO INVITATION", for: .normal)
-                    cell.redeemButton.backgroundColor = FlatGreenDark()
-                    cell.redeemButton.isEnabled = true
-                } else {
-                    // Check if user is part of the group already, and adjust button accordingly
-                    cell.redeemButton.setTitle("GROUP OWNER MUST REDEEM", for: .normal)
-                    cell.redeemButton.backgroundColor = FlatPurple()
-                    cell.redeemButton.isEnabled = false
-                }
-            }
-        }
         
         
         return cell
@@ -187,7 +286,7 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         let group = self.groups[row]
         let id = group.id
         let ownerId =  group.ownerId
-        let userId = self.userId
+        let userId = Constants.getUserId()
         
         
         //Setup alert
@@ -208,16 +307,16 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
                 self.collectionView?.deleteItems(at: [indexPath])
                 
                 // Only remove the entire group from back-end if you're the owner
-                if (userId == ownerId) {
+                if (Constants.getUserId() == ownerId) {
                     Constants.refs.groups.child("\(id)").removeValue()
-                    Constants.refs.users.child("\(userId)/groups/\(id)").removeValue()
+                    Constants.refs.users.child("\(Constants.getUserId())/groups/\(id)").removeValue()
                     for user in group.users {
                         Constants.refs.root.child("users/\(user.id)/groups/\(id)").removeValue()
                     }
                     // If not, only remove yourself from the group in back-end
                 } else {
-                    Constants.refs.users.child("groups/\(id)/users/\(userId)/").removeValue()
-                    Constants.refs.users.child("\(userId)/groups/\(id)").removeValue()
+                    Constants.refs.users.child("groups/\(id)/users/\(Constants.getUserId())/").removeValue()
+                    Constants.refs.users.child("\(Constants.getUserId())/groups/\(id)").removeValue()
                 }
             })
             
@@ -245,18 +344,43 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         self.performSegue(withIdentifier: "FriendsTableVewControllerSegue", sender: [index, userId])
     }
     
+    func respondToGroupInvitation(groupIndex: Int) {
+        
+        
+        let appearance = SCLAlertView.SCLAppearance(
+            showCloseButton: false,
+            showCircularIcon: false
+        )
+        
+        let alertView = SCLAlertView(appearance: appearance)
+        
+        alertView.addButton("Accept", backgroundColor: FlatGreen())   {
+            self.acceptGroupInvitation(groupIndex: groupIndex)
+        }
+        
+        alertView.addButton("Decline", backgroundColor: FlatRed()) {
+            self.declineGroupInvitation(groupIndex: groupIndex)
+        }
+        
+        
+        alertView.addButton("Later") {}
+        
+        alertView.showInfo("Invitation", subTitle: "Respond to Invitation")
+        
+    }
     func acceptGroupInvitation(groupIndex : Int) {
-        let group = self.groups[groupIndex]
+        let group = self.invitedGroups[groupIndex]
         let id = group.id
-        Constants.refs.root.child("users/\(userId)/groups/\(id)").setValue(true)
-        Constants.refs.groups.child("\(id)/users/\(userId)").setValue(true)
+        print(Constants.getUserId())
+        Constants.refs.groups.child("\(id)/users/\(Constants.getUserId())").setValue(true)
+        Constants.refs.users.child("\(Constants.getUserId())/groups/\(id)").setValue(true)
     }
     
     func declineGroupInvitation(groupIndex : Int) {
-        let group = self.groups[groupIndex]
+        let group = self.invitedGroups[groupIndex]
         let id = group.id
-        Constants.refs.root.child("users/\(userId)/groups/\(id)").removeValue()
-        Constants.refs.groups.child("\(id)/users/\(userId)").removeValue()
+        Constants.refs.root.child("users/\(Constants.getUserId())/groups/\(id)").removeValue()
+        Constants.refs.groups.child("\(id)/users/\(Constants.getUserId())").removeValue()
     }
     
     func redeem(index: Int) {
@@ -308,30 +432,51 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
     
     // This'll fetch all the information relating to the groups of this venue for the user
     func getGroups(completionHandler: @escaping (_ isComplete: Bool) -> ()){
-        self.groups = []
         // Get the groups from the user's object
-        Constants.refs.users.child(userId).observe(DataEventType.value, with: { (snapshot) in
+        Constants.refs.users.child(Constants.getUserId()).observe(DataEventType.value, with: { (snapshot) in
             let user = UserInfo(snapshot: snapshot)
+            self.invitedGroups = []
+            self.groups = []
+        
             print(user.groupIds)
             // Loop through group idss
-            for (key, _) in user.groupIds {
+            for (key, val) in user.groupIds {
                 var count = 0
                 // Fetch it from the back-end
-                Constants.refs.groups.child(key).observe(.value, with: { (snapshot) in
+                Constants.refs.groups.child(key).observeSingleEvent(of: .value, with: { (snapshot) in
                     let group = Group(snapshot: snapshot)
                     // Make sure group isn't already redeemed, not already in array and actually exists
                     if (!group.redeemed && group.id != "" && !self.groups.contains(where: { $0.id == group.id })) {
-                        // If it isn't, add it to the array, and if it isn't group page, sort it by creation date
-                        self.groups.append(group)
+                        // If it isn't, add it to one of the arrays depending on whether it is an invitation or not, and if it isn't group page, sort it by creation date
+                        
+                        
+                        // Group you're apart of
+                        if (val) {
+                            print("heeereee")
+                            if (self.invitedGroups.contains(where: { $0.id == group.id})) {
+                                let index = self.invitedGroups.index(where: {$0.id == group.id})
+                                self.invitedGroups.remove(at: index!)
+                            }
+                            self.groups.append(group)
+                        } else {
+                            print("Now here")
+                            // Group you were invited to
+                            self.invitedGroups.append(group)
+                        }
                     } else {
                         count = count + 1
                     }
                     
                     // Sort the groups by when they were created
                     self.groups = self.groups.sorted { ($0 .created )  > ($1.created ) }
+                    self.invitedGroups = self.invitedGroups.sorted { ($0 .created )  > ($1.created ) }
+                    
+                    print(self.groups)
+                    print(self.invitedGroups)
                     
                     // It's complete when the count is equal
-                    if (user.groupIds.count == self.groups.count - count) {
+                    if (user.groupIds.count == (self.groups.count + self.invitedGroups.count) - count) {
+                        self.collectionView.reloadData()
                         completionHandler(true)
                     }
                     
@@ -355,18 +500,22 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         
     }
     
-    
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "FriendsTableVewControllerSegue") {
             let destVC = segue.destination as? FriendsTableViewController
             let info = sender as? Array ?? []
-            let index = info[0] as? Int ?? 0
-            let userId = info[1] as? String ?? ""
-            destVC?.group = self.groups[index]
-            destVC?.userToDeleteId =  userId
-            shouldDeleteGroups = false
+            // This will be empty if a user goes to this page
+            // by clicking the contacts button on the top right
+            if (info.count > 0) {
+                print(info)
+                let index = info[0] as? Int ?? 0
+                let userId = info[1] as? String ?? ""
+                destVC?.group = self.groups[index]
+                destVC?.userToDeleteId =  userId
+                shouldDeleteGroups = false
+            }
         } else if (segue.identifier == "RedemptionViewControllerSegue") {
             let destVC = segue.destination as? RedemptionViewController
             let index = sender as! Int
@@ -380,3 +529,8 @@ class GroupCollectionViewController: UICollectionViewController, UICollectionVie
         
     }
 }
+
+class GroupCollectionViewHeader : UICollectionReusableView {
+    @IBOutlet weak var sectionTitleLabel: UILabel!
+}
+

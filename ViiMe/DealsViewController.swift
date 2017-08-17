@@ -36,6 +36,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var scrollView: UIScrollView!
     
+    @IBOutlet weak var dealNavigationItem: UINavigationItem!
+    
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +48,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         tableView.dataSource = self
         
         initDealsView()
+        
         
         // Grab uid in defaults
         if let userId = UserDefaults.standard.object(forKey: "uid") as? String {
@@ -108,10 +111,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             
             Constants.refs.groups.child("\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": self.userId, "venue-id": self.venue!.id])
             Constants.refs.users.child("\(self.userId)/groups/\(id.key)").setValue(true)
+            self.navigationController?.popToRootViewController(animated: true)
             
-            self.deal = self.venue!.deals[indexPath.row]
-            
-            self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: nil)
         }
         
         alertView.addButton("Cancel", backgroundColor: FlatRed())   {}
@@ -211,27 +212,11 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         }
     }
     
-    
-    //MARK: IBActions
-    @IBAction func groupBarButtonItemPressed(_ sender: Any) {
-        self.performSegue(withIdentifier: "GroupCollectionViewSegue", sender: true)
-    }
+
     
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "GroupCollectionViewSegue") {
-            let destVC = segue.destination as? GroupCollectionViewController
-            destVC?.venue = self.venue!
-            if (self.deal != nil) {
-                destVC?.deal = self.deal!
-            }
-            if (sender != nil) {
-                destVC?.isGroupPage = true
-            } else {
-                destVC?.isGroupPage = false
-            }
-        }
     }
     
     

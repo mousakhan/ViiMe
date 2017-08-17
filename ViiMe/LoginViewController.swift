@@ -65,7 +65,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 }
                 
                 // User is logged in, go to the venues page
-                self.performSegue(withIdentifier: "VenuesView", sender: nil)
+                self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
             }
         }
         
@@ -89,7 +89,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 if (self.token != nil) {
                     Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
                 }
-                self.performSegue(withIdentifier: "VenuesView", sender: nil)
+                self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
             } else {
                 // No User is signed in. Show user the login screen
             }
@@ -142,7 +142,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         }
                     }
                     
-                    self.performSegue(withIdentifier: "VenuesView", sender: nil)
+                    self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
                 }
             }
         }
@@ -225,7 +225,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                                 Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
                             }
                             // Segue
-                            self.performSegue(withIdentifier: "VenuesView", sender: nil)
+                            self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
                         }
                     }
                     
@@ -268,7 +268,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     }
                     
                     // If the user exists, then just segue!
-                    self.performSegue(withIdentifier: "VenuesView", sender: nil)
+                    self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
                 }
                 
             })

@@ -580,7 +580,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "GroupCollectionViewSegue") {
-            let destVC = segue.destination as? GroupCollectionViewController
+            let destVC = segue.destination as? HomeViewController
             destVC?.ids = self.userInfo!.groupIds
             destVC?.venue = self.venue!
             destVC?.deal = self.deal!

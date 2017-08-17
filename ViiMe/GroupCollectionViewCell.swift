@@ -14,8 +14,7 @@ import Firebase
 protocol UserCollectionViewCellDelegate {
     func invite(index : Int, userId: String)
     func redeem(index : Int)
-    func acceptGroupInvitation(groupIndex : Int)
-    func declineGroupInvitation(groupIndex : Int)
+    func respondToGroupInvitation(groupIndex : Int)
 }
 
 class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
@@ -120,8 +119,8 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         dividerLineView.heightAnchor.constraint(equalToConstant: 2).isActive = true
         
         usersCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        usersCollectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10).isActive = true
-        usersCollectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
+        usersCollectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 5).isActive = true
+        usersCollectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
         usersCollectionView.topAnchor.constraint(equalTo: self.dividerLineView.bottomAnchor, constant: -2.0).isActive = true
         
         
@@ -130,7 +129,6 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         redeemButton.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
         redeemButton.topAnchor.constraint(equalTo: self.usersCollectionView.bottomAnchor).isActive = true
         redeemButton.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-//        redeemButton.addTarget(self, action: #selector(redeem(sender:)), for: .touchUpInside )
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -169,7 +167,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
             
             // The first cell should always be the group owner
             if (indexPath.row == 0 && group?.owner != nil) {
-                cell.nameLabel.text = group?.owner?.name
+                cell.nameLabel.text = group?.owner?.username
                 cell.profilePicture.contentMode = .scaleToFill
                 cell.statusLabel.text = "Group Owner"
                 // Should not be able to click the group owner cell
@@ -198,7 +196,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                     } else {
                         cell.profilePicture.image = UIImage(named: "empty_profile")
                     }
-                    cell.nameLabel.text = user?.name ?? ""
+                    cell.nameLabel.text = user?.username ?? ""
                     cell.profilePicture.contentMode = .scaleToFill
                     cell.userId = user?.id ?? ""
                 } else if (isGroupOwner) {
@@ -210,7 +208,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                     cell.profilePicture.contentMode = .center
                     cell.statusLabel.text = ""
                     cell.userId = ""
-                    
+                    cell.isUserInteractionEnabled = true
                 } else {
                     // If you aren't the group owner and there are still empty spots
                     // just show filler users
@@ -221,6 +219,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                     cell.profilePicture.contentMode = .center
                     cell.statusLabel.text = ""
                     cell.userId = ""
+                    cell.isUserInteractionEnabled = true
                 }
             }
         }
@@ -235,48 +234,12 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: frame.height/3.0, height: frame.height/2.5)
+        return CGSize(width: frame.height/2.5, height: frame.height/2.5)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = self.usersCollectionView.cellForItem(at: indexPath) as! UserCollectionViewCell
-        // Invite the user to the group
         delegate?.invite(index: cell.tag, userId: cell.userId)
-        
-        
-//        var userIndex = -1
-//        
-//        for (index, user) in self.users.enumerated() {
-//            if user.id == self.user?.id && user.status != "" {
-//                userIndex = index
-//            }
-//        }
-//        
-//        if (self.users.count > 0 && userIndex == (indexPath.row - 1)) {
-//            
-//            let appearance = SCLAlertView.SCLAppearance(
-//                showCloseButton: false,
-//                showCircularIcon: false
-//            )
-//            
-//            let alertView = SCLAlertView(appearance: appearance)
-//            
-//            alertView.addButton("Accept", backgroundColor: FlatGreen())   {
-//                self.delegate?.acceptGroupInvitation(groupIndex: cell!.tag)
-//                cell?.isUserInteractionEnabled = false
-//            }
-//            
-//            alertView.addButton("Decline", backgroundColor: FlatRed()) {
-//                self.delegate?.declineGroupInvitation(groupIndex: cell!.tag)
-//            }
-//            
-//            
-//            alertView.addButton("Later") {}
-//            
-//            alertView.showInfo("Invitation", subTitle: "Accept Invitation")
-//        } else {
-//            delegate?.invite(index: cell!.tag, deal: self.deal!)
-//        }
         
     }
     
@@ -287,6 +250,11 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     func redeem(sender: UIButton) {
         let row : Int = (sender.layer.value(forKey: "row")) as! Int
         delegate?.redeem(index: row)
+    }
+    
+    func respondToInvitation(sender: UIButton) {
+        let row : Int = (sender.layer.value(forKey: "row")) as! Int
+        delegate?.respondToGroupInvitation(groupIndex: row)
     }
     
     
@@ -328,7 +296,7 @@ class UserCollectionViewCell: UICollectionViewCell {
         
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
-        nameLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 2.0).isActive = true
+        nameLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 0).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 15.0).isActive = true
         nameLabel.centerXAnchor.constraint(equalTo: profilePicture.centerXAnchor).isActive = true
         nameLabel.textAlignment = .center
@@ -336,8 +304,7 @@ class UserCollectionViewCell: UICollectionViewCell {
         nameLabel.numberOfLines = 1
         nameLabel.lineBreakMode = .byClipping
         nameLabel.minimumScaleFactor = 0.5
-        nameLabel.font = UIFont.systemFont(ofSize: 11)
-        nameLabel.sizeToFit()
+        nameLabel.font = UIFont.systemFont(ofSize: 10)
         
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true

@@ -27,32 +27,26 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     var delegate: AddFriendTableViewControllerDelegate?
     
     var friends = [Dictionary<String, Any>]()
-    var user : User? = nil
     var userFriends : Array<UserInfo> = []
-    var ref: DatabaseReference!
     var searchController : UISearchController!
     var contacts = [Dictionary<String, Any>]()
     var filteredContacts =  [Dictionary<String, Any>]()
     
-    override func viewDidLoad() {
     
+    override func viewDidLoad() {
         self.tableView.backgroundColor = FlatBlack()
-        ref = Database.database().reference()
-        user = Auth.auth().currentUser
+        // Changing navigation tint color to white, this makes the 'Cancel'
+        // button white
+        UIBarButtonItem.appearance(whenContainedInInstancesOf:[UISearchBar.self]).tintColor = FlatWhite()
         
     }
-    
-    
     
     //MARK: UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate
     func updateSearchResults(for searchController: UISearchController) {
         getSearchResults(query: searchController.searchBar.text!)
         self.tableView.reloadData()
     }
-    
-    
-    
-    
+  
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -115,8 +109,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
         if (indexPath.section == 0) {
             let username = self.friends[indexPath.row]["username"] as! String
             let id = self.friends[indexPath.row]["id"] as! String
-            let path = "users/\(id)/friends"
-            ref.child(path + "/" + user!.uid).setValue(false)
+            Constants.refs.users.child("\(id)/friends/" + Constants.getUserId()).setValue(false)
             BannerHelper.showBanner(title: "Friend Invitation Sent to \(username)", type: .success)
         } else {
             delegate?.sendSmsClick(recipient: self.filteredContacts[indexPath.row]["number"] as! String, vc: self)
@@ -173,7 +166,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                 
                 
                 //For why this works: https://stackoverflow.com/questions/38618953/how-to-do-a-simple-search-in-string-in-firebase-database
-                ref.child("users")
+                Constants.refs.users
                     .queryOrdered(byChild: "username")
                     .queryStarting(atValue: query.lowercased())
                     .queryEnding(atValue: query.lowercased()+"\u{f8ff}")
@@ -200,7 +193,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                             }
                             
                           
-                            if (id != self.user?.uid && !self.userFriends.contains(where: { $0.id == id })
+                            if (id != Constants.getUserId() && !self.userFriends.contains(where: { $0.id == id })
                                 ) {
                                 self.friends.append(dict)
                             }

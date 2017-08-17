@@ -24,7 +24,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     var invites : Array<UserInfo> = []
     var friends : Array<UserInfo> = []
     var ref: DatabaseReference!
-    
     // This is for when you invite someone to a deal, if there already is a user in that cell, then we need
     // a way to remove the user if you invite someone else
     var userToDeleteId : String?
@@ -158,14 +157,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             cell.profilePicture.layer.borderColor = FlatGray().cgColor
             
             let bgColorView = UIView()
-            
-            if (self.group != nil) {
-                bgColorView.backgroundColor = .clear
-            } else {
-                bgColorView.backgroundColor = FlatPurpleDark()
-            }
-            
-             cell.selectedBackgroundView = bgColorView
+            bgColorView.backgroundColor = FlatPurpleDark()
+            cell.selectedBackgroundView = bgColorView
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ContactCell", for: indexPath)
@@ -188,12 +181,12 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
         if (section == 0) {
-            return "Friend Invitations"
+            return "Invitations"
         } else if (section == 1) {
-            return "My Friends"
+            return "Friends"
         }
         
-        return "My Contacts"
+        return "Contacts"
     }
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
@@ -205,6 +198,15 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        
+        
+        // Remove section  if there aren't any rows in section
+        if let numberOfRows = tableView.dataSource?.tableView(tableView, numberOfRowsInSection: section) {
+            if (numberOfRows == 0) {
+                return 0
+            }
+        }
+        
         return 40.0
     }
     
@@ -376,7 +378,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         
         self.searchController.searchBar.tintColor = FlatPurpleDark()
         self.searchController.searchBar.barTintColor = FlatPurpleDark()
-        
+        self.searchController.searchBar.showsCancelButton = true
         self.searchController.searchResultsUpdater = resultsController as UISearchResultsUpdating
         self.searchController.delegate = self
         self.searchController.searchBar.delegate = self

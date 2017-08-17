@@ -166,7 +166,7 @@
                         <outlet property="passwordTextField" destination="Hhm-zu-UPH" id="CpV-ai-E9I"/>
                         <outlet property="signInButton" destination="Fqc-d0-nrk" id="T5q-Mn-V3Z"/>
                         <outlet property="usernameTextField" destination="KMo-gL-hAg" id="uip-H7-OTP"/>
-                        <segue destination="OfP-AE-a5O" kind="show" identifier="VenuesView" id="0Np-4w-rOI"/>
+                        <segue destination="kuA-cn-vyz" kind="show" identifier="HomeViewControllerSegue" id="MH6-qE-RuZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -488,7 +488,7 @@
         <scene sceneID="r37-pI-2nE">
             <objects>
                 <collectionViewController id="KuU-BT-XkD" customClass="VenuesCollectionViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Lzg-LF-ygt">
+                    <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="Lzg-LF-ygt">
                         <rect key="frame" x="0.0" y="64" width="414" height="672"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.12637259066104889" green="0.12639245390892029" blue="0.12636536359786987" alpha="1" colorSpace="calibratedRGB"/>
@@ -517,13 +517,6 @@
                     </collectionView>
                     <navigationItem key="navigationItem" title="Venues" id="7Vx-Ho-4el">
                         <barButtonItem key="backBarButtonItem" title=" " id="GIv-en-Rdn"/>
-                        <barButtonItem key="leftBarButtonItem" image="profile" id="8tx-Z1-3cG">
-                            <inset key="imageInsets" minX="12" minY="12" maxX="12" maxY="12"/>
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <connections>
-                                <segue destination="nMK-oK-2pX" kind="show" id="q0q-As-Iw5"/>
-                            </connections>
-                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="search" id="w3s-Ul-uoe">
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
@@ -532,7 +525,6 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="profileBarButtonItem" destination="8tx-Z1-3cG" id="gZp-vB-Ita"/>
                         <outlet property="searchBarButtonItem" destination="w3s-Ul-uoe" id="3A7-Nk-ZDN"/>
                         <segue destination="vQ5-nF-ICX" kind="show" identifier="DealViewControllerSegue" id="BUK-J3-X73"/>
                     </connections>
@@ -822,13 +814,6 @@
                                 <action selector="dismissProfilePage:" destination="nMK-oK-2pX" id="kat-Aq-66s"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="contacts" id="gSM-v6-F3d">
-                            <inset key="imageInsets" minX="10" minY="10" maxX="5" maxY="5"/>
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <connections>
-                                <segue destination="6VD-eB-E3J" kind="show" identifier="FriendsTableViewControllerSegue" id="PqW-eF-h9j"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="ageTextField" destination="kUh-ox-3xR" id="8s2-Zp-czJ"/>
@@ -845,7 +830,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wF4-hb-DSR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3158" y="849"/>
+            <point key="canvasLocation" x="2286" y="956"/>
         </scene>
         <!--Deals-->
         <scene sceneID="BHy-Z5-wyr">
@@ -1084,14 +1069,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Deals" id="MCe-R4-psV">
-                        <barButtonItem key="backBarButtonItem" title=" " id="cd7-HP-psa"/>
-                        <barButtonItem key="rightBarButtonItem" image="group" id="sOf-A5-OmK">
-                            <inset key="imageInsets" minX="12" minY="12" maxX="12" maxY="12"/>
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <connections>
-                                <action selector="groupBarButtonItemPressed:" destination="vQ5-nF-ICX" id="UBQ-CT-8oZ"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="backBarButtonItem" title="  " id="cd7-HP-psa"/>
                     </navigationItem>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
@@ -1109,7 +1087,6 @@
                         <outlet property="venueLogo" destination="0o2-bs-72h" id="mLM-b1-QHm"/>
                         <outlet property="websiteIcon" destination="RYw-kz-Map" id="2j2-fD-Vcd"/>
                         <outlet property="websiteLabel" destination="xty-r0-BLa" id="lYY-4e-0Ah"/>
-                        <segue destination="8O3-da-ifR" kind="show" identifier="GroupCollectionViewSegue" id="qdb-Yq-DeH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VeC-pz-lsV" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1208,7 +1185,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mdu-7S-XIs" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4016" y="849"/>
+            <point key="canvasLocation" x="4016" y="955"/>
         </scene>
         <!--Add Friend Table View Controller-->
         <scene sceneID="XXt-cm-IgC">
@@ -1299,7 +1276,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="4972" y="849"/>
+            <point key="canvasLocation" x="5878.2608695652179" y="848.64130434782612"/>
         </scene>
         <!--Group Collection View Controller-->
         <scene sceneID="83q-MG-e7s">
@@ -1337,7 +1314,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3zj-0e-CJ5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4971" y="128"/>
+            <point key="canvasLocation" x="3158" y="955"/>
         </scene>
         <!--Redemption View Controller-->
         <scene sceneID="iL2-Cb-Z80">
@@ -1469,27 +1446,131 @@
             </objects>
             <point key="canvasLocation" x="5773.913043478261" y="128.80434782608697"/>
         </scene>
-        <!--VenuesNavigation-->
-        <scene sceneID="Rel-gp-3St">
+        <!--ViiMe-->
+        <scene sceneID="j2y-If-Kwx">
             <objects>
-                <navigationController storyboardIdentifier="VenuesNavigation" title="VenuesNavigation" automaticallyAdjustsScrollViewInsets="NO" id="OfP-AE-a5O" sceneMemberID="viewController">
+                <viewController id="Z3U-aj-bE7" customClass="HomeViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="juj-lf-sG7"/>
+                        <viewControllerLayoutGuide type="bottom" id="znX-7U-6Y0"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="wA4-R6-s66">
+                        <rect key="frame" x="0.0" y="64" width="414" height="672"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="uut-yo-P46">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="612"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Bhr-Yg-iSg">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="50" height="40"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="GroupCategoryCell" id="5Zc-aH-vpj" customClass="GroupCollectionViewCell" customModule="ViiMe" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="40" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </view>
+                                    </collectionViewCell>
+                                </cells>
+                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="GroupHeader" id="Gkd-T5-Wmt" customClass="GroupCollectionViewHeader" customModule="ViiMe" customModuleProvider="target">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="40"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QPl-IM-osN">
+                                            <rect key="frame" x="183" y="8" width="49" height="24"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                            <color key="textColor" red="0.68888300657272339" green="0.71366006135940552" blue="0.73448425531387329" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" red="0.11181893199682236" green="0.1118365004658699" blue="0.1118125319480896" alpha="1" colorSpace="calibratedRGB"/>
+                                    <constraints>
+                                        <constraint firstItem="QPl-IM-osN" firstAttribute="centerY" secondItem="Gkd-T5-Wmt" secondAttribute="centerY" id="DoO-Kk-2lP"/>
+                                        <constraint firstItem="QPl-IM-osN" firstAttribute="centerX" secondItem="Gkd-T5-Wmt" secondAttribute="centerX" id="olT-Vc-cXG"/>
+                                    </constraints>
+                                    <connections>
+                                        <outlet property="sectionTitleLabel" destination="QPl-IM-osN" id="E2O-lt-Gas"/>
+                                    </connections>
+                                </collectionReusableView>
+                            </collectionView>
+                            <button alpha="0.90000000000000002" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gvA-mj-zfK">
+                                <rect key="frame" x="0.0" y="612" width="414" height="60"/>
+                                <color key="backgroundColor" red="0.27836513519287109" green="0.18530510365962982" blue="0.59323644638061523" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="Yrv-Rr-Mvj"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <state key="normal" title="BROWSE VENUES">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="KuU-BT-XkD" kind="show" id="7WF-TR-LmE"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="uut-yo-P46" secondAttribute="trailing" constant="-20" id="2b6-NC-8YT"/>
+                            <constraint firstItem="gvA-mj-zfK" firstAttribute="top" secondItem="uut-yo-P46" secondAttribute="bottom" id="D9Z-xi-oev"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="gvA-mj-zfK" secondAttribute="trailing" constant="-20" id="EY6-rT-AaA"/>
+                            <constraint firstItem="gvA-mj-zfK" firstAttribute="leading" secondItem="wA4-R6-s66" secondAttribute="leadingMargin" constant="-20" id="HEd-lZ-V0C"/>
+                            <constraint firstItem="znX-7U-6Y0" firstAttribute="top" secondItem="gvA-mj-zfK" secondAttribute="bottom" id="U86-d1-aHL"/>
+                            <constraint firstItem="uut-yo-P46" firstAttribute="top" secondItem="juj-lf-sG7" secondAttribute="bottom" id="eBk-Ws-juq"/>
+                            <constraint firstItem="uut-yo-P46" firstAttribute="leading" secondItem="wA4-R6-s66" secondAttribute="leadingMargin" constant="-20" id="wkA-fR-k9e"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="ViiMe" id="1CA-Jx-hUk">
+                        <barButtonItem key="backBarButtonItem" title=" " id="LxP-fn-buh"/>
+                        <barButtonItem key="leftBarButtonItem" image="profile" id="Kfe-e6-e0T">
+                            <inset key="imageInsets" minX="12" minY="12" maxX="12" maxY="12"/>
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <segue destination="nMK-oK-2pX" kind="show" id="Mw6-FP-vaE"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" image="contacts" id="DXF-w0-lcu">
+                            <inset key="imageInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <connections>
+                                <segue destination="6VD-eB-E3J" kind="show" identifier="FriendsTableVewControllerSegue" id="1DG-5s-6sY"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="collectionView" destination="uut-yo-P46" id="m6O-S1-1pL"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DK6-1z-X75" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2286" y="129"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="VOt-9j-a7m">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="kuA-cn-vyz" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="FIg-Ff-FUy">
+                    <navigationBar key="navigationBar" opaque="NO" contentMode="scaleToFill" misplaced="YES" translucent="NO" id="eRp-C5-PVZ">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="barTintColor" red="0.2470588235" green="0.14901960780000001" blue="0.50980392159999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="barTintColor" red="0.27836513519287109" green="0.18530510365962982" blue="0.59323644638061523" alpha="1" colorSpace="calibratedRGB"/>
                         <textAttributes key="titleTextAttributes">
                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="KuU-BT-XkD" kind="relationship" relationship="rootViewController" id="Hfw-ET-1jr"/>
+                        <segue destination="Z3U-aj-bE7" kind="relationship" relationship="rootViewController" id="Q9r-vW-nSB"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="aL0-Kk-Ryc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="u3G-12-EDb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2343" y="129"/>
+            <point key="canvasLocation" x="2422" y="-573"/>
         </scene>
     </scenes>
     <resources>
@@ -1498,13 +1579,11 @@
         <image name="address" width="50" height="50"/>
         <image name="cancel" width="50" height="50"/>
         <image name="contacts" width="48" height="48"/>
-        <image name="group" width="50" height="50"/>
         <image name="phone" width="64" height="64"/>
         <image name="profile" width="50" height="50"/>
         <image name="website" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Ds3-bh-ybB"/>
-        <segue reference="x8h-Vv-5e0"/>
+        <segue reference="1DG-5s-6sY"/>
     </inferredMetricsTieBreakers>
 </document>

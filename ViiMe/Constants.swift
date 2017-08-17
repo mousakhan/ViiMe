@@ -18,4 +18,12 @@ struct Constants
         static let venues = root.child("venue")
         static let deals = root.child("deal")
     }
+    
+    static func getUserId() -> String {
+        // Grab uid in defaults
+        if let userId = UserDefaults.standard.object(forKey: "uid") as? String {
+            return userId
+        }
+        return ""
+    }
 }
