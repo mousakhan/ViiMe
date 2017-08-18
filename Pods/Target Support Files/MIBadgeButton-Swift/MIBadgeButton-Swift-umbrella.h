@@ -10,8 +10,7 @@
 #endif
 #endif
 
-#import "UIEmptyState.h"
 
-FOUNDATION_EXPORT double UIEmptyStateVersionNumber;
-FOUNDATION_EXPORT const unsigned char UIEmptyStateVersionString[];
+FOUNDATION_EXPORT double MIBadgeButton_SwiftVersionNumber;
+FOUNDATION_EXPORT const unsigned char MIBadgeButton_SwiftVersionString[];
 

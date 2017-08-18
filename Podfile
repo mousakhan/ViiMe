@@ -5,8 +5,8 @@ target 'ViiMe' do
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
   # Pods for ViiMe
-  pod 'UIEmptyState'
-  pod 'Fabric'
+  pod 'Fabric' 
+  pod "MIBadgeButton-Swift", :git => 'https://github.com/mustafaibrahim989/MIBadgeButton-Swift.git', :branch => 'master'
   pod 'Crashlytics'
   pod 'Firebase/Storage'
   pod 'ImagePicker'

@@ -49,12 +49,11 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         initDealsView()
         
-        
-        // Grab uid in defaults
-        if let userId = UserDefaults.standard.object(forKey: "uid") as? String {
-            self.userId = userId
-        }
- 
+//        
+//        let infoButton = UIButton(type: .infoLight)
+//        let barButton = UIBarButtonItem(customView: infoButton)
+//        self.navigationItem.rightBarButtonItem = barButton
+       
     }
     
     
@@ -109,8 +108,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             let groupRef = self.ref.child("groups")
             let id = groupRef.childByAutoId()
             
-            Constants.refs.groups.child("\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": self.userId, "venue-id": self.venue!.id])
-            Constants.refs.users.child("\(self.userId)/groups/\(id.key)").setValue(true)
+            Constants.refs.groups.child("\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": Constants.getUserId(), "venue-id": self.venue!.id])
+            Constants.refs.users.child("\(Constants.getUserId())/groups/\(id.key)").setValue(true)
             self.navigationController?.popToRootViewController(animated: true)
             
         }

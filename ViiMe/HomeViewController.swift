@@ -12,26 +12,25 @@ import UIKit
 import ChameleonFramework
 import Firebase
 import SCLAlertView
+import MIBadgeButton_Swift
 
 private let reuseIdentifier = "GroupCategoryCell"
 private let headerIdentifier = "GroupHeader"
 
 class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, UserCollectionViewCellDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
     
-    var ids : Dictionary<String, Bool>? = nil
-    // All groups
     var groups : [Group] = []
-    // Groups you're invited to
     var invitedGroups : [Group] = []
-    // All other groups
-    var activeGroups : [Group] = []
     var users : [[UserInfo]]! = []
     var owners: Array<UserInfo>! = []
     var deal: Deal! = nil
-    var deals: Array<Deal>! = []
+
     var venue : Venue!
     var shouldDeleteGroups = true
     var isGroupPage = false
+  
+    // This is the contacts list icon with the badge for any new friend request
+    let badgeButton : MIBadgeButton = MIBadgeButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
     
     @IBOutlet weak var collectionView: UICollectionView!
     //MARK: View Lifecycle
@@ -42,8 +41,24 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         self.collectionView.dataSource = self
         self.view.backgroundColor = FlatBlack()
         
+
+        let origImage = UIImage(named: "contacts");
+        let tintedImage = origImage?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+        
+        badgeButton.tintColor = FlatWhite()
+        
+        badgeButton.setImage(tintedImage, for: .normal)
+        badgeButton.setTitle("T1", for: UIControlState.normal)
+        badgeButton.setTitleColor(UIColor.black, for: UIControlState.normal)
+        badgeButton.badgeString = ""
+        let barButton : UIBarButtonItem = UIBarButtonItem(customView: badgeButton)
+        self.navigationItem.rightBarButtonItem = barButton
+        badgeButton.addTarget(self, action: #selector(updateBadge(sender:)), for: .touchUpInside)
+        getCurrentUser()
     }
     
+  
+ 
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -500,6 +515,28 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         
     }
     
+    func getCurrentUser() {
+        // Check back end to see if user exists
+        let productRef = Constants.refs.users.child("\(Constants.getUserId())")
+        productRef.observe(DataEventType.value, with: { (snapshot) in
+            let user = UserInfo(snapshot: snapshot)
+            
+            // Check for invites and update badge accordingly if it is greater than 0
+            var count = 0
+            for (_, val) in user.friendIds {
+                if (!val) {
+                    count = count + 1
+                }
+            }
+            if (count > 0) {
+                self.badgeButton.badgeString = "\(count)"
+            } else {
+                self.badgeButton.badgeString = ""
+            }
+        })
+    }
+   
+    
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -520,13 +557,19 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             let destVC = segue.destination as? RedemptionViewController
             let index = sender as! Int
             destVC?.group = self.groups[index] as! Dictionary<String, Any>
-            destVC?.deal = self.deals[index]
             destVC?.venue = self.venue
             destVC?.owner = self.owners[index]
             destVC?.users = self.users[index]
         }
         
         
+    }
+    
+    //MARK: Helpers
+    
+    // This function will be called when the contacts list bar button item is clicked
+    func updateBadge(sender : UIButton) {
+        self.performSegue(withIdentifier: "FriendsTableVewControllerSegue", sender: nil)
     }
 }
 

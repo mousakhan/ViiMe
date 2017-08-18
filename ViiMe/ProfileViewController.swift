@@ -506,7 +506,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "GroupCollectionViewSegue") {
             let destVC = segue.destination as? HomeViewController
-            destVC?.ids = self.userInfo!.groupIds
             destVC?.venue = self.venue!
             destVC?.deal = self.deal!
         }

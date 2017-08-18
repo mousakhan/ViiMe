@@ -496,7 +496,7 @@
         <scene sceneID="r37-pI-2nE">
             <objects>
                 <collectionViewController id="KuU-BT-XkD" customClass="VenuesCollectionViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="Lzg-LF-ygt">
+                    <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="Lzg-LF-ygt">
                         <rect key="frame" x="0.0" y="64" width="414" height="672"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.12637259066104889" green="0.12639245390892029" blue="0.12636536359786987" alpha="1" colorSpace="calibratedRGB"/>
@@ -1254,7 +1254,7 @@
         <scene sceneID="83q-MG-e7s">
             <objects>
                 <collectionViewController storyboardIdentifier="GroupCollectionViewController" id="8O3-da-ifR" customClass="GroupCollectionViewController" customModule="ViiMe" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" dataMode="prototypes" id="V2E-Ax-B1C">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="V2E-Ax-B1C">
                         <rect key="frame" x="0.0" y="64" width="414" height="672"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1505,16 +1505,26 @@
                                 <segue destination="nMK-oK-2pX" kind="show" id="Mw6-FP-vaE"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="contacts" id="DXF-w0-lcu">
+                        <barButtonItem key="rightBarButtonItem" image="contacts" style="plain" id="kAV-3G-A9r">
                             <inset key="imageInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" id="tkP-M1-uOr" customClass="MIBadgeButton">
+                                <rect key="frame" x="346" y="-2" width="48" height="48"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <inset key="imageEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                <state key="normal" image="contacts"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="badgeBackgroundColor">
+                                        <color key="value" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </button>
                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <connections>
-                                <segue destination="6VD-eB-E3J" kind="show" identifier="FriendsTableVewControllerSegue" id="1DG-5s-6sY"/>
-                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="collectionView" destination="uut-yo-P46" id="m6O-S1-1pL"/>
+                        <segue destination="6VD-eB-E3J" kind="show" identifier="FriendsTableVewControllerSegue" id="Zpk-AZ-u7u"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DK6-1z-X75" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1526,7 +1536,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="kuA-cn-vyz" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" opaque="NO" contentMode="scaleToFill" misplaced="YES" translucent="NO" id="eRp-C5-PVZ">
+                    <navigationBar key="navigationBar" opaque="NO" contentMode="scaleToFill" translucent="NO" id="eRp-C5-PVZ">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1556,6 +1566,6 @@
         <image name="website" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="1DG-5s-6sY"/>
+        <segue reference="Zpk-AZ-u7u"/>
     </inferredMetricsTieBreakers>
 </document>

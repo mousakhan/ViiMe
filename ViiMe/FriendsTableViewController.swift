@@ -293,7 +293,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             alertView.addButton("Accept", backgroundColor: FlatGreen())   {
                 Constants.refs.users.child("\(Constants.getUserId())/friends/\(invite!.id)").setValue(true)
                 Constants.refs.users.child("\(invite!.id)/friends/\(Constants.getUserId())").setValue(true)
-                
+                self.filteredInvites = []
+                self.searchBar.text = ""
+                self.tableView.reloadData()
             }
             
             alertView.addButton("Decline", backgroundColor: FlatRed()) {
@@ -304,6 +306,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             // Don't do anything
             alertView.addButton("Later") {}
             
+            self.view.endEditing(true)
             
             alertView.showInfo("Accept Invitation", subTitle: "Add \(invite!.username) to your friend list")
             
@@ -325,8 +328,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                 } else {
                     friend = self.friends[indexPath.row]
                 }
-                
-                
                 
                 Constants.refs.groups.child("\(id)/users/\(friend!.id)").setValue(false)
                 Constants.refs.users.child("\(friend!.id)/groups/\(id)").setValue(false)
@@ -354,9 +355,19 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
+        var friend : UserInfo? = nil
+        if (isSearchActive()) {
+            friend = self.filteredFriends[indexPath.row]
+        } else {
+            friend = self.friends[indexPath.row]
+        }
+        
+        
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
-            Constants.refs.users.child("\(self.user!.uid)/friends/\(self.friends[indexPath.row].id)").removeValue()
-            Constants.refs.users.child("\(self.friends[indexPath.row].id)/friends/\(self.user!.uid)").removeValue()
+            Constants.refs.users.child("\(Constants.getUserId())/friends/\(friend!.id)").removeValue()
+            Constants.refs.users.child("\(friend!.id)/friends/\(Constants.getUserId())").removeValue()
+            self.searchBar.endEditing(true)
+            self.searchBar.text = ""
             self.tableView.reloadData()
         }
         
@@ -440,11 +451,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         return  self.searchBar.text != ""
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.searchBar.endEditing(true)
-
-    }
-
     //MARK: Search Controller
     func willPresentSearchController(_ searchController: UISearchController) {
         DispatchQueue.main.async {

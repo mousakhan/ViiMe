@@ -83,6 +83,7 @@ PODS:
   - Kingfisher (3.10.4)
   - leveldb-library (1.18.3)
   - MarqueeLabel/Swift (3.1.2)
+  - MIBadgeButton-Swift (0.5)
   - nanopb (0.3.8):
     - nanopb/decode (= 0.3.8)
     - nanopb/encode (= 0.3.8)
@@ -94,7 +95,6 @@ PODS:
   - Protobuf (3.3.0)
   - SCLAlertView (0.7.0)
   - SnapKit (3.2.0)
-  - UIEmptyState (2.0.0)
 
 DEPENDENCIES:
   - ChameleonFramework/Swift (from `https://github.com/ViccAlexander/Chameleon.git`)
@@ -109,18 +109,24 @@ DEPENDENCIES:
   - Firebase/Storage
   - ImagePicker
   - Kingfisher (~> 3.0)
+  - MIBadgeButton-Swift (from `https://github.com/mustafaibrahim989/MIBadgeButton-Swift.git`, branch `master`)
   - NotificationBannerSwift
   - SCLAlertView
-  - UIEmptyState
 
 EXTERNAL SOURCES:
   ChameleonFramework:
     :git: https://github.com/ViccAlexander/Chameleon.git
+  MIBadgeButton-Swift:
+    :branch: master
+    :git: https://github.com/mustafaibrahim989/MIBadgeButton-Swift.git
 
 CHECKOUT OPTIONS:
   ChameleonFramework:
     :commit: 6dd284bde21ea2e7f9fd89bc36f40df16e16369d
     :git: https://github.com/ViccAlexander/Chameleon.git
+  MIBadgeButton-Swift:
+    :commit: 3c2638d2e6e46ec2e6dd978d8ada8863df3df5e6
+    :git: https://github.com/mustafaibrahim989/MIBadgeButton-Swift.git
 
 SPEC CHECKSUMS:
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
@@ -145,13 +151,13 @@ SPEC CHECKSUMS:
   Kingfisher: dc3a4983e86d2dfa89513664983a82340c11a289
   leveldb-library: 10fb39c39e243db4af1828441162405bbcec1404
   MarqueeLabel: fcd7057a779422d86589be759036f1510b08c6a0
+  MIBadgeButton-Swift: 9e57309b00b168d75ca8fecb45bc75124a8ffddf
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   NotificationBannerSwift: 23be55635199b78cd34ea63f980718f85011ad73
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
   SCLAlertView: 8a14ffc40590c619e183eed2298b854385f30be1
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
-  UIEmptyState: 414304b38dbb399ef83f5bd48d5492c39794d6f8
 
-PODFILE CHECKSUM: f2bdc63359713e0270bdb0de8a6671baf1334ce9
+PODFILE CHECKSUM: 5f0c6d6e02ac6d9e2c2e2db8e85d4e660169379c
 
 COCOAPODS: 1.2.1

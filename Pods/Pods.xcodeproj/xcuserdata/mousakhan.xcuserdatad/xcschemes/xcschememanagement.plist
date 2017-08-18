@@ -59,6 +59,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>MIBadgeButton-Swift.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>MarqueeLabel.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -85,11 +90,6 @@
 			<false/>
 		</dict>
 		<key>SnapKit.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>UIEmptyState.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -123,6 +123,11 @@
 			<true/>
 		</dict>
 		<key>320AD47B0C6BA014D301395D3BFC8FB6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>34E1BEE5B9151B6FF42B51C88D1AF746</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -162,17 +167,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>835646F748EE87D9A3A1ECB519E2AD9D</key>
+		<key>7C4EEA8B1A9BAFEFB918515217607B8B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8E3463826AD71ED06A46504A9CD71F76</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>AD00190C4689061AE3E77191B4DBC6E0</key>
+		<key>A29D9EE64E1A31FE87FDF367521454AD</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -202,7 +202,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F7380C11AB9213E2619B210633BFB5A4</key>
+		<key>F7E80FF390A4A9C867C1A8462E0DF47C</key>
 		<dict>
 			<key>primary</key>
 			<true/>

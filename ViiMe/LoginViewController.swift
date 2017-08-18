@@ -23,6 +23,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     var token = Messaging.messaging().fcmToken
     
+    
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
