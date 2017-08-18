@@ -94,6 +94,7 @@ PODS:
   - Protobuf (3.3.0)
   - SCLAlertView (0.7.0)
   - SnapKit (3.2.0)
+  - UIEmptyState (2.0.0)
 
 DEPENDENCIES:
   - ChameleonFramework/Swift (from `https://github.com/ViccAlexander/Chameleon.git`)
@@ -110,6 +111,7 @@ DEPENDENCIES:
   - Kingfisher (~> 3.0)
   - NotificationBannerSwift
   - SCLAlertView
+  - UIEmptyState
 
 EXTERNAL SOURCES:
   ChameleonFramework:
@@ -148,7 +150,8 @@ SPEC CHECKSUMS:
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
   SCLAlertView: 8a14ffc40590c619e183eed2298b854385f30be1
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
+  UIEmptyState: 414304b38dbb399ef83f5bd48d5492c39794d6f8
 
-PODFILE CHECKSUM: af6d0fd3ad3c3370a537e529f88add1dda52dffa
+PODFILE CHECKSUM: f2bdc63359713e0270bdb0de8a6671baf1334ce9
 
 COCOAPODS: 1.2.1

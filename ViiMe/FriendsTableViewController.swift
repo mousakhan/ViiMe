@@ -31,20 +31,12 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     // a way to remove the user if you invite someone else
     var userToDeleteId : String?
     
-    let friendSearchController = UISearchController(searchResultsController: nil)
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         self.navigationController?.navigationBar.tintColor = FlatWhite()
-        friendSearchController.searchBar.barTintColor = FlatPurpleDark()
-        friendSearchController.searchBar.tintColor = FlatWhite()
-        friendSearchController.searchResultsUpdater = self
-        friendSearchController.dimsBackgroundDuringPresentation = false
-        definesPresentationContext = true
-        tableView.tableHeaderView = friendSearchController.searchBar
-        
-    
+        searchBar.delegate = self
+        searchBar.keyboardAppearance = .dark
         initContacts()
         
     }
@@ -95,7 +87,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     }
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-      
+        
         filteredFriends = friends.filter({( friend : UserInfo) -> Bool in
             return friend.name.lowercased().contains(searchText.lowercased())
         })
@@ -333,7 +325,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                 } else {
                     friend = self.friends[indexPath.row]
                 }
-            
+                
                 
                 
                 Constants.refs.groups.child("\(id)/users/\(friend!.id)").setValue(false)
@@ -445,9 +437,14 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     }
     
     func isSearchActive() -> Bool {
-        return friendSearchController.isActive && friendSearchController.searchBar.text != ""
+        return  self.searchBar.text != ""
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.searchBar.endEditing(true)
+
+    }
+
     //MARK: Search Controller
     func willPresentSearchController(_ searchController: UISearchController) {
         DispatchQueue.main.async {
@@ -497,19 +494,62 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        let trimmedString = searchText.trimmingCharacters(in: .whitespaces)
-        searchBar.text = trimmedString
         
-        if searchText == ("") {
-            searchBar.text = " "
+        if (searchBar == self.searchBar) {
+            filteredFriends = friends.filter({( friend : UserInfo) -> Bool in
+                return friend.username.lowercased().contains(searchBar.text!.lowercased())
+            })
+            
+            filteredInvites = invites.filter({( friend : UserInfo) -> Bool in
+                return friend.username.lowercased().contains(searchBar.text!.lowercased())
+            })
+            
+            filteredContacts = []
+            _ = self.contacts.filter({ (dict) -> Bool in
+                let number = dict["number"] as? String
+                let name = dict["name"] as? String
+                if (number!.contains(searchBar.text!.lowercased()) || (name!.lowercased().contains(searchBar.text!.lowercased()))) {
+                    self.filteredContacts.append(dict)
+                }
+                return true
+            })
+            self.tableView.reloadData()
+        } else {
+            let trimmedString = searchText.trimmingCharacters(in: .whitespaces)
+            searchBar.text = trimmedString
+            
+            if searchText == ("") {
+                searchBar.text = " "
+            }
+            
         }
+        
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        self.searchController = nil
+        if (searchBar == self.searchBar) {
+            searchBar.endEditing(true)
+            searchBar.text = ""
+            tableView.reloadData()
+        } else {
+            self.searchController = nil
+        }
     }
     
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = true;
+    }
     
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false;
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
+        searchBar.text = ""
+        tableView.reloadData()
+        
+    }
     //MARK: AddFriendTableViewControllerDelegate
     func dismissSearchController() {
         self.searchController.isActive = false
