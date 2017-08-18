@@ -188,7 +188,8 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     func openWebsite(_ sender: UITapGestureRecognizer) {
         let text = (sender.view as! UILabel).text
-        let url = URL(string: text!)!
+        let url = URL(string: "http://" + text!)!
+        
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         } else {
@@ -197,6 +198,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func openAddress(_ sender: UITapGestureRecognizer) {
+        print("Hereee")
         let text = (sender.view as! UILabel).text
         let baseUrl: String = "http://maps.apple.com/?q="
         let encodedName = text?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!

@@ -26,15 +26,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     @IBOutlet weak var usernameTextField: UITextField!
     
     var ref: DatabaseReference!
-    var user: User!
-    var userInfo : UserInfo!
-    var groups : Array<Any>! = []
-    var deals : Array<Deal>! = []
-    var personalDeals : Array<Deal>! = []
-    var deal : Deal! = nil
-    var venues : Array<Venue>! = []
-    var venue : Venue! = nil
-    var benefits : Array<Any>! = []
+    var user: UserInfo!
     let genders = ["", "Male", "Female"]
     var imagePicker: UIImagePickerController!
     let locationManager = CLLocationManager()
@@ -48,11 +40,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         self.view.backgroundColor = FlatBlack()
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         
-        user = Auth.auth().currentUser
-        ref = Constants.refs.root
-        
-        setupData()
-       
         //Profile Image Setup
         profilePicture.layer.cornerRadius = profilePicture.frame.size.width/2.0
         profilePicture.layer.borderWidth = 1.0
@@ -61,6 +48,19 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         let photoTapGesture = UITapGestureRecognizer(target: self, action: #selector(takePhoto))
         profilePicture.addGestureRecognizer(photoTapGesture)
         
+        
+        self.usernameTextField.text = user.username
+        self.nameTextField.text = user.name
+        self.emailTextField.text = user.email
+        self.ageTextField.text = user.age
+        self.genderTextField.text = user.gender
+        if (user.profile != "") {
+            let url = URL(string: user.profile)
+            self.profilePicture.kf.indicatorType = .activity
+            self.profilePicture.kf.setImage(with: url)
+        } else {
+            self.profilePicture.image = UIImage(named: "empty_profile")
+        }
         
         // Textfield setup
         setupTextField(textfield: usernameTextField)
@@ -109,9 +109,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        
-        return self.personalDeals.count
+        return self.user.personalDeals.count
     }
     
     //MARK: UITableViewDelegate
@@ -124,8 +122,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         cell.textLabel?.numberOfLines = 0
         cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
       
-            if (self.personalDeals.count > 0) {
-                cell.textLabel?.text = self.personalDeals[indexPath.row].shortDescription
+            if (self.user.personalDeals.count > 0) {
+                cell.textLabel?.text = self.user.personalDeals[indexPath.row].shortDescription
             }
         
         let bgColorView = UIView()
@@ -139,9 +137,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if (tableView == self.rewardsTableView) {
-            
-            self.deal = self.deals[indexPath.row]
-            self.venue = self.venues[indexPath.row]
+         
             let appearance = SCLAlertView.SCLAppearance(
                 kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
                 kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
@@ -154,20 +150,22 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             let alertView = SCLAlertView(appearance: appearance)
             
             let redemptionTextField = alertView.addTextField("Enter redemption code")
+            redemptionTextField.keyboardAppearance = .dark
             
             alertView.addButton("Redeem", backgroundColor: FlatPurple(), action: {
-                if (CLLocationManager.locationServicesEnabled() && redemptionTextField.text == self.venues[indexPath.row].code) {
+                if (CLLocationManager.locationServicesEnabled() && redemptionTextField.text == self.user.personalDeals[indexPath.row].venue?.code) {
                     switch(CLLocationManager.authorizationStatus()) {
                     case .notDetermined, .restricted, .denied:
                         BannerHelper.showBanner(title: "Location services must be enabled to redeem deal", type: .danger)
                     case .authorizedAlways, .authorizedWhenInUse:
+                        let deal = self.user.personalDeals[indexPath.row]
                         // Set value on the group redemption object
-                        Constants.refs.root.child("groups").childByAutoId().child("redemptions").setValue(["title": self.deal.title, "short-description": self.deal.shortDescription, "num-people": self.deal.numberOfPeople, "valid-from": self.deal.validFrom, "valid-to": self.deal.validTo, "recurring-from": self.deal.recurringFrom, "recurring-to": self.deal.recurringTo, "num-redemptions": self.deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude, "users": [self.user.uid : true]
+                        Constants.refs.root.child("groups").childByAutoId().child("redemptions").setValue(["title": deal.title, "short-description": deal.shortDescription, "num-people": deal.numberOfPeople, "valid-from": deal.validFrom, "valid-to": deal.validTo, "recurring-from": deal.recurringFrom, "recurring-to": deal.recurringTo, "num-redemptions": deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude, "users": [Constants.getUserId() : true, "redeemed": ServerValue.timestamp()]
                             ])
                         
-                        Constants.refs.root.child("users/\(self.user.uid)/personal-deals/\(self.personalDeals[indexPath.row].id)").removeValue()
+                        Constants.refs.root.child("users/\(Constants.getUserId())/personal-deals/\(self.user.personalDeals[indexPath.row].id)").removeValue()
                         
-                        self.personalDeals.remove(at: indexPath.row)
+                        self.user.personalDeals.remove(at: indexPath.row)
                         self.rewardsTableView.reloadData()
                         BannerHelper.showBanner(title: "Redemption Succesful", type: .success)
                     }
@@ -239,7 +237,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         if (profilePicture.image != nil) {
             
-            let storageRef = Storage.storage().reference().child("profile/ " + userInfo.id + ".png")
+            let storageRef = Storage.storage().reference().child("profile/ " + Constants.getUserId()
+                + ".png")
             
             storageRef.delete { error in
                 if let error = error {
@@ -257,7 +256,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                         print(error!)
                         return
                     }
-                    Constants.refs.root.root.child("users").child(self.userInfo.id).updateChildValues(["profile": metadata?.downloadURL()?.absoluteString ?? ""])
+                    Constants.refs.users.child(Constants.getUserId()).updateChildValues(["profile": metadata?.downloadURL()?.absoluteString ?? ""])
                     
                     
                 })
@@ -321,7 +320,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         let gender = genderTextField.text
         
         self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-            self.ref.child("users/\(self.user!.uid)").setValue(["username": username, "name": name, "age": age, "email": email, "gender": gender, "id": self.userInfo.id, "profile": self.userInfo.profile])
+            self.ref.child("users/\(Constants.getUserId())").setValue(["username": username, "name": name, "age": age, "email": email, "gender": gender, "id": Constants.getUserId(), "profile": self.user.profile])
         })
         
     }
@@ -386,73 +385,32 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         scrollView.contentInset = contentInset
     }
     
-    func setupData() {
-        // Check back end to see if user exists
-        let productRef = ref.child("users/\(user!.uid)")
-        productRef.observe(DataEventType.value, with: { (snapshot) in
-            let user = UserInfo(snapshot: snapshot)
-            self.usernameTextField.text = user.username
-            self.nameTextField.text = user.name
-            self.emailTextField.text = user.email
-            self.ageTextField.text = user.age
-            self.genderTextField.text = user.gender
-            if (user.profile != "") {
-                let url = URL(string: user.profile)
-                self.profilePicture.kf.indicatorType = .activity
-                self.profilePicture.kf.setImage(with: url)
-            } else {
-                self.profilePicture.image = UIImage(named: "empty_profile")
-            }
-            self.userInfo = user
-        })
-    }
-   
     
     func getPersonalDeals() {
-        Constants.refs.root.child("users/\(self.user.uid)").observe(DataEventType.value, with: { (snapshot) in
-            let value = snapshot.value as? NSDictionary
-            let deals = value?["personal-deals"] ?? [:]
-            self.personalDeals = []
-            if ( (deals as! Dictionary<String, Any>).count > 0) {
-                for (key, _) in (deals as! Dictionary<String, Any>) {
-                    print(key)
-                    self.getDeal(id: key, isPersonalDeal: true, completionHandler: { (isComplete) in
-                        if (isComplete) {
+        for (key, _) in self.user.personalDealIds {
+            Constants.refs.deals.child(key).observeSingleEvent(of: .value, with: { (snapshot) in
+                var deal = Deal(snapshot: snapshot)
+                self.getVenue(id: deal.venueId, completionHandler: { (isComplete, venue) in
+                    if (isComplete) {
+                        deal.venue = venue
+                        self.user.personalDeals.append(deal)
+                        if (self.user.personalDeals.count == self.user.personalDealIds.count) {
                             self.rewardsTableView.reloadData()
                         }
-                    })
-                }
-            }
-        })
-        
-        
-    }
-    
-    func getDeal(id : String, isPersonalDeal: Bool, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
-        if (id != "") {
-            Constants.refs.root.child("deal/\(id)").observe(DataEventType.value, with: { (snapshot) in
-                let deal = Deal(snapshot: snapshot)
-                
-                if (DateHelper.checkDateValidity(validFrom: deal.validFrom, validTo: deal.validTo, recurringFrom: deal.recurringFrom, recurringTo: deal.recurringTo)) {
-                    if (isPersonalDeal) {
-                        self.personalDeals.append(deal)
-                    } else {
-                        self.deals.append(deal)
                     }
-                }
-                completionHandler(true)
+                })
+
             })
+            
         }
-        
     }
     
     
-    func getVenue(id : String, completionHandler: @escaping (_ isComplete: Bool) -> ()) {
+    func getVenue(id : String, completionHandler: @escaping (_ isComplete: Bool, _ venue: Venue) -> ()) {
         if (id != "") {
-            Constants.refs.root.child("venue/\(id)").observe(DataEventType.value, with: { (snapshot) in
+            Constants.refs.venues.child("\(id)").observe(DataEventType.value, with: { (snapshot) in
                 let venue = Venue(snapshot: snapshot)
-                self.venues.append(venue)
-                completionHandler(true)
+                completionHandler(true, venue)
             })
         }
         
@@ -486,7 +444,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         let token = Messaging.messaging().fcmToken
         if (token != nil) {
-            self.ref.child("users/\(user!.uid)/notifications/\(token!)").removeValue()
+            self.ref.child("users/\(Constants.getUserId())/notifications/\(token!)").removeValue()
         }
         
         

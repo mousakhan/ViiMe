@@ -21,6 +21,8 @@ struct Deal {
     var validTo : String
     var recurringFrom : String
     var recurringTo : String
+    var venueId : String
+    var venue: Venue? = nil
     
     init(snapshot: DataSnapshot) {
         let value = snapshot.value as? NSDictionary
@@ -34,6 +36,7 @@ struct Deal {
         validTo = value?["valid-to"] as? String ?? ""
         recurringFrom = value?["recurring-from"] as? String ?? ""
         recurringTo = value?["recurring-to"] as? String ?? ""
+        venueId = value?["venue-id"] as? String ?? ""
     }
     
     

@@ -322,7 +322,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             if (self.group != nil) {
                 let id = self.group?.id ?? ""
                 // Check if there is a user to delete, and if so, remove them from backend
-                if (self.userToDeleteId != "" && self.userToDeleteId != friend?.id) {
+                if (self.userToDeleteId != "" && self.userToDeleteId != (friend?.id ?? "")) {
                     let userId = self.userToDeleteId ?? ""
                     Constants.refs.users.child("\(userId)/groups/\(id)").removeValue()
                     Constants.refs.groups.child("\(id)/users/\(userId)").removeValue()
@@ -330,8 +330,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                 }
                 
                 
-                
-                if (self.userToDeleteId != friend?.id) {
+                if (self.userToDeleteId != (friend?.id ?? "")) {
                     Constants.refs.groups.child("\(id)/users/\(friend!.id)").setValue(false)
                     Constants.refs.users.child("\(friend!.id)/groups/\(id)").setValue(false)
                 }

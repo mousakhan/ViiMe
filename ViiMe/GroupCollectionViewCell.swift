@@ -155,6 +155,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         cell.profilePicture.image = nil
         cell.statusLabel.text = nil
         cell.nameLabel.text = nil
+        cell.nameLabel.textColor = FlatWhite()
         cell.statusLabel.textColor = FlatWhite()
         // Set the tag for later user
         cell.tag = groupTag
@@ -200,15 +201,15 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                     cell.profilePicture.contentMode = .scaleToFill
                     cell.userId = user?.id ?? ""
                     let status = user?.status ?? ""
+                    cell.isUserInteractionEnabled = true
                     
-                    // Change text color to green if it's accepted
+                    // Change text color to green if it's accepted, and don't let them be able to change it.
                     if (status == "Accepted") {
                         cell.statusLabel.textColor = FlatGreen()
-                    } else if (status == "Invited") {
-                        cell.statusLabel.textColor = FlatYellow()
+                        cell.isUserInteractionEnabled = false
                     }
                     
-                    cell.isUserInteractionEnabled = true
+                    
                     cell.statusLabel.text = status
                 } else if (isGroupOwner) {
                     // If there are no users, then invite
@@ -223,12 +224,11 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                 } else {
                     // If you aren't the group owner and there are still empty spots
                     // just show filler users
-                    cell.nameLabel.text = ""
-                    cell.profilePicture.image = UIImage(named: "user")
-                    cell.profilePicture.image = cell.profilePicture.image?.withRenderingMode(.alwaysTemplate)
-                    cell.profilePicture.tintColor = FlatGray()
-                    cell.profilePicture.contentMode = .center
-                    cell.statusLabel.text = ""
+                    cell.nameLabel.text = "?"
+                    cell.profilePicture.image = UIImage(named: "empty_profile")
+                    cell.profilePicture.contentMode = .scaleToFill
+                    cell.statusLabel.text = "Waiting"
+                    cell.statusLabel.textColor = FlatYellow()
                     cell.userId = ""
                     cell.isUserInteractionEnabled = false
                 }
@@ -343,6 +343,5 @@ class UserCollectionViewCell: UICollectionViewCell {
         nameLabel.text = nil
         statusLabel.text = nil
         userId = ""
-
     }
 }
