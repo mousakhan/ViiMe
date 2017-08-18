@@ -21,11 +21,9 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var cancelButton: UIButton!
     
-    var deal : Deal!
-    var venue : Venue!
-    var owner : UserInfo!
-    var users : Array<UserInfo>!
-    var group : Dictionary<String, Any>!
+    var venue : Venue? = nil
+    var group : Group? = nil
+    
     let locationManager = CLLocationManager()
     var currentLocation = CLLocationCoordinate2D()
     
@@ -51,13 +49,13 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         cancelButton.tintColor = UIColor.white
         
         
-        self.dealTitleLabel.text = deal.shortDescription
+        self.dealTitleLabel.text = self.group?.deal?.shortDescription ?? ""
         
         // Create the message to show
-        var subTitle = "Valid from \(DateHelper.parseDate(date: deal.validFrom)) to \(DateHelper.parseDate(date: deal.validTo))"
+        var subTitle = "Valid from \(DateHelper.parseDate(date: self.group?.deal?.validFrom ?? "")) to \(DateHelper.parseDate(date: self.group?.deal?.validTo ?? ""))"
         
-        let recurringTo = DateHelper.parseTime(time: deal.recurringTo)
-        let recurringFrom = DateHelper.parseTime(time: deal.recurringFrom)
+        let recurringTo = DateHelper.parseTime(time: self.group?.deal?.recurringTo ?? "")
+        let recurringFrom = DateHelper.parseTime(time: self.group?.deal?.recurringFrom ?? "")
         
         // If it's a deal that only recurs from certain times, show it
         if (recurringTo != "" && recurringFrom != "") {
@@ -71,9 +69,6 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         
         collectionView.register(UserCollectionViewCell.self, forCellWithReuseIdentifier: reusableIdentifier)
         
-        self.users = self.users.filter { $0.id != "" }
-        
-        print(group)
     }
     
     //MARK: UICollectionView Datasource
@@ -82,7 +77,7 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.users.count + 1
+        return (self.group?.users.count  ?? 0) + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -91,11 +86,11 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         cell.profilePicture.image = nil
         cell.isUserInteractionEnabled = false
         
-        if (owner != nil && indexPath.row == 0) {
-            let name =  owner?.name
-            let profile =  owner?.profile
+        if (self.group?.owner != nil && indexPath.row == 0) {
+            let name =  self.group?.owner?.name ?? ""
+            let profile =  self.group?.owner?.profile ?? ""
             if (profile != "") {
-                let url = URL(string: profile!)
+                let url = URL(string: profile)
                 cell.profilePicture.kf.indicatorType = .activity
                 cell.profilePicture.kf.setImage(with: url)
             } else {
@@ -104,11 +99,11 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
             cell.nameLabel.text = name
             cell.profilePicture.contentMode = .scaleToFill
             cell.statusLabel.text = "Group Owner"
-        } else if (self.users.count > 0) {
-            if ((self.users.count) >= indexPath.row) {
+        } else if ((self.group?.users.count  ?? 0) > 0) {
+            if (((self.group?.users.count  ?? 0)) >= indexPath.row) {
                 let index = indexPath.row - 1
-                let name =  self.users[index].name
-                let profile =  self.users[index].profile
+                let name =  self.group?.users[index].name ?? ""
+                let profile =  self.group?.users[index].profile ?? ""
                 if (profile != "") {
                     let url = URL(string: profile)
                     cell.profilePicture.kf.indicatorType = .activity
@@ -154,26 +149,37 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
             case .notDetermined, .restricted, .denied:
                  BannerHelper.showBanner(title: "Location services must be enabled to redeem deal", type: .danger)
             case .authorizedAlways, .authorizedWhenInUse:
-                if (self.venue!.code != self.codeTextField.text) {
+                if ((self.group?.venue?.code ?? "") != self.codeTextField.text) {
                     BannerHelper.showBanner(title: "Incorrect Code Entered", type: .danger)
                 } else {
                     BannerHelper.showBanner(title: "Deal Redeemed", type: .success)
                     
-                    let id = self.group["id"] as! String
+                    let id = self.group?.id ?? ""
+                    
+                    let title = self.group?.deal?.title ?? ""
+                    let shortDescription = self.group?.deal?.shortDescription ?? ""
+                    let numberOfPeople = self.group?.deal?.numberOfPeople ?? ""
+                    let validFrom = self.group?.deal?.validFrom ?? ""
+                    let validTo = self.group?.deal?.validTo ?? ""
+                    let recurringFrom = self.group?.deal?.recurringFrom ?? ""
+                    let recurringTo = self.group?.deal?.recurringTo ?? ""
+                    let numberOfRedemptions = self.group?.deal?.numberOfRedemptions ?? ""
                     
                     // Set value on the group redemption object
-                    Constants.refs.root.child("groups/\(id)/redemptions").setValue(["title": deal.title, "short-description": deal.shortDescription, "num-people": deal.numberOfPeople, "valid-from": deal.validFrom, "valid-to": deal.validTo, "recurring-from": deal.recurringFrom, "recurring-to": deal.recurringTo, "num-redemptions": deal.numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude
+                    Constants.refs.root.child("groups/\(id)/redemptions").setValue(["title": title, "short-description": shortDescription, "num-people": numberOfPeople, "valid-from": validFrom, "valid-to": validTo, "recurring-from": recurringFrom, "recurring-to": recurringTo, "num-redemptions": numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude, "redeemed": ServerValue.timestamp()
                         ])
                     
                     
                     // Remove group id from owner
-                    Constants.refs.root.child("users/\(owner.id)/groups/\(id)").removeValue()
+                    Constants.refs.root.child("users/\(self.group?.owner?.id ?? "")/groups/\(id)").removeValue()
                     
                     // Remove group id from users
-                    for user in users {
-                        Constants.refs.root.child("users/\(user.id)/groups/\(id)").removeValue()
+                    if let users = self.group?.users {
+                        for user in users {
+                            Constants.refs.root.child("users/\(user.id)/groups/\(id)").removeValue()
+                        }
                     }
-                    
+          
                     
                     self.dismiss(animated: true, completion: { 
                         

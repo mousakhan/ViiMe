@@ -17,6 +17,7 @@ struct Group {
     var deal: Deal? = nil
     var created : Int
     var venueId: String
+    var venue: Venue? = nil
     var userIds : Dictionary<String, Bool>
     var users : [UserInfo]
     var redeemed : Bool

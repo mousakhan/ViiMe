@@ -48,13 +48,92 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         badgeButton.tintColor = FlatWhite()
         
         badgeButton.setImage(tintedImage, for: .normal)
-        badgeButton.setTitle("T1", for: UIControlState.normal)
         badgeButton.setTitleColor(UIColor.black, for: UIControlState.normal)
         badgeButton.badgeString = ""
         let barButton : UIBarButtonItem = UIBarButtonItem(customView: badgeButton)
         self.navigationItem.rightBarButtonItem = barButton
         badgeButton.addTarget(self, action: #selector(updateBadge(sender:)), for: .touchUpInside)
         getCurrentUser()
+        
+        self.getGroups(completionHandler: { (isComplete) in
+            if (isComplete) {
+                
+                DispatchQueue.main.async {
+                    self.collectionView?.reloadData()
+                }
+                
+                for (index, group) in self.invitedGroups.enumerated() {
+                    self.getDeal(id: group.dealId, completionHandler: { (isComplete, deal) in
+                        if (isComplete) {
+                            self.invitedGroups[index].deal = deal
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
+                    
+                    self.getOwner(id: group.ownerId, completionHandler: { (isComplete, owner) in
+                        if (isComplete) {
+                            self.invitedGroups[index].owner = owner
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
+                    
+                    self.getUsers(ids: group.userIds, completionHandler: { (isComplete, users) in
+                        if (isComplete) {
+                            self.invitedGroups[index].users = users
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
+                    
+                    self.getVenue(id: group.venueId, completionHandler: { (isComplete, venue) in
+                        if (isComplete) {
+                            self.invitedGroups[index].venue = venue
+                        }
+                    })
+                }
+                
+                for (index, group) in self.groups.enumerated() {
+                    self.getDeal(id: group.dealId, completionHandler: { (isComplete, deal) in
+                        if (isComplete) {
+                            self.groups[index].deal = deal
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
+                    
+                    self.getOwner(id: group.ownerId, completionHandler: { (isComplete, owner) in
+                        if (isComplete) {
+                            self.groups[index].owner = owner
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
+                    
+                    self.getUsers(ids: group.userIds, completionHandler: { (isComplete, users) in
+                        if (isComplete) {
+                            self.groups[index].users = users
+                            DispatchQueue.main.async {
+                                self.collectionView?.reloadData()
+                            }
+                        }
+                    })
+                    
+                    self.getVenue(id: group.venueId, completionHandler: { (isComplete, venue) in
+                        if (isComplete) {
+                            self.groups[index].venue = venue
+                        }
+                    })
+                }
+            }
+        })
+        
     }
     
   
@@ -89,74 +168,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Get all the groups
-        self.getGroups(completionHandler: { (isComplete) in
-            if (isComplete) {
-                DispatchQueue.main.async {
-                    self.collectionView?.reloadData()
-                }
-                
-                for (index, group) in self.invitedGroups.enumerated() {
-                    self.getDeal(id: group.dealId, completionHandler: { (isComplete, deal) in
-                        if (isComplete) {
-                            self.invitedGroups[index].deal = deal
-                            DispatchQueue.main.async {
-                                self.collectionView?.reloadData()
-                            }
-                        }
-                    })
-                    
-                    self.getOwner(id: group.ownerId, completionHandler: { (isComplete, owner) in
-                        if (isComplete) {
-                            self.invitedGroups[index].owner = owner
-                            DispatchQueue.main.async {
-                                self.collectionView?.reloadData()
-                            }
-                        }
-                    })
-                    
-                    self.getUsers(ids: group.userIds, completionHandler: { (isComplete, users) in
-                        if (isComplete) {
-                            self.invitedGroups[index].users = users
-                            DispatchQueue.main.async {
-                                self.collectionView?.reloadData()
-                            }
-                        }
-                    })
-                }
-                
-                for (index, group) in self.groups.enumerated() {
-                    self.getDeal(id: group.dealId, completionHandler: { (isComplete, deal) in
-                        if (isComplete) {
-                            self.groups[index].deal = deal
-                            DispatchQueue.main.async {
-                                self.collectionView?.reloadData()
-                            }
-                        }
-                    })
-                    
-                    self.getOwner(id: group.ownerId, completionHandler: { (isComplete, owner) in
-                        if (isComplete) {
-                            self.groups[index].owner = owner
-                            DispatchQueue.main.async {
-                                self.collectionView?.reloadData()
-                            }
-                        }
-                    })
-                    
-                    self.getUsers(ids: group.userIds, completionHandler: { (isComplete, users) in
-                        if (isComplete) {
-                            self.groups[index].users = users
-                            DispatchQueue.main.async {
-                                self.collectionView?.reloadData()
-                            }
-                        }
-                    })
-                }
-            }
-        })
-        
-        
     }
     
     override func didReceiveMemoryWarning() {
@@ -179,13 +190,11 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             headerView.sectionTitleLabel.text = "ACTIVE GROUPS"
         }
         
+        headerView.backgroundColor = .clear
         
         return headerView
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 10.0, left: 1.0, bottom: 10.0, right: 1.0)
-    }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
@@ -243,6 +252,24 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                             cell.redeemButton.setTitle("\(self.groups[indexPath.row].owner?.username ?? "") must redeem", for: .normal)
                             cell.redeemButton.backgroundColor = FlatPurple()
                             cell.redeemButton.isEnabled = false
+                        }
+                    } else {
+                        // It is the group owner, so check if they can redeem
+                        // by seeing the number of people required for the deal and number of people
+                        // in group
+                        if let count = self.groups[indexPath.row].deal?.numberOfPeople {
+                            
+                            var numOfUsers = 0
+                            for (_,val) in self.groups[indexPath.row].userIds {
+                                if (val) {
+                                    numOfUsers = numOfUsers + 1
+                                }
+                            }
+                            
+                            if (numOfUsers + 1 == (Int(count) ?? 0)) {
+                                cell.redeemButton.isEnabled = true
+                                cell.redeemButton.addTarget(cell, action: #selector(cell.redeem(sender:)), for: .touchUpInside)
+                            }
                         }
                     }
                 } else {
@@ -407,10 +434,11 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         var users : [UserInfo] = []
         
         for (key, val) in ids {
-            Constants.refs.users.child(key).observeSingleEvent(of: .value, with: { (snapshot) in
+            Constants.refs.users.child(key).observe(.value, with: { (snapshot) in
                 var user = UserInfo(snapshot: snapshot)
                 // Check if the user value is true or false.
                 // If it is false, the user is still in the invited status
+                print(val)
                 if (!(val )) {
                     user.status = "Invited"
                 } else {
@@ -421,6 +449,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 users.append(user)
                 
                 if (users.count == ids.count) {
+                    self.collectionView.reloadData()
                     completionHandler(true, users)
                 }
             })
@@ -437,6 +466,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             // Fetch it from the back-end
             Constants.refs.users.child(id).observeSingleEvent(of: .value, with: { (ownerSnapshot) in
                 let user = UserInfo(snapshot: ownerSnapshot)
+                self.collectionView.reloadData()
                 completionHandler(true, user)
                 
                 
@@ -445,6 +475,18 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     }
     
     
+    // This will get the venue
+    func getVenue(id : String, completionHandler: @escaping (_ isComplete: Bool, _ venue: Venue) -> ()) {
+        // Make sure there actually is a owner
+        if (id != "") {
+            // Fetch it from the back-end
+            Constants.refs.venues.child(id).observeSingleEvent(of: .value, with: { (snapshot) in
+                let venue = Venue(snapshot: snapshot)
+                completionHandler(true, venue)
+            })
+        }
+    }
+    
     // This'll fetch all the information relating to the groups of this venue for the user
     func getGroups(completionHandler: @escaping (_ isComplete: Bool) -> ()){
         // Get the groups from the user's object
@@ -452,31 +494,32 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             let user = UserInfo(snapshot: snapshot)
             self.invitedGroups = []
             self.groups = []
-        
             print(user.groupIds)
             // Loop through group idss
             for (key, val) in user.groupIds {
                 var count = 0
                 // Fetch it from the back-end
-                Constants.refs.groups.child(key).observeSingleEvent(of: .value, with: { (snapshot) in
+                Constants.refs.groups.child(key).observe(.value, with: { (snapshot) in
                     let group = Group(snapshot: snapshot)
                     // Make sure group isn't already redeemed, not already in array and actually exists
-                    if (!group.redeemed && group.id != "" && !self.groups.contains(where: { $0.id == group.id })) {
+                    if (!group.redeemed && group.id != "") {
                         // If it isn't, add it to one of the arrays depending on whether it is an invitation or not, and if it isn't group page, sort it by creation date
-                        
-                        
                         // Group you're apart of
                         if (val) {
-                            print("heeereee")
                             if (self.invitedGroups.contains(where: { $0.id == group.id})) {
                                 let index = self.invitedGroups.index(where: {$0.id == group.id})
                                 self.invitedGroups.remove(at: index!)
                             }
-                            self.groups.append(group)
+                            
+                            if (!self.groups.contains(where: { $0.id == group.id })) {
+                                self.groups.append(group)
+                            }
                         } else {
-                            print("Now here")
-                            // Group you were invited to
-                            self.invitedGroups.append(group)
+                            if (!self.invitedGroups.contains(where: { $0.id == group.id})) {
+                                // Group you were invited to
+                                self.invitedGroups.append(group)
+                            }
+                            
                         }
                     } else {
                         count = count + 1
@@ -485,9 +528,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                     // Sort the groups by when they were created
                     self.groups = self.groups.sorted { ($0 .created )  > ($1.created ) }
                     self.invitedGroups = self.invitedGroups.sorted { ($0 .created )  > ($1.created ) }
-                    
-                    print(self.groups)
-                    print(self.invitedGroups)
                     
                     // It's complete when the count is equal
                     if (user.groupIds.count == (self.groups.count + self.invitedGroups.count) - count) {
@@ -507,6 +547,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         if (id != "") {
             Constants.refs.root.child("deal/\(id)").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                 let deal = Deal(snapshot: snapshot)
+                self.collectionView.reloadData()
                 completionHandler(true, deal)
                 
                 //TODO: If deal is invalid, then group probably should be removed
@@ -556,10 +597,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         } else if (segue.identifier == "RedemptionViewControllerSegue") {
             let destVC = segue.destination as? RedemptionViewController
             let index = sender as! Int
-            destVC?.group = self.groups[index] as! Dictionary<String, Any>
-            destVC?.venue = self.venue
-            destVC?.owner = self.owners[index]
-            destVC?.users = self.users[index]
+            destVC?.group = self.groups[index]
         }
         
         

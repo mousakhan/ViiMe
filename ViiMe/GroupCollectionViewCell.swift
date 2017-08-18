@@ -199,6 +199,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                     cell.nameLabel.text = user?.username ?? ""
                     cell.profilePicture.contentMode = .scaleToFill
                     cell.userId = user?.id ?? ""
+                    cell.statusLabel.text = user?.status ?? ""
                 } else if (isGroupOwner) {
                     // If there are no users, then invite
                     cell.nameLabel.text = "Invite"

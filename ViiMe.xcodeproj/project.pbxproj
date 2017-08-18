@@ -120,12 +120,13 @@
 			name = Profile;
 			sourceTree = "<group>";
 		};
-		4C50CE511F39EB0600781ACD /* Groups */ = {
+		4C50CE511F39EB0600781ACD /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				4CC3EB801F45CCAD00EC0D4F /* HomeViewController.swift */,
 				4C50CE541F39FD3800781ACD /* GroupCollectionViewCell.swift */,
 			);
-			name = Groups;
+			name = Home;
 			sourceTree = "<group>";
 		};
 		4C7DB2991EEED5F400765D3A /* Helper Classes */ = {
@@ -167,13 +168,12 @@
 				4CFFF2461F41528F00AB05F3 /* ViiMe.entitlements */,
 				4C75AE831F36BFEB002E518E /* Assets.xcassets */,
 				4CB6AD771F2CC573004EB393 /* Data Model */,
-				4CC3EB801F45CCAD00EC0D4F /* HomeViewController.swift */,
 				4C02DE2E1F1EA052002AA78C /* Login & Signup  */,
+				4C50CE511F39EB0600781ACD /* Home */,
 				4C02DE301F1EA08B002AA78C /* Profile */,
 				4CB6AD651F2BA5CE004EB393 /* Friends */,
 				4C02DE2F1F1EA06E002AA78C /* Venue  */,
 				4CB6AD6E1F2BBDD7004EB393 /* Deals */,
-				4C50CE511F39EB0600781ACD /* Groups */,
 				4CB6AD7C1F2CFF64004EB393 /* Redemption */,
 				4C7DB2991EEED5F400765D3A /* Helper Classes */,
 				4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */,

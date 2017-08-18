@@ -1435,13 +1435,13 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Bhr-Yg-iSg">
                                     <size key="itemSize" width="50" height="50"/>
-                                    <size key="headerReferenceSize" width="50" height="40"/>
+                                    <size key="headerReferenceSize" width="50" height="50"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="GroupCategoryCell" id="5Zc-aH-vpj" customClass="GroupCollectionViewCell" customModule="ViiMe" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="40" width="50" height="50"/>
+                                        <rect key="frame" x="0.0" y="50" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -1450,13 +1450,13 @@
                                     </collectionViewCell>
                                 </cells>
                                 <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="GroupHeader" id="Gkd-T5-Wmt" customClass="GroupCollectionViewHeader" customModule="ViiMe" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="40"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QPl-IM-osN">
-                                            <rect key="frame" x="183" y="8" width="49" height="24"/>
+                                            <rect key="frame" x="183" y="13" width="49" height="24"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                            <color key="textColor" red="0.68888300657272339" green="0.71366006135940552" blue="0.73448425531387329" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -1525,6 +1525,7 @@
                     <connections>
                         <outlet property="collectionView" destination="uut-yo-P46" id="m6O-S1-1pL"/>
                         <segue destination="6VD-eB-E3J" kind="show" identifier="FriendsTableVewControllerSegue" id="Zpk-AZ-u7u"/>
+                        <segue destination="w55-eS-zWc" kind="presentation" identifier="RedemptionViewControllerSegue" id="TP2-Qr-qz5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DK6-1z-X75" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1567,5 +1568,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Zpk-AZ-u7u"/>
+        <segue reference="TP2-Qr-qz5"/>
     </inferredMetricsTieBreakers>
 </document>
