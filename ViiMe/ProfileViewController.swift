@@ -500,16 +500,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     @IBAction func dismissProfilePage(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
-    
-    // MARK: Navigation
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "GroupCollectionViewSegue") {
-            let destVC = segue.destination as? HomeViewController
-            destVC?.venue = self.venue!
-            destVC?.deal = self.deal!
-        }
-    }
-    
+  
     
 }

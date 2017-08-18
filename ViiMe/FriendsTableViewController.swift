@@ -312,25 +312,30 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             
             self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
         } else if (indexPath.section == 1) {
+            var friend : UserInfo? = nil
+            if (isSearchActive()) {
+                friend = self.filteredFriends[indexPath.row]
+            } else {
+                friend = self.friends[indexPath.row]
+            }
+            
             if (self.group != nil) {
                 let id = self.group?.id ?? ""
                 // Check if there is a user to delete, and if so, remove them from backend
-                if (self.userToDeleteId != "") {
+                if (self.userToDeleteId != "" && self.userToDeleteId != friend?.id) {
                     let userId = self.userToDeleteId ?? ""
                     Constants.refs.users.child("\(userId)/groups/\(id)").removeValue()
                     Constants.refs.groups.child("\(id)/users/\(userId)").removeValue()
                     self.userToDeleteId = ""
                 }
                 
-                var friend : UserInfo? = nil
-                if (isSearchActive()) {
-                    friend = self.filteredFriends[indexPath.row]
-                } else {
-                    friend = self.friends[indexPath.row]
+                
+                
+                if (self.userToDeleteId != friend?.id) {
+                    Constants.refs.groups.child("\(id)/users/\(friend!.id)").setValue(false)
+                    Constants.refs.users.child("\(friend!.id)/groups/\(id)").setValue(false)
                 }
                 
-                Constants.refs.groups.child("\(id)/users/\(friend!.id)").setValue(false)
-                Constants.refs.users.child("\(friend!.id)/groups/\(id)").setValue(false)
                 self.navigationController?.popViewController(animated: true)
             }
         } else if (indexPath.section == 2) {

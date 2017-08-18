@@ -66,7 +66,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
     let redeemButton: UIButton = {
         let button = UIButton()
         // Change color of icon button, could probably make this into it's own helper function
-        button.setTitle("REDEEM", for: .normal)
+        button.setTitle("Redeem", for: .normal)
         button.setTitleColor(FlatWhite(), for: .normal)
         button.backgroundColor = FlatPurpleDark()
         button.setTitleColor(FlatGray(), for: .disabled)
@@ -155,7 +155,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         cell.profilePicture.image = nil
         cell.statusLabel.text = nil
         cell.nameLabel.text = nil
-        
+        cell.statusLabel.textColor = FlatWhite()
         // Set the tag for later user
         cell.tag = groupTag
         
@@ -199,7 +199,17 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                     cell.nameLabel.text = user?.username ?? ""
                     cell.profilePicture.contentMode = .scaleToFill
                     cell.userId = user?.id ?? ""
-                    cell.statusLabel.text = user?.status ?? ""
+                    let status = user?.status ?? ""
+                    
+                    // Change text color to green if it's accepted
+                    if (status == "Accepted") {
+                        cell.statusLabel.textColor = FlatGreen()
+                    } else if (status == "Invited") {
+                        cell.statusLabel.textColor = FlatYellow()
+                    }
+                    
+                    cell.isUserInteractionEnabled = true
+                    cell.statusLabel.text = status
                 } else if (isGroupOwner) {
                     // If there are no users, then invite
                     cell.nameLabel.text = "Invite"
@@ -220,7 +230,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
                     cell.profilePicture.contentMode = .center
                     cell.statusLabel.text = ""
                     cell.userId = ""
-                    cell.isUserInteractionEnabled = true
+                    cell.isUserInteractionEnabled = false
                 }
             }
         }

@@ -169,7 +169,6 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
                     Constants.refs.root.child("groups/\(id)/redemptions").setValue(["title": title, "short-description": shortDescription, "num-people": numberOfPeople, "valid-from": validFrom, "valid-to": validTo, "recurring-from": recurringFrom, "recurring-to": recurringTo, "num-redemptions": numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude, "redeemed": ServerValue.timestamp()
                         ])
                     
-                    
                     // Remove group id from owner
                     Constants.refs.root.child("users/\(self.group?.owner?.id ?? "")/groups/\(id)").removeValue()
                     
