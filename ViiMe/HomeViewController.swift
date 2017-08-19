@@ -28,7 +28,9 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     var shouldDeleteGroups = true
     
     // This is the contacts list icon with the badge for any new friend request
-    let badgeButton : MIBadgeButton = MIBadgeButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+    let friendsBadgeButton : MIBadgeButton = MIBadgeButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+    // This is the profile icon with the badge for personal delas
+    let rewardsBadgeButton : MIBadgeButton = MIBadgeButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
     
     @IBOutlet weak var collectionView: UICollectionView!
     //MARK: View Lifecycle
@@ -43,14 +45,24 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         let origImage = UIImage(named: "contacts");
         let tintedImage = origImage?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
         
-        badgeButton.tintColor = FlatWhite()
-        
-        badgeButton.setImage(tintedImage, for: .normal)
-        badgeButton.setTitleColor(UIColor.black, for: UIControlState.normal)
-        badgeButton.badgeString = ""
-        let barButton : UIBarButtonItem = UIBarButtonItem(customView: badgeButton)
+        friendsBadgeButton.tintColor = FlatWhite()
+        friendsBadgeButton.setImage(tintedImage, for: .normal)
+        friendsBadgeButton.setTitleColor(UIColor.black, for: UIControlState.normal)
+        friendsBadgeButton.badgeString = ""
+        let barButton : UIBarButtonItem = UIBarButtonItem(customView: friendsBadgeButton)
         self.navigationItem.rightBarButtonItem = barButton
-        badgeButton.addTarget(self, action: #selector(updateBadge(sender:)), for: .touchUpInside)
+        friendsBadgeButton.addTarget(self, action: #selector(segueToFriendsTableViewController(sender:)), for: .touchUpInside)
+
+        
+        let profileOrigImage = UIImage(named: "profile");
+        let profileTintedImage = profileOrigImage?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+        rewardsBadgeButton.tintColor = FlatWhite()
+        rewardsBadgeButton.setImage(profileTintedImage, for: .normal)
+        rewardsBadgeButton.badgeString = ""
+        let profileBarButton : UIBarButtonItem = UIBarButtonItem(customView: rewardsBadgeButton)
+        self.navigationItem.leftBarButtonItem = profileBarButton
+        rewardsBadgeButton.addTarget(self, action: #selector(segueToProfileTableViewController(sender:)), for: .touchUpInside)
+
         getCurrentUser()
         
         self.getGroups(completionHandler: { (isComplete) in
@@ -221,7 +233,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                                 if (numOfUsersInvited != 0 && numOfUsersNeeded == 0) {
                                     cell.redeemButton.setTitle("Waiting on response", for: .normal)
                                 } else  {
-                                    cell.redeemButton.setTitle("Invite \(numOfUsersNeeded) more users", for: .normal)
+                                    cell.redeemButton.setTitle("Invite \(numOfUsersNeeded) more friends", for: .normal)
                                 }
                                 cell.redeemButton.isEnabled = false
                             }
@@ -363,7 +375,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     
     //MARK: UserCollectionViewCellDelegate
     func invite(index : Int, userId : String) {
-        self.performSegue(withIdentifier: "FriendsTableVewControllerSegue", sender: [index, userId])
+        self.performSegue(withIdentifier: "FriendsTableViewControllerSegue", sender: [index, userId])
     }
     
     func respondToGroupInvitation(groupIndex: Int) {
@@ -617,9 +629,15 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 }
             }
             if (count > 0) {
-                self.badgeButton.badgeString = "\(count)"
+                self.friendsBadgeButton.badgeString = "\(count)"
             } else {
-                self.badgeButton.badgeString = ""
+                self.friendsBadgeButton.badgeString = ""
+            }
+            
+            if (user.personalDealIds.count > 0) {
+                self.rewardsBadgeButton.badgeString = "\(user.personalDealIds.count)"
+            } else {
+                self.rewardsBadgeButton.badgeString = ""
             }
         })
     }
@@ -628,7 +646,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "FriendsTableVewControllerSegue") {
+        if (segue.identifier == "FriendsTableViewControllerSegue") {
             let destVC = segue.destination as? FriendsTableViewController
             let info = sender as? Array ?? []
             // This will be empty if a user goes to this page
@@ -666,9 +684,15 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         
     }
     // This function will be called when the contacts list bar button item is clicked
-    func updateBadge(sender : UIButton) {
-        self.performSegue(withIdentifier: "FriendsTableVewControllerSegue", sender: nil)
+    func segueToFriendsTableViewController(sender : UIButton) {
+        self.performSegue(withIdentifier: "FriendsTableViewControllerSegue", sender: nil)
     }
+    
+    // This function will be called when the contacts list bar button item is clicked
+    func segueToProfileTableViewController(sender : UIButton) {
+        self.performSegue(withIdentifier: "ProfileViewControllerSegue", sender: nil)
+    }
+    
 }
 
 class GroupCollectionViewHeader : UICollectionReusableView {

@@ -25,7 +25,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     @IBOutlet weak var rewardsTableView: UITableView!
     @IBOutlet weak var usernameTextField: UITextField!
     
-    var ref: DatabaseReference!
     var user: UserInfo!
     let genders = ["", "Male", "Female"]
     var imagePicker: UIImagePickerController!
@@ -84,9 +83,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         // Ask for Authorisation from the User.
         self.locationManager.requestAlwaysAuthorization()
-        
-        // For use in foreground
-        self.locationManager.requestWhenInUseAuthorization()
         
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
@@ -167,7 +163,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                         
                         self.user.personalDeals.remove(at: indexPath.row)
                         self.rewardsTableView.reloadData()
-                        BannerHelper.showBanner(title: "Redemption Succesful", type: .success)
+                        BannerHelper.showBanner(title: "Redemption successful", type: .success)
                     }
                 } else {
                         BannerHelper.showBanner(title: "Incorrect redemption code entered", type: .danger)
@@ -313,14 +309,13 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        let username = usernameTextField.text
-        let name =  nameTextField.text
-        let age = ageTextField.text
-        let email = emailTextField.text
-        let gender = genderTextField.text
+        let name =  nameTextField.text ?? ""
+        let age = ageTextField.text ?? ""
+        let email = emailTextField.text ?? ""
+        let gender = genderTextField.text ?? ""
         
-        self.ref.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-            self.ref.child("users/\(Constants.getUserId())").setValue(["username": username, "name": name, "age": age, "email": email, "gender": gender, "id": Constants.getUserId(), "profile": self.user.profile])
+        Constants.refs.root.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+            Constants.refs.root.child("users/\(Constants.getUserId())").setValue(["username": self.user.username, "name": name, "age": age, "email": email, "gender": gender, "id": Constants.getUserId(), "profile": self.user.profile, "personal-deals": self.user.personalDealIds, "friends": self.user.friendIds, "notifications": self.user.notifications])
         })
         
     }
@@ -444,7 +439,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         let token = Messaging.messaging().fcmToken
         if (token != nil) {
-            self.ref.child("users/\(Constants.getUserId())/notifications/\(token!)").removeValue()
+            Constants.refs.root.child("users/\(Constants.getUserId())/notifications/\(token!)").removeValue()
         }
         
         

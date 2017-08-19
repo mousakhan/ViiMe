@@ -389,12 +389,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             granted, error in
             
             guard granted else {
-                let alert = UIAlertController(title: "Can't Access Contacts", message: "Please go to Settings -> ViiMe to enable contact permission.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
                 return
             }
-            
             
             let keysToFetch = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName), CNContactPhoneNumbersKey] as [Any]
             let request = CNContactFetchRequest(keysToFetch: keysToFetch as! [CNKeyDescriptor])
