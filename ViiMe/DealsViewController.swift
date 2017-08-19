@@ -162,7 +162,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         addressLabel.text = venue!.address
         websiteLabel.text = venue!.website
         phoneLabel.text = venue!.number
-        venueDealsLabel.text = "\(venue!.deals.count) Venue Deals"
+        venueDealsLabel.text = "\(venue!.deals.count) Deals Available"
         
     
         // Adding icon and changing color
@@ -173,17 +173,30 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     func call(_ sender : UITapGestureRecognizer) {
         let text = (sender.view as! UILabel).text
-        let alert = UIAlertController(title: "Call Venue", message: "", preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: "Call", style: .default, handler: { (action) in
+        
+        let appearance = SCLAlertView.SCLAppearance(
+            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+            showCloseButton: false,
+            showCircularIcon: false
+        )
+        
+        let alertView = SCLAlertView(appearance: appearance)
+        // When the 'Create' button is pressed, we write to the backend to create the group
+        alertView.addButton("Call", backgroundColor: FlatPurple())    {
             if let phoneCallURL:NSURL = NSURL(string:"tel://\(text!)") {
                 let application:UIApplication = UIApplication.shared
                 if (application.canOpenURL(phoneCallURL as URL)) {
                     application.openURL(phoneCallURL as URL);
                 }
             }
-        }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+            
+        }
+        
+        alertView.addButton("Cancel", backgroundColor: FlatRed())   {}
+        
+        alertView.showInfo("Call Venue", subTitle: "Are you sure you want to call the venue?")
     }
     
     func openWebsite(_ sender: UITapGestureRecognizer) {

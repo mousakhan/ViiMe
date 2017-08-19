@@ -159,7 +159,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             }
         
         
-        return CGSize.zero
+        return CGSize(width: UIScreen.main.bounds.width, height: 50)
     }
     
     
