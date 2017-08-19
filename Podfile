@@ -21,4 +21,5 @@ target 'ViiMe' do
   pod 'ChameleonFramework/Swift', :git => 'https://github.com/ViccAlexander/Chameleon.git'
   pod 'Kingfisher', '~> 3.0'	
   pod 'SCLAlertView'
+  pod 'DZNEmptyDataSet'
 end

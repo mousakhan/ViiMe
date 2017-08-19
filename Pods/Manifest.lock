@@ -10,6 +10,7 @@ PODS:
     - ChameleonFramework/Default
   - Crashlytics (3.8.5):
     - Fabric (~> 1.6.3)
+  - DZNEmptyDataSet (1.8.1)
   - Fabric (1.6.12)
   - FacebookCore (0.2.0):
     - Bolts (~> 1.8)
@@ -99,6 +100,7 @@ PODS:
 DEPENDENCIES:
   - ChameleonFramework/Swift (from `https://github.com/ViccAlexander/Chameleon.git`)
   - Crashlytics
+  - DZNEmptyDataSet
   - Fabric
   - FacebookCore
   - FacebookLogin
@@ -132,6 +134,7 @@ SPEC CHECKSUMS:
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   ChameleonFramework: d21a3cc247abfe5e37609a283a8238b03575cf64
   Crashlytics: dfbae35ef22ca189240d230ad501feea4ee85d2d
+  DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
   Fabric: f050464eac45a2ce5a8e6e6a07e977c0df32fe28
   FacebookCore: 2cb3f0fbff218e9d3119cec84bae983b232412de
   FacebookLogin: c9d606504735780a9e3002465a615512e0a691a5
@@ -158,6 +161,6 @@ SPEC CHECKSUMS:
   SCLAlertView: 8a14ffc40590c619e183eed2298b854385f30be1
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
 
-PODFILE CHECKSUM: 5f0c6d6e02ac6d9e2c2e2db8e85d4e660169379c
+PODFILE CHECKSUM: 38d565289e265cb7461352a6a36e82bc1e240fda
 
 COCOAPODS: 1.2.1

@@ -13,8 +13,9 @@ import FBSDKLoginKit
 import FirebaseStorage
 import SCLAlertView
 import CoreLocation
+import DZNEmptyDataSet
 
-class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
+class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var profilePicture: UIImageView!
@@ -30,7 +31,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     var imagePicker: UIImagePickerController!
     let locationManager = CLLocationManager()
     var currentLocation = CLLocationCoordinate2D()
-    
     
     //MARK: View Lifecycle
     override func viewDidLoad() {
@@ -71,6 +71,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         // Tableview set up
         setupTableview(tableView: rewardsTableView)
         
+    
         
         self.getPersonalDeals()
         
@@ -351,6 +352,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         tableView.layer.masksToBounds = true
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.emptyDataSetSource = self
+        tableView.emptyDataSetDelegate = self
+        tableView.tableFooterView = UIView()
     }
     
     
@@ -453,6 +457,24 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     @IBAction func dismissProfilePage(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
+    
+    
+    //MARK: DZNEmptyDataSet Delegate & Datasource
+    //Add title for empty dataset
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        let str = "No vRewards available"
+        let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline), NSForegroundColorAttributeName: FlatWhite()]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    //Add description/subtitle on empty dataset
+    func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        let str = "Deals sent to you personally by venue owners will be found here!"
+        let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.body), NSForegroundColorAttributeName: FlatGray()]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
   
+ 
     
 }

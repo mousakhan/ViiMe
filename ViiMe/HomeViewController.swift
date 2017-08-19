@@ -13,11 +13,12 @@ import ChameleonFramework
 import Firebase
 import SCLAlertView
 import MIBadgeButton_Swift
+import DZNEmptyDataSet
 
 private let reuseIdentifier = "GroupCategoryCell"
 private let headerIdentifier = "GroupHeader"
 
-class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, UserCollectionViewCellDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
+class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, UserCollectionViewCellDelegate, UICollectionViewDelegate, UICollectionViewDataSource, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     var groups : [Group] = []
     var invitedGroups : [Group] = []
@@ -39,6 +40,8 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         self.collectionView?.backgroundColor = FlatBlack()
         self.collectionView?.delegate = self
         self.collectionView.dataSource = self
+        self.collectionView.emptyDataSetSource = self
+        
         self.view.backgroundColor = FlatBlack()
         
         
@@ -130,9 +133,9 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! GroupCollectionViewHeader
         
         if (indexPath.section == 0) {
-            headerView.sectionTitleLabel.text = "GROUP INVITATIONS"
+            headerView.sectionTitleLabel.text = "DEAL INVITATIONS"
         } else {
-            headerView.sectionTitleLabel.text = "ACTIVE GROUPS"
+            headerView.sectionTitleLabel.text = "ACTIVE DEALS"
         }
         
         headerView.backgroundColor = .clear
@@ -149,9 +152,14 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             return CGSize.zero
         }
         
-        let headerView = self.view.subviews[0].subviews[0] as! UICollectionReusableView
-        let existingSize = headerView.frame.size
-        return existingSize
+  
+            if let headerView = self.view.subviews[0].subviews[0] as? UICollectionReusableView {
+                let existingSize = headerView.frame.size
+                return existingSize
+            }
+        
+        
+        return CGSize.zero
     }
     
     
@@ -692,6 +700,32 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     func segueToProfileTableViewController(sender : UIButton) {
         self.performSegue(withIdentifier: "ProfileViewControllerSegue", sender: nil)
     }
+    
+    //MARK: Empty State
+    //Add title for empty dataset
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        let str = "You aren’t currently part of any groups"
+        let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline), NSForegroundColorAttributeName: FlatWhite()]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    //Add description/subtitle on empty dataset
+    func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        let str = "Explore the venues, share the experience, enjoy the value!"
+        let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.body),  NSForegroundColorAttributeName: FlatGray()]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    //Add  image
+    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
+        return UIImage(named: "venue")
+    }
+    
+    func imageTintColor(forEmptyDataSet scrollView: UIScrollView!) -> UIColor! {
+        return FlatWhite()
+    }
+    
+ 
     
 }
 
