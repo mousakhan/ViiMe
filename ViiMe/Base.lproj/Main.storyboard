@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
@@ -36,7 +37,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="2Cq-1f-FwP">
                                         <rect key="frame" x="0.0" y="0.0" width="344" height="400"/>
                                         <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ViiMe" translatesAutoresizingMaskIntoConstraints="NO" id="ogr-yj-JBO">
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ViiMe" translatesAutoresizingMaskIntoConstraints="NO" id="ogr-yj-JBO">
                                                 <rect key="frame" x="0.0" y="0.0" width="344" height="207"/>
                                                 <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                 <constraints>
@@ -199,7 +200,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="6LC-wI-n7c">
                                         <rect key="frame" x="0.0" y="0.0" width="344" height="312"/>
                                         <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ViiMe" translatesAutoresizingMaskIntoConstraints="NO" id="uSZ-Xl-jzb">
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ViiMe" translatesAutoresizingMaskIntoConstraints="NO" id="uSZ-Xl-jzb">
                                                 <rect key="frame" x="0.0" y="0.0" width="344" height="207"/>
                                                 <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                 <constraints>
@@ -330,7 +331,7 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="m2R-Kw-Zf2">
                                                 <rect key="frame" x="0.0" y="0.0" width="334" height="577"/>
                                                 <subviews>
-                                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ViiMe" translatesAutoresizingMaskIntoConstraints="NO" id="piT-2r-hyS">
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ViiMe" translatesAutoresizingMaskIntoConstraints="NO" id="piT-2r-hyS">
                                                         <rect key="frame" x="0.0" y="0.0" width="334" height="207"/>
                                                         <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                         <constraints>
@@ -1327,7 +1328,7 @@
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="80" id="RMY-QE-vaY"/>
                                                 </constraints>
-                                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="MlX-LN-APx">
+                                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="9DD-lp-ctl">
                                                     <size key="itemSize" width="50" height="50"/>
                                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
@@ -1335,7 +1336,7 @@
                                                 </collectionViewFlowLayout>
                                                 <cells>
                                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="sGW-oa-Rbm">
-                                                        <rect key="frame" x="0.0" y="15" width="50" height="50"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                                             <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
@@ -1352,7 +1353,7 @@
                                                 </constraints>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" keyboardAppearance="alert"/>
+                                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" keyboardAppearance="alert" returnKeyType="done"/>
                                             </textField>
                                         </subviews>
                                     </stackView>
@@ -1544,7 +1545,7 @@
     </scenes>
     <resources>
         <image name="Nightlife" width="500" height="750"/>
-        <image name="ViiMe" width="1280" height="980"/>
+        <image name="ViiMe" width="1061" height="426"/>
         <image name="address" width="50" height="50"/>
         <image name="cancel" width="50" height="50"/>
         <image name="contacts" width="48" height="48"/>

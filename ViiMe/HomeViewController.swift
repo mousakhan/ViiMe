@@ -27,7 +27,8 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     // If you go to the invite or redeem page, it is set to no, since we don't want the deals to be deleted
     // Otherwise, if you have an empty group, and navigate away from the page, delete it
     var shouldDeleteGroups = true
-    
+    // This is to keep track of whether or not it's loading
+    var groupsAreLoading = false
     // This is the contacts list icon with the badge for any new friend request
     let friendsBadgeButton : MIBadgeButton = MIBadgeButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
     // This is the profile icon with the badge for personal delas
@@ -55,7 +56,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         let barButton : UIBarButtonItem = UIBarButtonItem(customView: friendsBadgeButton)
         self.navigationItem.rightBarButtonItem = barButton
         friendsBadgeButton.addTarget(self, action: #selector(segueToFriendsTableViewController(sender:)), for: .touchUpInside)
-
+        
         
         let profileOrigImage = UIImage(named: "profile");
         let profileTintedImage = profileOrigImage?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
@@ -65,23 +66,9 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         let profileBarButton : UIBarButtonItem = UIBarButtonItem(customView: rewardsBadgeButton)
         self.navigationItem.leftBarButtonItem = profileBarButton
         rewardsBadgeButton.addTarget(self, action: #selector(segueToProfileTableViewController(sender:)), for: .touchUpInside)
-
+        
         getCurrentUser()
-        
-        self.getGroups(completionHandler: { (isComplete) in
-            if (isComplete) {
-                
-                DispatchQueue.main.async {
-                    self.collectionView?.reloadData()
-                }
-                
-            }
-        })
-        
     }
-    
-    
-    
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -107,6 +94,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                     }
                 }
             }
+            
             self.collectionView.reloadData()
             shouldDeleteGroups = true
         }
@@ -116,6 +104,8 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.getCurrentUser()
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -152,11 +142,11 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             return CGSize.zero
         }
         
-  
-            if let headerView = self.view.subviews[0].subviews[0] as? UICollectionReusableView {
-                let existingSize = headerView.frame.size
-                return existingSize
-            }
+        
+        if let headerView = self.view.subviews[0].subviews[0] as? UICollectionReusableView {
+            let existingSize = headerView.frame.size
+            return existingSize
+        }
         
         
         return CGSize(width: UIScreen.main.bounds.width, height: 50)
@@ -200,7 +190,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             if (self.groups.count > 0) {
                 if (self.groups[indexPath.row].deal != nil) {
                     cell.group = self.groups[indexPath.row]
-                    cell.usersCollectionView.reloadData()
                 } else {
                     cell.group = nil
                 }
@@ -483,6 +472,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         }
     }
     
+
     
     // This will get the venue
     func getVenue(id : String, completionHandler: @escaping (_ isComplete: Bool, _ venue: Venue) -> ()) {
@@ -498,114 +488,136 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     
     // This'll fetch all the information relating to the groups of this venue for the user
     func getGroups(completionHandler: @escaping (_ isComplete: Bool) -> ()){
-        // Get the groups from the user's object
-        Constants.refs.users.child(Constants.getUserId()).observe(DataEventType.value, with: { (snapshot) in
-            let user = UserInfo(snapshot: snapshot)
-            self.invitedGroups = []
-            self.groups = []
-            
-            // Loop through group idss
-            for (key, val) in user.groupIds {
-                
-                // Fetch it from the back-end
-                Constants.refs.groups.child(key).observe(.value, with: { (snapshot) in
-                    var group = Group(snapshot: snapshot)
-                    
-                    // Check if it already equals  the total
-                    // If so, clean out the arrays. This is for when user 1 deletes a group
-                    // and it has to update on user 2's screen
-                    if (user.groupIds.count < (self.groups.count + self.invitedGroups.count)) {
-                        self.invitedGroups = []
-                        self.groups = []
-                        self.collectionView.reloadData()
-                    }
-                    
-                    // Make sure group isn't already redeemed, not already in array and actually exists
-                    if (!group.redeemed && group.id != "") {
-                        self.getDeal(id: group.dealId, completionHandler: { (isComplete1, deal) in
-                            if (isComplete1) {
-                                group.deal = deal
-                                self.getOwner(id: group.ownerId, completionHandler: { (isComplete2, owner) in
-                                    if (isComplete2) {
-                                        group.owner = owner
-                                        self.getUsers(ids: group.userIds, completionHandler: { (isComplete3, users) in
-                                            if (isComplete3) {
-                                                group.users = users
-                                                self.getVenue(id: group.venueId, completionHandler: { (isComplete4, venue) in
-                                                    if (isComplete4) {
-                                                        group.venue = venue
-                                                        // Check if you're apart of the group
-                                                        if (val) {
-                                                            // If the group exists in the invited groups array, remove it
-                                                            
-                                                            if (self.invitedGroups.contains(where: { $0.id == group.id})) {
-                                                                let index = self.invitedGroups.index(where: {$0.id == group.id})
-                                                                if (index != nil) {
-                                                                    self.invitedGroups.remove(at: index!)
-                                                                }
-                                                            }
-                                                            
-                                                            
-                                                            // Check if it already exists, if not, add it
-                                                            if (!self.groups.contains(where: { $0.id == group.id })) {
-                                                                self.groups.append(group)
-                                                            } else {
-                                                                // If it does already exist, update it
-                                                                let index = self.groups.index(where: {$0.id == group.id})
-                                                                if (index != nil) {
-                                                                    self.groups[index!] = group
-                                                                }
-                                                            }
-                                                            
-                                                            // You aren't part of the group yet, so you're invited
-                                                        } else {
-                                                            // If you aren't part of the group, join it
-                                                            if (!self.invitedGroups.contains(where: { $0.id == group.id})) {
-                                                                // Group you were invited to
-                                                                self.invitedGroups.append(group)
-                                                                // If it does already exist, update it
-                                                            } else {
-                                                                let index = self.invitedGroups.index(where: {$0.id == group.id})
-                                                                if (index != nil) {
-                                                                    self.invitedGroups[index!] = group
-                                                                }
-                                                            }
-                                                            
-                                                        }
-                                                        // Sort the groups by when they were created
-                                                        self.groups = self.groups.sorted { ($0 .created )  > ($1.created ) }
-                                                        self.invitedGroups = self.invitedGroups.sorted { ($0 .created )  > ($1.created ) }
-                                                        
-                                                        
-                                                        // It's complete when the count is equal
-                                                        if (user.groupIds.count == (self.groups.count + self.invitedGroups.count)) {
-                                                            self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
-                                                            self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
-                                                            
-                                                            self.collectionView.reloadData()
-                                                            completionHandler(true)
-                                                        }
-                                                    }
-                                                })
-                                            }
-                                        })
-                                    }
-                                })
-                            }
-                        })
-                    } else {
-                        self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
-                        self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
-                        
-                        self.collectionView.reloadData()
-                    }
-                    
-                    
-                    
-                })
-                
+        // Loop through group idss
+        var groupIds : Dictionary<String, Bool> = [:]
+        // Check if group ids exist
+        if (self.user?.groupIds != nil) {
+            groupIds = (self.user?.groupIds)!
+            print(groupIds)
+            // If there aren't any, then empty out any arrays, refresh and return
+            if (groupIds.count == 0){
+                self.groups = []
+                self.invitedGroups = []
+                self.groupsAreLoading = false
+                print("Now")
+                self.collectionView.reloadData()
+                self.collectionView.reloadEmptyDataSet()
+                completionHandler(false)
             }
-        })
+            
+        }
+      
+        for (key, val) in groupIds {
+            // Fetch it from the back-end
+            Constants.refs.groups.child(key).observe(.value, with: { (snapshot) in
+                print("here")
+                // Have to add it in here since this is what'll be called if there are any changes in the database
+                self.groupsAreLoading = true
+                var group = Group(snapshot: snapshot)
+                
+              
+                // Check if it already equals  the total
+                // If so, clean out the arrays. This is for when user 1 deletes a group
+                // and it has to update on user 2's screen
+                if (groupIds.count < (self.groups.count + self.invitedGroups.count)) {
+                    self.invitedGroups = []
+                    self.groups = []
+                    self.collectionView.reloadData()
+                    self.collectionView.reloadEmptyDataSet()
+                    
+                    self.groupsAreLoading = false
+                    completionHandler(false)
+                }
+                
+                // Make sure group isn't already redeemed, not already in array and actually exists
+                if (!group.redeemed && group.id != "") {
+                    self.getDeal(id: group.dealId, completionHandler: { (isComplete1, deal) in
+                        if (isComplete1) {
+                            group.deal = deal
+                            self.getOwner(id: group.ownerId, completionHandler: { (isComplete2, owner) in
+                                if (isComplete2) {
+                                    group.owner = owner
+                                    self.getUsers(ids: group.userIds, completionHandler: { (isComplete3, users) in
+                                        if (isComplete3) {
+                                            group.users = users
+                                            self.getVenue(id: group.venueId, completionHandler: { (isComplete4, venue) in
+                                                if (isComplete4) {
+                                                    group.venue = venue
+                                                    // Check if you're apart of the group
+                                                    if (val) {
+                                                        // If the group exists in the invited groups array, remove it
+                                                        
+                                                        if (self.invitedGroups.contains(where: { $0.id == group.id})) {
+                                                            let index = self.invitedGroups.index(where: {$0.id == group.id})
+                                                            if (index != nil) {
+                                                                self.invitedGroups.remove(at: index!)
+                                                            }
+                                                        }
+                                                        
+                                                        
+                                                        // Check if it already exists, if not, add it
+                                                        if (!self.groups.contains(where: { $0.id == group.id })) {
+                                                            self.groups.append(group)
+                                                        } else {
+                                                            // If it does already exist, update it
+                                                            let index = self.groups.index(where: {$0.id == group.id})
+                                                            if (index != nil) {
+                                                                self.groups[index!] = group
+                                                            }
+                                                        }
+                                                        
+                                                        // You aren't part of the group yet, so you're invited
+                                                    } else {
+                                                        // If you aren't part of the group, join it
+                                                        if (!self.invitedGroups.contains(where: { $0.id == group.id})) {
+                                                            // Group you were invited to
+                                                            self.invitedGroups.append(group)
+                                                            // If it does already exist, update it
+                                                        } else {
+                                                            let index = self.invitedGroups.index(where: {$0.id == group.id})
+                                                            if (index != nil) {
+                                                                self.invitedGroups[index!] = group
+                                                            }
+                                                        }
+                                                        
+                                                    }
+                                                    // Sort the groups by when they were created
+                                                    self.groups = self.groups.sorted { ($0 .created )  > ($1.created ) }
+                                                    self.invitedGroups = self.invitedGroups.sorted { ($0 .created )  > ($1.created ) }
+                                                    
+                                                    
+                                                    // It's complete when the count is equal
+                                                    if (groupIds.count == (self.groups.count + self.invitedGroups.count)) {
+                                                        self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
+                                                        self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
+                                                        
+                                                        self.collectionView.reloadData()
+                                                        completionHandler(true)
+                                                    }
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        }
+                    })
+                } else {
+                    self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
+                    self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
+                    
+                    self.groupsAreLoading = false
+                    self.collectionView.reloadData()
+                    self.collectionView.reloadEmptyDataSet()
+
+                }
+                
+                
+                
+            })
+            
+        }
+        //        })
         
         
     }
@@ -625,7 +637,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     
     func getCurrentUser() {
         // Check back end to see if user exists
-        let productRef = Constants.refs.users.child("\(Constants.getUserId())")
+        let productRef = Constants.refs.users.child(Constants.getUserId())
         productRef.observe(DataEventType.value, with: { (snapshot) in
             let user = UserInfo(snapshot: snapshot)
             self.user = user
@@ -647,10 +659,21 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             } else {
                 self.rewardsBadgeButton.badgeString = ""
             }
+   
+            self.groupsAreLoading = true
+            self.getGroups(completionHandler: { (isComplete) in
+                if (isComplete) {
+                    self.groupsAreLoading = false
+                    DispatchQueue.main.async {
+                        self.collectionView?.reloadData()
+                        self.collectionView?.reloadEmptyDataSet()
+                    }
+                }
+            })
         })
     }
     
-    
+
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -704,20 +727,35 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     //MARK: Empty State
     //Add title for empty dataset
     func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        let str = "You aren’t currently part of any groups"
+        var str = ""
+        if (groupsAreLoading) {
+            str = "Loading your deals"
+        } else {
+            str = "You aren’t currently part of any deals"
+        }
+        
         let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline), NSForegroundColorAttributeName: FlatWhite()]
         return NSAttributedString(string: str, attributes: attrs)
     }
     
     //Add description/subtitle on empty dataset
     func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        let str = "Explore the venues, share the experience, enjoy the value!"
+        var str = ""
+        if (groupsAreLoading) {
+            str = "Please hold on a second!"
+        } else {
+            str = "Explore the venues, share the experience, enjoy the value!"
+        }
+        
         let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.body),  NSForegroundColorAttributeName: FlatGray()]
         return NSAttributedString(string: str, attributes: attrs)
     }
     
     //Add  image
     func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
+        if (groupsAreLoading) {
+            return UIImage(named: "wait")
+        }
         return UIImage(named: "venue")
     }
     
@@ -725,7 +763,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         return FlatWhite()
     }
     
- 
+    
     
 }
 

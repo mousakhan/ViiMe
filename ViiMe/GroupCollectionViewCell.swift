@@ -299,18 +299,13 @@ class UserCollectionViewCell: UICollectionViewCell {
         addSubview(nameLabel)
         addSubview(statusLabel)
         
-        profilePicture.translatesAutoresizingMaskIntoConstraints = false
-        profilePicture.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 0).isActive = true
-        profilePicture.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        profilePicture.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
-        profilePicture.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
-        
+
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         nameLabel.topAnchor.constraint(equalTo: profilePicture.bottomAnchor, constant: 0).isActive = true
         nameLabel.heightAnchor.constraint(equalToConstant: 15.0).isActive = true
         nameLabel.centerXAnchor.constraint(equalTo: profilePicture.centerXAnchor).isActive = true
         nameLabel.textAlignment = .center
+        nameLabel.widthAnchor.constraint(equalToConstant: 80.0).isActive = true
         nameLabel.textColor = FlatWhite()
         nameLabel.numberOfLines = 1
         nameLabel.lineBreakMode = .byClipping
@@ -322,19 +317,22 @@ class UserCollectionViewCell: UICollectionViewCell {
         statusLabel.heightAnchor.constraint(equalToConstant: 15.0).isActive = true
         statusLabel.widthAnchor.constraint(equalToConstant: 60.0).isActive = true
         statusLabel.centerXAnchor.constraint(equalTo: profilePicture.centerXAnchor).isActive = true
-        
         statusLabel.textAlignment = .center
         statusLabel.textColor = FlatWhite()
         statusLabel.numberOfLines = 0
         statusLabel.font = UIFont.systemFont(ofSize: 8)
         
+        profilePicture.translatesAutoresizingMaskIntoConstraints = false
+        profilePicture.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 0).isActive = true
+        profilePicture.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        profilePicture.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
+        profilePicture.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
         profilePicture.layoutIfNeeded()
         profilePicture.layer.cornerRadius = profilePicture.frame.height / 2
         profilePicture.clipsToBounds = true
         profilePicture.layer.borderWidth = 1.0
         profilePicture.layer.borderColor = FlatGray().cgColor
         profilePicture.backgroundColor = UIColor.clear
-        
     }
     
     override func prepareForReuse() {

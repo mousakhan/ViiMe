@@ -65,9 +65,16 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         collectionView.dataSource = self
         
         collectionView.register(UserCollectionViewCell.self, forCellWithReuseIdentifier: reusableIdentifier)
-        
-    }
     
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+        layout.itemSize = CGSize(width: 80, height: self.collectionView.frame.size.height)
+        layout.minimumInteritemSpacing = 0
+        layout.minimumLineSpacing = 0
+        collectionView!.collectionViewLayout = layout
+    }
+ 
     //MARK: UICollectionView Datasource
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -84,7 +91,7 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         cell.isUserInteractionEnabled = false
         
         if (self.group?.owner != nil && indexPath.row == 0) {
-            let name =  self.group?.owner?.name ?? ""
+            let name =  self.group?.owner?.username ?? ""
             let profile =  self.group?.owner?.profile ?? ""
             if (profile != "") {
                 let url = URL(string: profile)
@@ -99,7 +106,7 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         } else if ((self.group?.users.count  ?? 0) > 0) {
             if (((self.group?.users.count  ?? 0)) >= indexPath.row) {
                 let index = indexPath.row - 1
-                let name =  self.group?.users[index].name ?? ""
+                let name =  self.group?.users[index].username ?? ""
                 let profile =  self.group?.users[index].profile ?? ""
                 if (profile != "") {
                     let url = URL(string: profile)
@@ -125,6 +132,7 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
     
     // Specifically to remove keyboard when not interacting with textfield
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -163,11 +171,12 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
                     let numberOfRedemptions = self.group?.deal?.numberOfRedemptions ?? ""
                     
                     // Set value on the group redemption object
-                    Constants.refs.root.child("groups/\(id)/redemptions").setValue(["title": title, "short-description": shortDescription, "num-people": numberOfPeople, "valid-from": validFrom, "valid-to": validTo, "recurring-from": recurringFrom, "recurring-to": recurringTo, "num-redemptions": numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude, "redeemed": ServerValue.timestamp()
+                    Constants.refs.groups.child("\(id)/redemptions").setValue(["title": title, "short-description": shortDescription, "num-people": numberOfPeople, "valid-from": validFrom, "valid-to": validTo, "recurring-from": recurringFrom, "recurring-to": recurringTo, "num-redemptions": numberOfRedemptions, "active": false, "latitude": self.currentLocation.latitude, "longitude": self.currentLocation.longitude, "redeemed": ServerValue.timestamp()
                         ])
                     
+                    let ownerId = self.group?.owner?.id ?? ""
                     // Remove group id from owner
-                    Constants.refs.root.child("users/\(self.group?.owner?.id ?? "")/groups/\(id)").removeValue()
+                    Constants.refs.root.child("users/\(ownerId)/groups/\(id)").removeValue()
                     
                     // Remove group id from users
                     if let users = self.group?.users {
@@ -176,7 +185,6 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
                         }
                     }
           
-                    
                     self.dismiss(animated: true, completion: { 
                         
                     })
