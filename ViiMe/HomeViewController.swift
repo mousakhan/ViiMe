@@ -498,7 +498,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 self.groups = []
                 self.invitedGroups = []
                 self.groupsAreLoading = false
-                print("Now")
                 self.collectionView.reloadData()
                 self.collectionView.reloadEmptyDataSet()
                 completionHandler(false)
@@ -507,7 +506,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         }
         
         for (key, val) in groupIds {
-            
             // Fetch it from the back-end
             Constants.refs.groups.child(key).observe(.value, with: { (snapshot) in
                 // Have to add it in here since this is what'll be called if there are any changes in the database
@@ -548,7 +546,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                                             self.getVenue(id: group.venueId, completionHandler: { (isComplete4, venue) in
                                                 if (isComplete4) {
                                                     group.venue = venue
-                                                    print(val)
                                                     // Check if you're apart of the group
                                                     if (val) {
                                                         // If the group exists in the invited groups array, remove it
@@ -593,7 +590,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                                                     self.groups = self.groups.sorted { ($0 .created )  > ($1.created ) }
                                                     self.invitedGroups = self.invitedGroups.sorted { ($0 .created )  > ($1.created ) }
                                                     
-                                                    print("We going in here \(groupIds.count), and the group counts is \(self.groups.count)")
                                                     // It's complete when the count is equal
                                                     if (count == (self.groups.count + self.invitedGroups.count)) {
                                                         self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
