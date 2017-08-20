@@ -472,7 +472,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         }
     }
     
-
+    
     
     // This will get the venue
     func getVenue(id : String, completionHandler: @escaping (_ isComplete: Bool, _ venue: Venue) -> ()) {
@@ -493,7 +493,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         // Check if group ids exist
         if (self.user?.groupIds != nil) {
             groupIds = (self.user?.groupIds)!
-            print(groupIds)
             // If there aren't any, then empty out any arrays, refresh and return
             if (groupIds.count == 0){
                 self.groups = []
@@ -506,28 +505,34 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             }
             
         }
-      
+        
         for (key, val) in groupIds {
+            
             // Fetch it from the back-end
             Constants.refs.groups.child(key).observe(.value, with: { (snapshot) in
-                print("here")
                 // Have to add it in here since this is what'll be called if there are any changes in the database
                 self.groupsAreLoading = true
                 var group = Group(snapshot: snapshot)
                 
-              
+                
                 // Check if it already equals  the total
                 // If so, clean out the arrays. This is for when user 1 deletes a group
                 // and it has to update on user 2's screen
-                if (groupIds.count < (self.groups.count + self.invitedGroups.count)) {
+                
+                var count = 0
+                if (self.user?.groupIds != nil) {
+                    count = (self.user?.groupIds.count)!
+                }
+                
+                if (count < (self.groups.count + self.invitedGroups.count)) {
                     self.invitedGroups = []
                     self.groups = []
                     self.collectionView.reloadData()
                     self.collectionView.reloadEmptyDataSet()
-                    
                     self.groupsAreLoading = false
                     completionHandler(false)
                 }
+                
                 
                 // Make sure group isn't already redeemed, not already in array and actually exists
                 if (!group.redeemed && group.id != "") {
@@ -543,10 +548,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                                             self.getVenue(id: group.venueId, completionHandler: { (isComplete4, venue) in
                                                 if (isComplete4) {
                                                     group.venue = venue
+                                                    print(val)
                                                     // Check if you're apart of the group
                                                     if (val) {
                                                         // If the group exists in the invited groups array, remove it
-                                                        
                                                         if (self.invitedGroups.contains(where: { $0.id == group.id})) {
                                                             let index = self.invitedGroups.index(where: {$0.id == group.id})
                                                             if (index != nil) {
@@ -557,6 +562,8 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                                                         
                                                         // Check if it already exists, if not, add it
                                                         if (!self.groups.contains(where: { $0.id == group.id })) {
+                                                            
+                                                            
                                                             self.groups.append(group)
                                                         } else {
                                                             // If it does already exist, update it
@@ -581,13 +588,14 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                                                         }
                                                         
                                                     }
+                                                    
                                                     // Sort the groups by when they were created
                                                     self.groups = self.groups.sorted { ($0 .created )  > ($1.created ) }
                                                     self.invitedGroups = self.invitedGroups.sorted { ($0 .created )  > ($1.created ) }
                                                     
-                                                    
+                                                    print("We going in here \(groupIds.count), and the group counts is \(self.groups.count)")
                                                     // It's complete when the count is equal
-                                                    if (groupIds.count == (self.groups.count + self.invitedGroups.count)) {
+                                                    if (count == (self.groups.count + self.invitedGroups.count)) {
                                                         self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
                                                         self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
                                                         
@@ -609,7 +617,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                     self.groupsAreLoading = false
                     self.collectionView.reloadData()
                     self.collectionView.reloadEmptyDataSet()
-
+                    
                 }
                 
                 
@@ -659,7 +667,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             } else {
                 self.rewardsBadgeButton.badgeString = ""
             }
-   
+            
             self.groupsAreLoading = true
             self.getGroups(completionHandler: { (isComplete) in
                 if (isComplete) {
@@ -673,7 +681,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         })
     }
     
-
+    
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
