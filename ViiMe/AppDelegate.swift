@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         
         let token = Messaging.messaging().fcmToken
-        print(InstanceID.instanceID().token()!)
+      
         print("FCM token: \(token ?? "")")
         
         return true
@@ -75,14 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         print((userInfo["aps"] as! [AnyHashable : Any])["alert"]!)
     }
     
-   
-    func application(_ application: UIApplication,
-                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        print("HAA")
-        print(deviceToken as Data)
-        Messaging.messaging().setAPNSToken(deviceToken as Data, type: .sandbox)
-//        Messaging.messaging().setAPNSToken(deviceToken as Data, type: .prod)
-    }
+  
     
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
