@@ -44,10 +44,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         
         let token = Messaging.messaging().fcmToken
+        print(InstanceID.instanceID().token()!)
         print("FCM token: \(token ?? "")")
         
         return true
     }
+    
     
     
     
@@ -76,8 +78,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
    
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        print("HAA")
+        print(deviceToken as Data)
         Messaging.messaging().setAPNSToken(deviceToken as Data, type: .sandbox)
-        Messaging.messaging().setAPNSToken(deviceToken as Data, type: .prod)
+//        Messaging.messaging().setAPNSToken(deviceToken as Data, type: .prod)
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
