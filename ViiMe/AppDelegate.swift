@@ -39,21 +39,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
             application.registerUserNotificationSettings(settings)
         }
-        
+                
         application.registerForRemoteNotifications()
         
         
         let token = Messaging.messaging().fcmToken
-      
         print("FCM token: \(token ?? "")")
         
         return true
     }
-    
-    
-    
-    
-    
+  
     // The callback to handle data message received via FCM for devices running iOS 10 or above.
     func applicationReceivedRemoteMessage(_ remoteMessage: MessagingRemoteMessage) {
         print(remoteMessage.appData)
@@ -73,9 +68,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
         print((userInfo["aps"] as! [AnyHashable : Any])["alert"]!)
+        Messaging.messaging().appDidReceiveMessage(userInfo)
     }
     
-  
+   
+    func application(_ application: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+      
+        // Remember to change this depending on build or push notifications won't work
+ //       Messaging.messaging().setAPNSToken(deviceToken as Data, type: .sandbox)
+        Messaging.messaging().setAPNSToken(deviceToken as Data, type: .prod)
+    }
     
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

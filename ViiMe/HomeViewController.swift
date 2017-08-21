@@ -14,6 +14,7 @@ import Firebase
 import SCLAlertView
 import MIBadgeButton_Swift
 import DZNEmptyDataSet
+import FirebaseMessaging
 
 private let reuseIdentifier = "GroupCategoryCell"
 private let headerIdentifier = "GroupHeader"
@@ -68,6 +69,23 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         rewardsBadgeButton.addTarget(self, action: #selector(segueToProfileTableViewController(sender:)), for: .touchUpInside)
         
         getCurrentUser()
+        
+        // This is if the push notification token changes
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(tokenRefreshNotification),
+                                               name: NSNotification.Name.InstanceIDTokenRefresh,
+                                               object: nil)
+        
+    }
+    
+    func tokenRefreshNotification () {
+        if let updatedToken = Messaging.messaging().fcmToken {
+            Constants.refs.users.child("\(self.user!.id)/notifications").setValue([updatedToken: true])
+        } else {
+            print("We don't have an FCM token yet")
+        }
+        
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -394,7 +412,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         }
         
         
-        alertView.addButton("Later") {}
+        alertView.addButton("Maybe Later") {}
         
         alertView.showInfo("Invitation", subTitle: "Respond to Invitation")
         

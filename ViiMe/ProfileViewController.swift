@@ -14,8 +14,9 @@ import FirebaseStorage
 import SCLAlertView
 import CoreLocation
 import DZNEmptyDataSet
+import MessageUI
 
-class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, MFMailComposeViewControllerDelegate {
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var profilePicture: UIImageView!
@@ -472,6 +473,84 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         let str = "Deals sent to you personally by venue owners will be found here!"
         let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.body), NSForegroundColorAttributeName: FlatGray()]
         return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    @IBAction func contactButtonClicked(_ sender: Any) {
+        
+        let appearance = SCLAlertView.SCLAppearance(
+            kTitleFont: UIFont.systemFont(ofSize: 18, weight: UIFontWeightRegular),
+            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+            showCloseButton: false,
+            showCircularIcon: false
+        )
+        
+        let alertView = SCLAlertView(appearance: appearance)
+        alertView.addButton("Email", backgroundColor: FlatPurple(), action: {
+            let mailComposeViewController = self.configuredMailComposeViewController()
+            if MFMailComposeViewController.canSendMail() {
+                self.present(mailComposeViewController, animated: true, completion: nil)
+            } else {
+                self.showSendMailErrorAlert()
+            }
+        })
+        
+        alertView.addButton("Rate Our App", backgroundColor: FlatBlue(), action: {
+            self.rateApp(appId: "id1144678737", completion: { (isComplete) in
+                
+            })
+        })
+        
+        
+        alertView.addButton("Maybe Later",  action: {
+        })
+        
+        
+        alertView.showInfo("Thank you for using ViiMe!", subTitle: "Our team is working hard to bring your next adVenture one heartbeat closer. \n\nPlease feel free to share your feedback and the features you want to see in the next version.")
+    }
+    
+    func configuredMailComposeViewController() -> MFMailComposeViewController {
+        let mailComposerVC = MFMailComposeViewController()
+        mailComposerVC.mailComposeDelegate = self // Extremely important to set the --mailComposeDelegate-- property, NOT the --delegate-- property
+        
+        mailComposerVC.setToRecipients(["support@viime.ca"])
+        mailComposerVC.setSubject("ViiMe Feedback")
+    
+        return mailComposerVC
+    }
+    
+    func showSendMailErrorAlert() {
+        let appearance = SCLAlertView.SCLAppearance(
+            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+            showCloseButton: false,
+            showCircularIcon: false
+        )
+        
+        let alertView = SCLAlertView(appearance: appearance)
+        alertView.showError("Failed to send email", subTitle: "Your device could not send e-mail.  Please check e-mail configuration and try again.")
+       
+    }
+    
+    // MARK: MFMailComposeViewControllerDelegate
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
+        
+    }
+    
+    // MARK: Helpers
+    func rateApp(appId: String, completion: @escaping ((_ success: Bool)->())) {
+        guard let url = URL(string : "itms-apps://itunes.apple.com/app/" + appId) else {
+            completion(false)
+            return
+        }
+        guard #available(iOS 10, *) else {
+            completion(UIApplication.shared.openURL(url))
+            return
+        }
+        UIApplication.shared.open(url, options: [:], completionHandler: completion)
     }
     
   

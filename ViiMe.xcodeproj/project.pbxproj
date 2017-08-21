@@ -35,9 +35,9 @@
 		4CC3EB811F45CCAD00EC0D4F /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC3EB801F45CCAD00EC0D4F /* HomeViewController.swift */; };
 		4CD8E1CF1EEB661B009C3FD0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */; };
 		4CEB3A621F194156004246F5 /* VenueCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */; };
-		4CF360FB1F3FEA3300E14EB1 /* RedemptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF360FA1F3FEA3200E14EB1 /* RedemptionViewController.swift */; };
 		4CF360FD1F41448900E14EB1 /* DateHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF360FC1F41448900E14EB1 /* DateHelper.swift */; };
 		4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFA46CC1EEBD2EE008BDF8F /* ForgotPasswordController.swift */; };
+		4CFAA8FC1F4A754F000976D6 /* RedemptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFAA8FB1F4A754F000976D6 /* RedemptionViewController.swift */; };
 		A75F914523E7601419AB1C2F /* Pods_ViiMe.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91F5863EEE27A9C74733223C /* Pods_ViiMe.framework */; };
 /* End PBXBuildFile section */
 
@@ -72,9 +72,9 @@
 		4CC3EB801F45CCAD00EC0D4F /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		4CD8E1CE1EEB661B009C3FD0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4CEB3A611F194156004246F5 /* VenueCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenueCollectionViewCell.swift; sourceTree = "<group>"; };
-		4CF360FA1F3FEA3200E14EB1 /* RedemptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RedemptionViewController.swift; sourceTree = "<group>"; };
 		4CF360FC1F41448900E14EB1 /* DateHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateHelper.swift; sourceTree = "<group>"; };
 		4CFA46CC1EEBD2EE008BDF8F /* ForgotPasswordController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForgotPasswordController.swift; sourceTree = "<group>"; };
+		4CFAA8FB1F4A754F000976D6 /* RedemptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RedemptionViewController.swift; path = ViiMe/RedemptionViewController.swift; sourceTree = "<group>"; };
 		4CFFF2461F41528F00AB05F3 /* ViiMe.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ViiMe.entitlements; sourceTree = "<group>"; };
 		5912848828A13E7FC084CBA3 /* Pods-ViiMe.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ViiMe.release.xcconfig"; path = "Pods/Target Support Files/Pods-ViiMe/Pods-ViiMe.release.xcconfig"; sourceTree = "<group>"; };
 		91F5863EEE27A9C74733223C /* Pods_ViiMe.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ViiMe.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -218,7 +218,7 @@
 		4CB6AD7C1F2CFF64004EB393 /* Redemption */ = {
 			isa = PBXGroup;
 			children = (
-				4CF360FA1F3FEA3200E14EB1 /* RedemptionViewController.swift */,
+				4CFAA8FB1F4A754F000976D6 /* RedemptionViewController.swift */,
 			);
 			name = Redemption;
 			path = ..;
@@ -278,7 +278,7 @@
 					4C7EDDFC1EEB01BD001A9B81 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = 3L8HKMPJ68;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Keychain = {
 								enabled = 0;
@@ -389,13 +389,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CFAA8FC1F4A754F000976D6 /* RedemptionViewController.swift in Sources */,
 				4C7DB2981EEED0B400765D3A /* BannerHelper.swift in Sources */,
 				4C5502131F16A5B80073A405 /* Venue.swift in Sources */,
 				4C5502151F16B2780073A405 /* ProfileViewController.swift in Sources */,
 				4C8C0FAE1F3BC17F00B23D37 /* Group.swift in Sources */,
 				4CB6AD621F2A6D22004EB393 /* UITextField+Border.swift in Sources */,
 				4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */,
-				4CF360FB1F3FEA3300E14EB1 /* RedemptionViewController.swift in Sources */,
 				4CB6AD7E1F2D4F8E004EB393 /* Deal.swift in Sources */,
 				4C7EDE031EEB01BD001A9B81 /* LoginViewController.swift in Sources */,
 				4C50CE4E1F395F3A00781ACD /* UIView+Border.swift in Sources */,
@@ -541,15 +541,15 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ViiMe/ViiMe.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 3L8HKMPJ68;
 				INFOPLIST_FILE = ViiMe/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = vl.ViiMe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "88608fc1-7873-4712-9c58-658c2304d97b";
-				PROVISIONING_PROFILE_SPECIFIER = firebase;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -561,15 +561,15 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ViiMe/ViiMe.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 3L8HKMPJ68;
 				INFOPLIST_FILE = ViiMe/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = vl.ViiMe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "88608fc1-7873-4712-9c58-658c2304d97b";
-				PROVISIONING_PROFILE_SPECIFIER = firebase;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

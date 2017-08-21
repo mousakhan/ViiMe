@@ -304,7 +304,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             }
             
             // Don't do anything
-            alertView.addButton("Later") {}
+            alertView.addButton("Maybe Later") {}
             
             self.view.endEditing(true)
             

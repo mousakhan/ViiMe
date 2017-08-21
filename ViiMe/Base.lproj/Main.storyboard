@@ -778,6 +778,12 @@
                                 <action selector="dismissProfilePage:" destination="nMK-oK-2pX" id="kat-Aq-66s"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Contact " style="done" id="VTF-FA-2sk">
+                            <inset key="imageInsets" minX="12" minY="12" maxX="12" maxY="12"/>
+                            <connections>
+                                <action selector="contactButtonClicked:" destination="nMK-oK-2pX" id="psf-JF-s5k"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="ageTextField" destination="kUh-ox-3xR" id="8s2-Zp-czJ"/>
