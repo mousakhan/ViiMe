@@ -24,8 +24,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var confirmPasswordTextField: UITextField!
     @IBOutlet weak var cancelButton: UIButton!
     
-    var ref: DatabaseReference!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -54,9 +53,10 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(hideKeyboard(sender:)))
         tapGesture.cancelsTouchesInView = false
         scrollView.addGestureRecognizer(tapGesture)
+   
     }
     
-    
+
     // MARK: UITextFieldDelegate Functions
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
@@ -109,8 +109,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             BannerHelper.showBanner(title: "Please enter a username", type: .danger)
             return
         }
-        ref = Constants.refs.root
-        
+      
         let userValidation = ValidationHelper.validateUsername(textfield: self.usernameTextField)
         checkIfUserNameIsUnique(username: self.usernameTextField.text!) { (isUnique) in
             if (isUnique) {
@@ -136,8 +135,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                                     } else {
                                         // Show success message, and then write to the database
                                         BannerHelper.showBanner(title: "Email Verification Sent", type: .success)
-                                        let id = user!.uid
-                                        self.ref.child("users/\(String(describing: id))").setValue(["username": self.usernameTextField.text?.lowercased(), "name": self.nameTextField.text!, "age": self.ageTextField.text!, "email": self.emailTextField.text!, "id": user?.uid])
+                                        let id = user?.uid ?? ""
+                                        Constants.refs.users.child(id).setValue(["username": self.usernameTextField.text?.lowercased(), "name": self.nameTextField.text!, "age": self.ageTextField.text!, "email": self.emailTextField.text!, "id": user?.uid])
                                         self.dismiss(animated: true, completion: {})
                                     }
                                 }

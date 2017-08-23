@@ -19,7 +19,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     var ref: DatabaseReference!
     var groups: Array<Any>?
     var deals : Array<Deal>?
-    var userId = ""
+    var user : UserInfo!
     
     @IBOutlet weak var venueInfoView: UIView!
     @IBOutlet weak var aboutThisVenueLabel: UILabel!
@@ -49,11 +49,11 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         initDealsView()
         
-//        
-//        let infoButton = UIButton(type: .infoLight)
-//        let barButton = UIBarButtonItem(customView: infoButton)
-//        self.navigationItem.rightBarButtonItem = barButton
-       
+        //
+        //        let infoButton = UIButton(type: .infoLight)
+        //        let barButton = UIBarButtonItem(customView: infoButton)
+        //        self.navigationItem.rightBarButtonItem = barButton
+        
     }
     
     
@@ -92,6 +92,46 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        // Check if group owner can only redeem once. The number of redemptions will be "1" if
+        // that's the case.
+        if (self.venue!.deals[indexPath.row].numberOfRedemptions == "1") {
+            let redemptions = self.user.redemptions
+            let id = self.venue!.deals[indexPath.row].id
+            if (redemptions.count > 0) {
+                //  Check if it exists
+                if let dealExists = redemptions[id] {
+                    // If it exists and the value is true, that means the person was a group owner
+                    if (dealExists) {
+                        let alertView = SCLAlertView()
+                        alertView.showError("Error", subTitle: "You can only redeem the deal once as a group owner")
+                        self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
+                        return
+                    }
+                }
+            }
+            
+        }
+        
+
+        // Can probably re-factor this into the above if statement
+        if (self.venue!.deals[indexPath.row].numberOfRedemptions == "0") {
+            let redemptions = self.user.redemptions
+            let id = self.venue!.deals[indexPath.row].id
+            if (redemptions.count > 0) {
+                //  Check if it exists
+                if let _ = redemptions[id] {
+                    // If it exists then they have redeemed it once already
+                        let alertView = SCLAlertView()
+                        alertView.showError("Error", subTitle: "You can only redeem the deal once ")
+                        self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
+                        return
+                    }
+                }
+        }
+        
+        
+        
         // Create custom alert view
         let appearance = SCLAlertView.SCLAppearance(
             kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
@@ -164,7 +204,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         phoneLabel.text = venue!.number
         venueDealsLabel.text = "\(venue!.deals.count) Deals Available"
         
-    
+        
         // Adding icon and changing color
         addIcon(name: "phone", imageView: phoneIcon)
         addIcon(name: "website", imageView: websiteIcon)
@@ -226,7 +266,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         }
     }
     
-
+    
     
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation

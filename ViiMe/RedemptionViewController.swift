@@ -10,6 +10,7 @@ import UIKit
 import ChameleonFramework
 import CoreLocation
 import Firebase
+import SCLAlertView
 
 class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, CLLocationManagerDelegate {
     
@@ -149,6 +150,70 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
     }
     
     @IBAction func redeemButtonClicked(_ sender: Any) {
+        let numberOfRedemptions = self.group?.deal?.numberOfRedemptions ?? ""
+        
+        // Check if group owner can only redeem once
+        // This is just in case they have created multiple groups but can only redeem once
+        if (numberOfRedemptions == "1") {
+            let redemptions = self.group?.owner?.redemptions ?? [:]
+            let id = self.group?.deal?.id ?? ""
+            if (redemptions.count > 0) {
+                //  Check if it exists
+                if let dealExists = redemptions[id] {
+                    // If it exists and the value is true, that means the person was a group owner
+                    if (dealExists) {
+                        let appearance = SCLAlertView.SCLAppearance(
+                            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+                            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+                            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+                            showCloseButton: false,
+                            showCircularIcon: false
+                        )
+                        
+                        let alertView = SCLAlertView(appearance: appearance)
+                        alertView.addButton("OK", backgroundColor: FlatPurple())   {}
+                        alertView.showInfo("Error", subTitle: "You can only redeem the deal once as a group owner")
+                        return
+                    }
+                }
+            }
+            
+        }
+        
+        //Check if users have already redeemed if it's a deal where users can only redeem once
+        if (numberOfRedemptions == "0") {
+            let id = self.group?.deal?.id ?? ""
+            
+            let ownerRedemptions = self.group?.owner?.redemptions ?? [:]
+            // Make sure you haven't redeemed it
+            if (ownerRedemptions.count > 0) {
+                //  Check if it exists
+                if let dealExists = ownerRedemptions[id] {
+                    // If it exists and the value is true, that means the person was a group owner
+                    if (dealExists) {
+                        let alertView = SCLAlertView()
+                        alertView.showError("Error", subTitle: "You can only redeem the deal once")
+                        return
+                    }
+                }
+            }
+            
+            // Then check users
+            let users = self.group?.users ?? []
+            for user in users {
+                if (user.redemptions.count > 0) {
+                    if let _ = user.redemptions[id] {
+                        // If the value exists, then they've already redeemed the deal once
+                        let alertView = SCLAlertView()
+                        alertView.showError("Error", subTitle: "\(user.username) has already redeemed the deal once")
+                        
+                            return
+                    }
+                }
+            }
+            
+        }
+        
         if CLLocationManager.locationServicesEnabled() {
             switch(CLLocationManager.authorizationStatus()) {
             case .notDetermined, .restricted, .denied:
@@ -175,13 +240,21 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
                         ])
                     
                     let ownerId = self.group?.owner?.id ?? ""
+                    let dealId = self.group?.deal?.id ?? ""
+                   
                     // Remove group id from owner
-                    Constants.refs.root.child("users/\(ownerId)/groups/\(id)").removeValue()
+                    Constants.refs.users.child("\(ownerId)/groups/\(id)").removeValue()
+                  
+                    // If value is true, then they have redeemed as group owner
+                    Constants.refs.users.child("\(ownerId)/redemptions").setValue([dealId : true])
                     
-                    // Remove group id from users
+                    
+                    // Remove group id from users and add deal
                     if let users = self.group?.users {
                         for user in users {
-                            Constants.refs.root.child("users/\(user.id)/groups/\(id)").removeValue()
+                            Constants.refs.users.child("\(user.id)/groups/\(id)").removeValue()
+                            Constants.refs.users.child("\(user.id)/redemptions").updateChildValues([dealId: false])
+                            
                         }
                     }
           

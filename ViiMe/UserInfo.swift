@@ -25,6 +25,7 @@ struct UserInfo {
     var personalDealIds : Dictionary<String, Bool>
     var personalDeals : [Deal]
     var notifications: Dictionary<String, Bool>
+    var redemptions: Dictionary<String, Bool>
     
     init(snapshot: DataSnapshot) {
          let value = snapshot.value as? NSDictionary
@@ -43,6 +44,7 @@ struct UserInfo {
          personalDealIds = value?["personal-deals"] as? Dictionary<String, Bool> ?? [:]
          personalDeals = []
          notifications = value?["notifications"] as? Dictionary<String, Bool> ?? [:]
+         redemptions = value?["redemptions"] as? Dictionary<String, Bool> ?? [:]
     }
     
 }

@@ -35,6 +35,8 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     // This is the profile icon with the badge for personal delas
     let rewardsBadgeButton : MIBadgeButton = MIBadgeButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
     
+    var refreshControl: UIRefreshControl!
+    
     @IBOutlet weak var collectionView: UICollectionView!
     //MARK: View Lifecycle
     override func viewDidLoad() {
@@ -43,6 +45,15 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         self.collectionView?.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.emptyDataSetSource = self
+        
+        // This is for swiping down collection view to reload
+        refreshControl = UIRefreshControl()
+        let attributedStringColour : NSDictionary = [NSForegroundColorAttributeName : FlatWhite()];
+        refreshControl.attributedTitle =  NSAttributedString(string: "Pull to refresh", attributes: attributedStringColour as? [String : AnyObject])
+
+        
+        refreshControl.addTarget(self, action: #selector(refresh(sender:)), for: UIControlEvents.valueChanged)
+        collectionView.addSubview(refreshControl)
         
         self.view.backgroundColor = FlatBlack()
         
@@ -88,6 +99,23 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         
     }
     
+    // This is when the collection view is swiped down to refresh
+    func refresh(sender:AnyObject) {
+        self.groupsAreLoading = true
+        self.getGroups { (isComplete) in
+            if (isComplete) {
+                self.groupsAreLoading = false
+                
+                DispatchQueue.main.async {
+                    self.collectionView?.reloadData()
+                    self.collectionView?.reloadEmptyDataSet()
+                                    
+                }
+                 self.refreshControl.endRefreshing()
+            }
+        }
+    }
+  
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         // This is to deal with the case where someone creates a group, then leaves the page.
@@ -119,12 +147,15 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         
         
     }
-    
+  
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.getCurrentUser()
         
     }
+    
+   
+
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -143,7 +174,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         if (indexPath.section == 0) {
             headerView.sectionTitleLabel.text = "DEAL INVITATIONS"
         } else {
-            headerView.sectionTitleLabel.text = "ACTIVE DEALS"
+            headerView.sectionTitleLabel.text = "MY ACTIVE DEALS"
         }
         
         headerView.backgroundColor = .clear
@@ -516,8 +547,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 self.groups = []
                 self.invitedGroups = []
                 self.groupsAreLoading = false
+                
                 self.collectionView.reloadData()
                 self.collectionView.reloadEmptyDataSet()
+                                
                 completionHandler(false)
             }
             
@@ -546,6 +579,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                     self.collectionView.reloadData()
                     self.collectionView.reloadEmptyDataSet()
                     self.groupsAreLoading = false
+                    
                     completionHandler(false)
                 }
                 
@@ -629,6 +663,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                     self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
                     
                     self.groupsAreLoading = false
+                    
                     self.collectionView.reloadData()
                     self.collectionView.reloadEmptyDataSet()
                     
@@ -686,9 +721,11 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             self.getGroups(completionHandler: { (isComplete) in
                 if (isComplete) {
                     self.groupsAreLoading = false
+                    
                     DispatchQueue.main.async {
                         self.collectionView?.reloadData()
                         self.collectionView?.reloadEmptyDataSet()
+                                          
                     }
                 }
             })
@@ -717,6 +754,9 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             destVC?.group = self.groups[index]
         } else if (segue.identifier == "ProfileViewControllerSegue") {
             let destVC = segue.destination as? ProfileViewController
+            destVC?.user = self.user
+        } else if (segue.identifier == "VenuesCollectionViewControllerSegue") {
+            let destVC = segue.destination as? VenuesCollectionViewController
             destVC?.user = self.user
         }
         

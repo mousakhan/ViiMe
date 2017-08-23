@@ -470,7 +470,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     
     //Add description/subtitle on empty dataset
     func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        let str = "Deals sent to you personally by venue owners will be found here!"
+        let str = "Get rewarded for your loyalty. Deals sent to you personally by venue owners will be found here!"
         let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.body), NSForegroundColorAttributeName: FlatGray()]
         return NSAttributedString(string: str, attributes: attrs)
     }

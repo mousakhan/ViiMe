@@ -24,6 +24,10 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     var filteredVenues = [Venue]()
     var venues = [Venue]()
     
+    // This is passed in from the home page, and then passed  to the deals view controller.
+    // It is not used in this view controller.
+    var user: UserInfo!
+    
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -180,6 +184,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             let destVC = segue.destination as! DealsViewController
             if let indexPath = collectionView?.indexPathsForSelectedItems?[0][1] {
                 destVC.venue = venues[indexPath]
+                destVC.user = self.user
             }
         }
     }

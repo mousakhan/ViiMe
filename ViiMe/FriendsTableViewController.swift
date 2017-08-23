@@ -320,6 +320,20 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             }
             
             if (self.group != nil) {
+                let dealID = self.group?.deal?.id ?? ""
+                let redemptions  = friend?.redemptions ?? [:]
+                if (self.group?.deal?.numberOfRedemptions == "0" && redemptions.count > 0) {
+                    //  Check if it exists
+                    if let _ = redemptions[dealID] {
+                        // If it exists then the person has already redeemed
+                        let alertView = SCLAlertView()
+                        alertView.showError("Error", subTitle: "This user has already redeemed this deal")
+                        self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
+                        return
+                        
+                    }
+                }
+                
                 let id = self.group?.id ?? ""
                 // Check if there is a user to delete, and if so, remove them from backend
                 if (self.userToDeleteId != "" && self.userToDeleteId != (friend?.id ?? "")) {

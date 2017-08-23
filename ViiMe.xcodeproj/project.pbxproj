@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4C1AB9561F35CC4400855189 /* AddFriendTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1AB9551F35CC4400855189 /* AddFriendTableViewController.swift */; };
+		4C320A871F4D0B13007EC52E /* ProgressActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C320A861F4D0B13007EC52E /* ProgressActivityIndicator.swift */; };
 		4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */; };
 		4C50CE4E1F395F3A00781ACD /* UIView+Border.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50CE4D1F395F3A00781ACD /* UIView+Border.swift */; };
 		4C50CE551F39FD3800781ACD /* GroupCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C50CE541F39FD3800781ACD /* GroupCollectionViewCell.swift */; };
@@ -43,6 +44,7 @@
 
 /* Begin PBXFileReference section */
 		4C1AB9551F35CC4400855189 /* AddFriendTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddFriendTableViewController.swift; sourceTree = "<group>"; };
+		4C320A861F4D0B13007EC52E /* ProgressActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressActivityIndicator.swift; sourceTree = "<group>"; };
 		4C3AF0BB1F0E184F008B2CE5 /* VenuesCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VenuesCollectionViewController.swift; sourceTree = "<group>"; };
 		4C50CE4D1F395F3A00781ACD /* UIView+Border.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Border.swift"; sourceTree = "<group>"; };
 		4C50CE541F39FD3800781ACD /* GroupCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				4C50CE4D1F395F3A00781ACD /* UIView+Border.swift */,
 				4C8C0FAB1F3BA9F300B23D37 /* CALayer+BorderProperties.swift */,
 				4CF360FC1F41448900E14EB1 /* DateHelper.swift */,
+				4C320A861F4D0B13007EC52E /* ProgressActivityIndicator.swift */,
 			);
 			name = "Helper Classes";
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 				4C3AF0BC1F0E184F008B2CE5 /* VenuesCollectionViewController.swift in Sources */,
 				4CB6AD7E1F2D4F8E004EB393 /* Deal.swift in Sources */,
 				4C7EDE031EEB01BD001A9B81 /* LoginViewController.swift in Sources */,
+				4C320A871F4D0B13007EC52E /* ProgressActivityIndicator.swift in Sources */,
 				4C50CE4E1F395F3A00781ACD /* UIView+Border.swift in Sources */,
 				4CFA46CD1EEBD2EE008BDF8F /* ForgotPasswordController.swift in Sources */,
 				4CB6AD741F2CB692004EB393 /* FriendTableViewCell.swift in Sources */,
@@ -542,7 +546,7 @@
 				CODE_SIGN_ENTITLEMENTS = ViiMe/ViiMe.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 3L8HKMPJ68;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = ViiMe/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -562,7 +566,7 @@
 				CODE_SIGN_ENTITLEMENTS = ViiMe/ViiMe.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 3L8HKMPJ68;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = ViiMe/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
