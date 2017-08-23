@@ -45,7 +45,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         self.collectionView?.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.emptyDataSetSource = self
-        
+        self.collectionView.emptyDataSetDelegate = self
         // This is for swiping down collection view to reload
         refreshControl = UIRefreshControl()
         let attributedStringColour : NSDictionary = [NSForegroundColorAttributeName : FlatWhite()];
@@ -87,6 +87,13 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                                                name: NSNotification.Name.InstanceIDTokenRefresh,
                                                object: nil)
         
+    }
+    
+    func emptyDataSetWillAppear(_ scrollView: UIScrollView!) {
+        print("Appear")
+        scrollView.setContentOffset(
+            CGPoint(x: 0,y: -collectionView.contentOffset.y),
+            animated: true)
     }
     
     func tokenRefreshNotification () {
@@ -579,7 +586,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                     self.collectionView.reloadData()
                     self.collectionView.reloadEmptyDataSet()
                     self.groupsAreLoading = false
-                    
                     completionHandler(false)
                 }
                 
@@ -659,6 +665,13 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                         }
                     })
                 } else {
+                    
+                    if (group.redeemed) {
+                        let index = self.groups.index(where: {$0.id == group.id})
+                        if (index != nil) {
+                            self.groups.remove(at: index!)
+                        }
+                    }
                     self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
                     self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
                     
