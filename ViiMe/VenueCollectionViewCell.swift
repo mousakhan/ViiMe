@@ -95,7 +95,7 @@ class VenueCollectionViewCell: UICollectionViewCell {
         distanceLabel = UILabel(frame: distanceIconLabelFrame)
         distanceLabel.font = priceLabel.font.withSize(10)
         distanceLabel.textColor = FlatWhite()
-        distanceLabel.text = "100" + "km"
+        distanceLabel.text = ""
         distanceLabel.numberOfLines = 1
         distanceLabel.adjustsFontSizeToFitWidth = true
         self.contentView.addSubview(distanceLabel)

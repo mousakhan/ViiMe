@@ -109,8 +109,10 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
         if (indexPath.section == 0) {
             let username = self.friends[indexPath.row]["username"] as! String
             let id = self.friends[indexPath.row]["id"] as! String
-            Constants.refs.users.child("\(id)/friends/" + Constants.getUserId()).setValue(false)
-            BannerHelper.showBanner(title: "Friend Invitation Sent to \(username)", type: .success)
+            if (Constants.getUserId() != "") {
+                Constants.refs.users.child("\(id)/friends/" + Constants.getUserId()).setValue(false)
+                BannerHelper.showBanner(title: "Friend Invitation Sent to \(username)", type: .success)
+            }
         } else {
             delegate?.sendSmsClick(recipient: self.filteredContacts[indexPath.row]["number"] as! String, vc: self)
         }

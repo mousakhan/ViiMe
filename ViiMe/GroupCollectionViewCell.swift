@@ -37,7 +37,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         let origImage = UIImage(named: "cancel.png")
         let tintedImage = origImage?.withRenderingMode(.alwaysTemplate)
         button.setImage(tintedImage, for: .normal)
-        button.tintColor = UIColor.white
+        button.tintColor = FlatGray()
         button.titleLabel?.text = ""
         return button
     }()
@@ -53,6 +53,19 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
+    let venueLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.textColor = FlatWhiteDark()
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.numberOfLines = 2
+        label.minimumScaleFactor = 0.6
+        label.adjustsFontSizeToFitWidth = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     
     let usersCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -85,6 +98,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         
         addSubview(usersCollectionView)
         addSubview(dealLabel)
+        addSubview(venueLabel)
         addSubview(cancelButton)
         addSubview(redeemButton)
         addSubview(dividerLineView)
@@ -110,12 +124,19 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         dealLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 30).isActive = true
         dealLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
         dealLabel.topAnchor.constraint(equalTo: self.cancelButton.topAnchor, constant:5).isActive = true
-        dealLabel.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        dealLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        
+        venueLabel.translatesAutoresizingMaskIntoConstraints = false
+        venueLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 30).isActive = true
+        venueLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10).isActive = true
+        venueLabel.topAnchor.constraint(equalTo: self.dealLabel.bottomAnchor).isActive = true
+        venueLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
+        
         
         dividerLineView.translatesAutoresizingMaskIntoConstraints = false
         dividerLineView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
         dividerLineView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
-        dividerLineView.topAnchor.constraint(equalTo: self.dealLabel.bottomAnchor).isActive = true
+        dividerLineView.topAnchor.constraint(equalTo: self.venueLabel.bottomAnchor, constant: 5).isActive = true
         dividerLineView.heightAnchor.constraint(equalToConstant: 2).isActive = true
         
         usersCollectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -163,7 +184,8 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         // Check if the group exists
         if (self.group != nil) {
             if (self.group?.deal != nil) {
-                dealLabel.text = self.group?.deal?.shortDescription
+                dealLabel.text = self.group?.deal?.title
+                venueLabel.text = self.group?.venue?.name
             }
             
             // The first cell should always be the group owner

@@ -23,9 +23,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     var token = Messaging.messaging().fcmToken
     
-    let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
-    
-    
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,8 +35,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         
         usernameTextField.delegate = self
         passwordTextField.delegate = self
-        self.activityIndicator.center = self.view.center;
-        self.view.addSubview(activityIndicator)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -107,7 +102,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         let email = usernameTextField.text!
         let password = passwordTextField.text!
         
-        activityIndicator.startAnimating()
+
         // Check if the email is valid
         if ValidationHelper.validateEmail(textfield: usernameTextField) {
             // Sign in
@@ -115,10 +110,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 // Show error if there is one
                 if let error = error {
                     BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
-                    DispatchQueue.main.async {
-                        self.activityIndicator.stopAnimating()
-                    }
-                    
 
                     return
                 }
@@ -139,10 +130,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     alertView.addButton("Cancel", backgroundColor: FlatRed(), action: {
                     })
                     alertView.showInfo("Error", subTitle: "Sorry. Your email address has not yet been verified. Do you want us to send another verification email to \(email)?")
-                    DispatchQueue.main.async {
-                        self.activityIndicator.stopAnimating()
-
-                    }
                 } else {
                     // All is well, go to the next view controller and add their FCM token to the back-end
                     if (self.token != nil) {
@@ -157,7 +144,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                             UserDefaults.standard.synchronize()
                         }
                     }
-                    self.activityIndicator.stopAnimating()
                     
                 }
             }

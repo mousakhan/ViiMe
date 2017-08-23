@@ -71,11 +71,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         })
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        Constants.refs.root.removeAllObservers()
-    }
-    
+ 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

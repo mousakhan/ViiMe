@@ -36,7 +36,10 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var scrollView: UIScrollView!
     
+    @IBOutlet weak var stackViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var dealNavigationItem: UINavigationItem!
+    
     
     //MARK: View Lifecycle
     override func viewDidLoad() {
@@ -49,13 +52,15 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         initDealsView()
         
-        //
-        //        let infoButton = UIButton(type: .infoLight)
-        //        let barButton = UIBarButtonItem(customView: infoButton)
-        //        self.navigationItem.rightBarButtonItem = barButton
-        
     }
     
+    
+    //TODO: Xcode is giving an error with constraints, but seems to be working OK. fix after web app is done
+    override func viewWillLayoutSubviews() {
+        super.updateViewConstraints()
+        self.tableViewHeightConstraint.constant = self.tableView.contentSize.height
+        stackViewHeight.constant = self.tableView.contentSize.height + 30
+    }
     
     
     //MARK: UITableView DataSource
@@ -69,7 +74,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50.0
+        return 65.0
     }
     
     //MARK: UITableView Delegate
@@ -78,11 +83,16 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
         
         cell.backgroundColor = FlatBlackDark()
-        cell.textLabel?.text = venue?.deals[indexPath.row].shortDescription
+        cell.textLabel?.text = venue?.deals[indexPath.row].title
         cell.textLabel?.textColor = FlatWhite()
-        cell.textLabel?.lineBreakMode = .byWordWrapping
-        cell.textLabel?.numberOfLines = 0
-        cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
+        cell.textLabel?.font = cell.textLabel?.font.withSize(12)
+
+        cell.detailTextLabel?.text = venue?.deals[indexPath.row].shortDescription
+        cell.detailTextLabel?.textColor = FlatWhiteDark()
+        cell.detailTextLabel?.lineBreakMode = .byWordWrapping
+        cell.detailTextLabel?.numberOfLines = 0
+        cell.detailTextLabel?.font = cell.textLabel?.font.withSize(10)
+
         
         let bgColorView = UIView()
         bgColorView.backgroundColor = FlatPurpleDark()

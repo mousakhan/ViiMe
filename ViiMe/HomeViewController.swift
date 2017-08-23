@@ -89,12 +89,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         
     }
     
-    func emptyDataSetWillAppear(_ scrollView: UIScrollView!) {
-        print("Appear")
-        scrollView.setContentOffset(
-            CGPoint(x: 0,y: -collectionView.contentOffset.y),
-            animated: true)
-    }
     
     func tokenRefreshNotification () {
         if let updatedToken = Messaging.messaging().fcmToken {
@@ -402,8 +396,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                     }
                     // If not, only remove yourself from the group in back-end
                 } else {
-                    Constants.refs.groups.child("\(id)/users/\(Constants.getUserId())").removeValue()
-                    Constants.refs.users.child("\(Constants.getUserId())/groups/\(id)").removeValue()
+                    if (Constants.getUserId() != "") {
+                        Constants.refs.groups.child("\(id)/users/\(Constants.getUserId())").removeValue()
+                        Constants.refs.users.child("\(Constants.getUserId())/groups/\(id)").removeValue()
+                    }
                 }
             })
             
@@ -450,9 +446,11 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         }
         
         
+        
+        
         alertView.addButton("Maybe Later") {}
         
-        alertView.showInfo("Invitation", subTitle: "Respond to Invitation")
+        alertView.showInfo("Deal Invitation", subTitle: "Let your friend know if you're coming!")
         
     }
     func acceptGroupInvitation(groupIndex : Int) {

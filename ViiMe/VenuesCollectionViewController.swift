@@ -66,10 +66,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         initVenues()
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        Constants.refs.root.removeAllObservers()
-    }
     
     // MARK: UICollectionViewDataSource
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -117,11 +113,14 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         cell.numberOfDealsLabel.text = "\(venue?.deals.count ?? 0) Deals"
         cell.priceLabel.text = venue?.price ?? ""
         cell.cuisineLabel.text = venue?.cuisine ?? ""
-        setDistance(address: venue?.address ?? "", completionHandler: { (isComplete, distance) in
-            if (isComplete) {
-                cell.distanceLabel.text = distance
-            }
-        })
+        
+        if (cell.distanceLabel.text == "") {
+            setDistance(address: venue?.address ?? "", completionHandler: { (isComplete, distance) in
+                if (isComplete) {
+                    cell.distanceLabel.text = distance
+                }
+            })
+        }
         cell.venueTypeLabel.text = venue?.type ?? ""
         
         
@@ -200,26 +199,32 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     // This will grab all the venues from the back-end
     func initVenues () {
         // Go to back-end 'venue' node and fetch every venue
-        Constants.refs.venues.observe(DataEventType.value, with: { (snapshot) in
-            self.venues = []
+        Constants.refs.venues.observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
             let enumerator = snapshot.children
+
             //Iterate through the venues, keep track of an index
-            var index = -1
             while let rest = enumerator.nextObject() as? DataSnapshot {
-                let venue = Venue(snapshot: rest)
-                self.venues.append(venue)
-                index = index + 1
+                var venue = Venue(snapshot: rest)
                 // Check if deals actually exist
                 if venue.dealIds.count != 0 {
-                    // If they do, laod the deal
                     self.getDeal(ids: venue.dealIds , completionHandler: { (isComplete, deal) in
                         // If a deal is loaded, then add it to the venue
                         if (isComplete) {
-                            self.venues[index].deals.append(deal)
+                            venue.deals.append(deal)
+                            
+                            if (!self.venues.contains(where: { $0.id == venue.id})) {
+                                self.venues.append(venue)
+                            } else {
+                                let index = self.venues.index(where: {$0.id == venue.id})
+                                if (index != nil) {
+                                    self.venues[index!] = venue
+                                }
+                            }
                             DispatchQueue.main.async {
                                 self.collectionView?.reloadData()
                             }
                         }
+                        
                     })
                     self.collectionView?.reloadData()
                 }
