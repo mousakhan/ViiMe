@@ -99,11 +99,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>TBEmptyDataSet.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>leveldb-library.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -118,16 +113,6 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>09A62655F66AE53A474D64E42E6E9DF9</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>1DBB607C921107BFDC1660B95A99B6A4</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>231F130600414D45A7C389CCA6733D1A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -162,6 +147,11 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>49B29A5FA0AB60B1EEA5C6DD8B76B826</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>593E9479C06FB200807D11AB29EB50BD</key>
 		<dict>
 			<key>primary</key>
@@ -187,12 +177,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8EF539C58EEE2B913DB1F3D0DD9CC187</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>B6F6D857472C56D55022081A48CA9A05</key>
+		<key>77BFA0CE7FD837AC0E6B14F1FDD6EC34</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -223,6 +208,11 @@
 			<true/>
 		</dict>
 		<key>EAA88C5A4B6AEAC54C2772A9995B99C2</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>FCD4A6921DCFEE24226897755441D899</key>
 		<dict>
 			<key>primary</key>
 			<true/>

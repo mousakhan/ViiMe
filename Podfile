@@ -22,5 +22,4 @@ target 'ViiMe' do
   pod 'Kingfisher', '~> 3.0'	
   pod 'SCLAlertView'
   pod 'DZNEmptyDataSet'
-pod 'TBEmptyDataSet'
 end

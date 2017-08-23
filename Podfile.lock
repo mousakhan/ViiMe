@@ -96,7 +96,6 @@ PODS:
   - Protobuf (3.3.0)
   - SCLAlertView (0.7.0)
   - SnapKit (3.2.0)
-  - TBEmptyDataSet (2.5)
 
 DEPENDENCIES:
   - ChameleonFramework/Swift (from `https://github.com/ViccAlexander/Chameleon.git`)
@@ -115,7 +114,6 @@ DEPENDENCIES:
   - MIBadgeButton-Swift (from `https://github.com/mustafaibrahim989/MIBadgeButton-Swift.git`, branch `master`)
   - NotificationBannerSwift
   - SCLAlertView
-  - TBEmptyDataSet
 
 EXTERNAL SOURCES:
   ChameleonFramework:
@@ -162,8 +160,7 @@ SPEC CHECKSUMS:
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
   SCLAlertView: 8a14ffc40590c619e183eed2298b854385f30be1
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
-  TBEmptyDataSet: 4527a34cba692e29964b2a07d0ffc46b20946bca
 
-PODFILE CHECKSUM: d77c8e5fd87187ea8641966457e15c16d0d15a3c
+PODFILE CHECKSUM: 38d565289e265cb7461352a6a36e82bc1e240fda
 
 COCOAPODS: 1.2.1
