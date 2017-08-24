@@ -134,7 +134,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         if (self.user.personalDeals.count > 0) {
             cell.textLabel?.text = self.user.personalDeals[indexPath.row].title
-            cell.textLabel?.text = self.user.personalDeals[indexPath.row].shortDescription
+            cell.detailTextLabel?.text = self.user.personalDeals[indexPath.row].shortDescription
         }
         
         let bgColorView = UIView()
