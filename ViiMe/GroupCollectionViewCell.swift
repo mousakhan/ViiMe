@@ -108,6 +108,7 @@ class GroupCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource,
         
         usersCollectionView.register(UserCollectionViewCell.self, forCellWithReuseIdentifier: reusableIdentifier)
         
+        
         self.layer.borderWidth = 0.5
         self.layer.borderColor = FlatGrayDark().cgColor
         

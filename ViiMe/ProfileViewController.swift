@@ -72,7 +72,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         // Tableview set up
         setupTableview(tableView: rewardsTableView)
         
-    
+        
         
         self.getPersonalDeals()
         
@@ -110,19 +110,32 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         return self.user.personalDeals.count
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 65.0
+    }
+    
     //MARK: UITableViewDelegate
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UITableViewCell", for: indexPath)
         
         cell.backgroundColor = FlatBlack()
-        cell.textLabel?.textColor  = FlatWhite()
-        cell.textLabel?.lineBreakMode = .byWordWrapping
-        cell.textLabel?.numberOfLines = 0
-        cell.textLabel?.font = cell.textLabel?.font.withSize(12 )
-      
-            if (self.user.personalDeals.count > 0) {
-                cell.textLabel?.text = self.user.personalDeals[indexPath.row].shortDescription
-            }
+        
+        cell.backgroundColor = FlatBlackDark()
+        
+        cell.textLabel?.textColor = FlatWhite()
+        cell.textLabel?.font = cell.textLabel?.font.withSize(12)
+        
+        cell.detailTextLabel?.textColor = FlatWhiteDark()
+        cell.detailTextLabel?.lineBreakMode = .byWordWrapping
+        cell.detailTextLabel?.numberOfLines = 0
+        cell.detailTextLabel?.font = cell.textLabel?.font.withSize(10)
+        
+        
+        
+        if (self.user.personalDeals.count > 0) {
+            cell.textLabel?.text = self.user.personalDeals[indexPath.row].title
+            cell.textLabel?.text = self.user.personalDeals[indexPath.row].shortDescription
+        }
         
         let bgColorView = UIView()
         bgColorView.backgroundColor = FlatPurpleDark()
@@ -135,7 +148,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if (tableView == self.rewardsTableView) {
-         
+            
             let appearance = SCLAlertView.SCLAppearance(
                 kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
                 kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
@@ -168,7 +181,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                         BannerHelper.showBanner(title: "Redemption successful", type: .success)
                     }
                 } else {
-                        BannerHelper.showBanner(title: "Incorrect redemption code entered", type: .danger)
+                    BannerHelper.showBanner(title: "Incorrect redemption code entered", type: .danger)
                 }
             })
             
@@ -183,7 +196,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         tableView.deselectRow(at: tableView.indexPathForSelectedRow!, animated: true)
     }
     
-
+    
     //MARK: Image Picker
     func takePhoto() {
         imagePicker =  UIImagePickerController()
@@ -399,7 +412,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                         }
                     }
                 })
-
+                
             })
             
         }
@@ -496,7 +509,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         })
         
         alertView.addButton("Rate Our App", backgroundColor: FlatBlue(), action: {
-            self.rateApp(appId: "id1144678737", completion: { (isComplete) in
+            self.rateApp(appId: "id1267863034", completion: { (isComplete) in
                 
             })
         })
@@ -515,7 +528,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         mailComposerVC.setToRecipients(["support@viime.ca"])
         mailComposerVC.setSubject("ViiMe Feedback")
-    
+        
         return mailComposerVC
     }
     
@@ -530,7 +543,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         
         let alertView = SCLAlertView(appearance: appearance)
         alertView.showError("Failed to send email", subTitle: "Your device could not send e-mail.  Please check e-mail configuration and try again.")
-       
+        
     }
     
     // MARK: MFMailComposeViewControllerDelegate
@@ -553,7 +566,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         UIApplication.shared.open(url, options: [:], completionHandler: completion)
     }
     
-  
- 
+    
+    
     
 }

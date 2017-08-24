@@ -155,8 +155,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         // When the 'Create' button is pressed, we write to the backend to create the group
         alertView.addButton("Create", backgroundColor: FlatPurple())    {
-            let groupRef = self.ref.child("groups")
-            let id = groupRef.childByAutoId()
+            let id = Constants.refs.groups.childByAutoId()
             
             Constants.refs.groups.child("\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": Constants.getUserId(), "venue-id": self.venue!.id])
             Constants.refs.users.child("\(Constants.getUserId())/groups/\(id.key)").setValue(true)
@@ -261,7 +260,6 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func openAddress(_ sender: UITapGestureRecognizer) {
-        print("Hereee")
         let text = (sender.view as! UILabel).text
         let baseUrl: String = "http://maps.apple.com/?q="
         let encodedName = text?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!

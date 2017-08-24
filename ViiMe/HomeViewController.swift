@@ -50,8 +50,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         refreshControl = UIRefreshControl()
         let attributedStringColour : NSDictionary = [NSForegroundColorAttributeName : FlatWhite()];
         refreshControl.attributedTitle =  NSAttributedString(string: "Pull to refresh", attributes: attributedStringColour as? [String : AnyObject])
-
-        
         refreshControl.addTarget(self, action: #selector(refresh(sender:)), for: UIControlEvents.valueChanged)
         collectionView.addSubview(refreshControl)
         
@@ -79,8 +77,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         self.navigationItem.leftBarButtonItem = profileBarButton
         rewardsBadgeButton.addTarget(self, action: #selector(segueToProfileTableViewController(sender:)), for: .touchUpInside)
         
-        getCurrentUser()
-        
+    
         // This is if the push notification token changes
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(tokenRefreshNotification),
@@ -105,18 +102,15 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         self.groupsAreLoading = true
         self.getGroups { (isComplete) in
             if (isComplete) {
-                self.groupsAreLoading = false
                 
-                DispatchQueue.main.async {
-                    self.collectionView?.reloadData()
-                    self.collectionView?.reloadEmptyDataSet()
-                                    
-                }
-                 self.refreshControl.endRefreshing()
+                self.groupsAreLoading = false
+                self.collectionView?.reloadData()
+                self.refreshControl.endRefreshing()
+                
             }
         }
     }
-  
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         // This is to deal with the case where someone creates a group, then leaves the page.
@@ -143,20 +137,22 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             }
             
             self.collectionView.reloadData()
+            
             shouldDeleteGroups = true
         }
         
         
     }
-  
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         self.getCurrentUser()
         
     }
     
-   
-
+    
+    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -382,9 +378,9 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                     self.groups.remove(at: row)
                 }
                 
-                DispatchQueue.main.async {
-                    self.collectionView?.reloadData()
-                }
+                
+                self.collectionView?.reloadData()
+                
                 
                 
                 // Only remove the entire group from back-end if you're the owner
@@ -502,6 +498,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 users.append(user)
                 if (users.count == ids.count) {
                     self.collectionView.reloadData()
+                    
                     completionHandler(true, users)
                 }
             })
@@ -519,6 +516,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             Constants.refs.users.child(id).observeSingleEvent(of: .value, with: { (ownerSnapshot) in
                 let user = UserInfo(snapshot: ownerSnapshot)
                 self.collectionView.reloadData()
+                
                 completionHandler(true, user)
                 
                 
@@ -552,10 +550,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 self.groups = []
                 self.invitedGroups = []
                 self.groupsAreLoading = false
-                
                 self.collectionView.reloadData()
-                self.collectionView.reloadEmptyDataSet()
-                                
                 completionHandler(false)
             }
             
@@ -567,7 +562,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 // Have to add it in here since this is what'll be called if there are any changes in the database
                 self.groupsAreLoading = true
                 var group = Group(snapshot: snapshot)
-                
                 
                 // Check if it already equals  the total
                 // If so, clean out the arrays. This is for when user 1 deletes a group
@@ -581,15 +575,23 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 if (count < (self.groups.count + self.invitedGroups.count)) {
                     self.invitedGroups = []
                     self.groups = []
-                    self.collectionView.reloadData()
-                    self.collectionView.reloadEmptyDataSet()
                     self.groupsAreLoading = false
-                    completionHandler(false)
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
+ 
+                    completionHandler(true)
                 }
                 
-                
-                // Make sure group isn't already redeemed, not already in array and actually exists
-                if (!group.redeemed && group.id != "") {
+                if (group.redeemed) {
+                    let index = self.groups.index(where: {$0.id == group.id})
+                    if (index != nil) {
+                        self.groups.remove(at: index!)
+                    }
+                    // If group is redeemed, reduce count
+                    count = count - 1
+                    // Make sure group isn't already redeemed, not already in array and actually exists
+                } else if (!group.redeemed && group.id != "") {
                     self.getDeal(id: group.dealId, completionHandler: { (isComplete1, deal) in
                         if (isComplete1) {
                             group.deal = deal
@@ -615,8 +617,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                                                         
                                                         // Check if it already exists, if not, add it
                                                         if (!self.groups.contains(where: { $0.id == group.id })) {
-                                                            
-                                                            
+                            
                                                             self.groups.append(group)
                                                         } else {
                                                             // If it does already exist, update it
@@ -642,18 +643,25 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                                                         
                                                     }
                                                     
-                                                    // Sort the groups by when they were created
-                                                    self.groups = self.groups.sorted { ($0 .created )  > ($1.created ) }
-                                                    self.invitedGroups = self.invitedGroups.sorted { ($0 .created )  > ($1.created ) }
+                                               
+                                                    self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
+                                                    self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
+                                                    
+                                                
                                                     
                                                     // It's complete when the count is equal
                                                     if (count == (self.groups.count + self.invitedGroups.count)) {
                                                         self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
                                                         self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
+                                                        self.groupsAreLoading = false
+                                                        DispatchQueue.main.async {
+                                                            self.collectionView.reloadData()
+                                                        }
                                                         
-                                                        self.collectionView.reloadData()
                                                         completionHandler(true)
                                                     }
+                                                    
+                                                   
                                                 }
                                             })
                                         }
@@ -662,31 +670,14 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                             })
                         }
                     })
-                } else {
-                    
-                    if (group.redeemed) {
-                        let index = self.groups.index(where: {$0.id == group.id})
-                        if (index != nil) {
-                            self.groups.remove(at: index!)
-                        }
-                    }
-                    self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
-                    self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
-                    
-                    self.groupsAreLoading = false
-                    
-                    self.collectionView.reloadData()
-                    self.collectionView.reloadEmptyDataSet()
-                    
                 }
-                
+             
+            
                 
                 
             })
             
         }
-        //        })
-        
         
     }
     
@@ -694,7 +685,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         if (id != "") {
             Constants.refs.root.child("deal/\(id)").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                 let deal = Deal(snapshot: snapshot)
-                self.collectionView.reloadData()
                 completionHandler(true, deal)
                 
                 //TODO: If deal is invalid, then group probably should be removed
@@ -707,6 +697,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         // Check back end to see if user exists
         let productRef = Constants.refs.users.child(Constants.getUserId())
         productRef.observe(DataEventType.value, with: { (snapshot) in
+            
             let user = UserInfo(snapshot: snapshot)
             self.user = user
             // Check for invites and update badge accordingly if it is greater than 0
@@ -716,6 +707,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                     count = count + 1
                 }
             }
+            
             if (count > 0) {
                 self.friendsBadgeButton.badgeString = "\(count)"
             } else {
@@ -730,14 +722,18 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             
             self.groupsAreLoading = true
             self.getGroups(completionHandler: { (isComplete) in
+ 
                 if (isComplete) {
                     self.groupsAreLoading = false
                     
                     DispatchQueue.main.async {
                         self.collectionView?.reloadData()
-                        self.collectionView?.reloadEmptyDataSet()
-                                          
                     }
+                    
+
+
+                    
+                    
                 }
             })
         })
