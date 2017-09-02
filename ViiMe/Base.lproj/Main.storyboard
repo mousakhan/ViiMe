@@ -612,7 +612,7 @@
                                                                         <rect key="frame" x="0.0" y="20.333333333333343" width="178.33333333333334" height="30"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                        <textInputTraits key="textInputTraits" autocapitalizationType="words" keyboardType="emailAddress" keyboardAppearance="alert"/>
+                                                                        <textInputTraits key="textInputTraits" autocapitalizationType="words" keyboardAppearance="alert"/>
                                                                     </textField>
                                                                 </subviews>
                                                             </stackView>
@@ -724,17 +724,17 @@
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MwA-c0-S5b">
                                                         <rect key="frame" x="0.0" y="0.0" width="374" height="50"/>
-                                                        <color key="backgroundColor" red="0.85043728351593018" green="0.21816034615039825" blue="0.15920260548591614" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <color key="backgroundColor" red="0.19115509089999999" green="0.63786703349999996" blue="0.26147949700000001" alpha="1" colorSpace="calibratedRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="50" id="eDD-AE-7kG"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                        <state key="normal" title="LOG OUT">
+                                                        <state key="normal" title="SAVE CHANGES">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         </state>
                                                         <connections>
-                                                            <action selector="logout:" destination="nMK-oK-2pX" eventType="touchUpInside" id="ym9-3t-R4a"/>
+                                                            <action selector="save:" destination="nMK-oK-2pX" eventType="touchUpInside" id="QVg-c7-DBJ"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -771,12 +771,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Profile" id="Ko5-tr-Qhr">
                         <barButtonItem key="backBarButtonItem" title=" " id="Goa-sW-RJh"/>
-                        <barButtonItem key="rightBarButtonItem" image="info" style="done" id="VTF-FA-2sk">
-                            <inset key="imageInsets" minX="12" minY="12" maxX="12" maxY="12"/>
-                            <connections>
-                                <action selector="contactButtonClicked:" destination="nMK-oK-2pX" id="psf-JF-s5k"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Item" style="plain" id="VTF-FA-2sk"/>
                     </navigationItem>
                     <connections>
                         <outlet property="ageTextField" destination="kUh-ox-3xR" id="8s2-Zp-czJ"/>
@@ -1556,7 +1551,6 @@
         <image name="address" width="50" height="50"/>
         <image name="cancel" width="50" height="50"/>
         <image name="contacts" width="48" height="48"/>
-        <image name="info" width="16" height="16"/>
         <image name="profile" width="50" height="50"/>
     </resources>
 </document>

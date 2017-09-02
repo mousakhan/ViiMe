@@ -38,6 +38,20 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         self.view.backgroundColor = FlatBlack()
         self.navigationController?.navigationBar.tintColor = FlatWhite()
         
+        
+        // Create the info button
+        let infoButton = UIButton(type: .infoLight)
+        
+        // You will need to configure the target action for the button itself, not the bar button itemr
+        infoButton.addTarget(self, action: #selector(contactButtonClicked), for: .touchUpInside)
+        
+        // Create a bar button item using the info button as its custom view
+        let infoBarButtonItem = UIBarButtonItem(customView: infoButton)
+        
+        // Use it as required
+        navigationItem.rightBarButtonItem = infoBarButtonItem
+        
+        
         //Profile Image Setup
         profilePicture.layer.cornerRadius = profilePicture.frame.size.width/2.0
         profilePicture.layer.borderWidth = 1.0
@@ -328,22 +342,11 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         } else if (textField == emailTextField) {
             ageTextField.becomeFirstResponder()
         }
-        // Do not add a line break
+
         return false
     }
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        let name =  nameTextField.text ?? ""
-        let age = ageTextField.text ?? ""
-        let email = emailTextField.text ?? ""
-        
-        if (Constants.getUserId() != "") {
-            Constants.refs.users.child("\(Constants.getUserId())/name").setValue(name)
-            Constants.refs.users.child("\(Constants.getUserId())/age").setValue(age)
-            Constants.refs.users.child("\(Constants.getUserId())/email").setValue(email)
-        }
-    
-    }
+
     
     //MARK: Helper Functions
     func hideKeyboard(sender: AnyObject) {
@@ -439,26 +442,22 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
     }
     
     //MARK: IBActions
-    @IBAction func logout(_ sender: Any) {
-        try! Auth.auth().signOut()
+    @IBAction func save(_ sender: Any) {
+        let name =  nameTextField.text ?? ""
+        let age = ageTextField.text ?? ""
+        let email = emailTextField.text ?? ""
         
-        if ((FBSDKAccessToken.current()) != nil) {
-            let loginManager = FBSDKLoginManager()
-            loginManager.logOut()
+        if (Constants.getUserId() != "") {
+            Constants.refs.users.child("\(Constants.getUserId())/name").setValue(name)
+            Constants.refs.users.child("\(Constants.getUserId())/age").setValue(age)
+            Constants.refs.users.child("\(Constants.getUserId())/email").setValue(email)
+            BannerHelper.showBanner(title: "Profile Updated", type: .success)
+        } else {
+            BannerHelper.showBanner(title: "Error. Profile did not update.", type: .danger)
         }
-        
-        let token = Messaging.messaging().fcmToken
-        if (token != nil) {
-            Constants.refs.root.child("users/\(Constants.getUserId())/notifications/\(token!)").removeValue()
-        }
-        
-        let presentingViewController = self.presentingViewController
-        self.dismiss(animated: false, completion: {
-            presentingViewController!.dismiss(animated: true, completion: {})
-        })
-        
-    }
     
+    }
+
     @IBAction func dismissProfilePage(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
@@ -479,7 +478,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         return NSAttributedString(string: str, attributes: attrs)
     }
     
-    @IBAction func contactButtonClicked(_ sender: Any) {
+    func contactButtonClicked() {
         
         let appearance = SCLAlertView.SCLAppearance(
             kTitleFont: UIFont.systemFont(ofSize: 18, weight: UIFontWeightRegular),

@@ -303,6 +303,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                 }
                 
                 self.filteredInvites = []
+                self.filteredFriends = []
+                self.filteredContacts = []
                 self.searchBar.text = ""
                 self.tableView.reloadData()
             }
