@@ -74,7 +74,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 65.0
+        return 75.0
     }
     
     //MARK: UITableView Delegate

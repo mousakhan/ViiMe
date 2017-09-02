@@ -212,10 +212,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = FlatPurple()
                 cell.selectedBackgroundView = bgColorView
+                cell.isUserInteractionEnabled = true
             } else {
-                let bgColorView = UIView()
-                bgColorView.backgroundColor = .clear
-                cell.selectedBackgroundView = bgColorView
+                cell.isUserInteractionEnabled = false
             }
             
             return cell

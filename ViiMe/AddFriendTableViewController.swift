@@ -137,7 +137,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
             return "Search by Username"
         }
         
-        return "My Contacts"
+        return "Search by Contacts"
     }
     
     
