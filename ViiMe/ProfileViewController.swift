@@ -200,18 +200,32 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         imagePicker =  UIImagePickerController()
         imagePicker.delegate = self
         
-        let alert = UIAlertController(title: "Choose Image", message: nil, preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
+        let appearance = SCLAlertView.SCLAppearance(
+            kTitleFont: UIFont.systemFont(ofSize: 18, weight: UIFontWeightRegular),
+            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+            showCloseButton: false,
+            showCircularIcon: false
+        )
+        
+        let alertView = SCLAlertView(appearance: appearance)
+        
+        alertView.addButton("Camera", backgroundColor: FlatPurple(), action: {
             self.openCamera()
-        }))
+        })
         
-        alert.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { _ in
+        alertView.addButton("Photos", backgroundColor: FlatBlueDark(), action: {
             self.openGallary()
-        }))
+        })
         
-        alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
         
-        self.present(alert, animated: true, completion: nil)
+        alertView.addButton("Maybe Later",  action: {
+        })
+        
+        
+        alertView.showInfo("Choose Image", subTitle: "Change your profile picture by either taking a photo, or selecting one from your photo roll!")
+        
+     
     }
     
     func openCamera() {
@@ -220,9 +234,9 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
             imagePicker.allowsEditing = true
             self.present(imagePicker, animated: true, completion: nil)
         } else {
-            let alert  = UIAlertController(title: "Warning", message: "You don't have a camera", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
+            
+            let alert  = SCLAlertView()
+            alert.showError("Error", subTitle: "You don't have a camera")
         }
     }
     
@@ -234,18 +248,16 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         imagePicker.dismiss(animated: true, completion: nil)
+        var tmpImage : UIImage? = nil
         
         if let image = info[UIImagePickerControllerEditedImage] as? UIImage {
-            profilePicture.image = image
+            tmpImage = image
         } else if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
-            profilePicture.image = image
-        } else {
-            profilePicture.image = nil
-            profilePicture.image = UIImage(named: "empty_profile")
+            tmpImage = image
         }
         
-        if (profilePicture.image != nil) {
-            
+        if (tmpImage != nil) {
+        
             let storageRef = Storage.storage().reference().child("profile/ " + Constants.getUserId()
                 + ".png")
             
@@ -259,14 +271,26 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
             }
             
             
-            if let uploadData = UIImagePNGRepresentation(profilePicture.image!) {
+            if let uploadData = UIImagePNGRepresentation(tmpImage!) {
                 storageRef.putData(uploadData, metadata: nil, completion: { (metadata, error) in
                     if error != nil {
                         print(error!)
                         return
                     }
                     Constants.refs.users.child(Constants.getUserId()).updateChildValues(["profile": metadata?.downloadURL()?.absoluteString ?? ""])
+             
+                    let downloadURL = metadata?.downloadURL()?.absoluteString ?? ""
+                    print("HERE")
+                    print(downloadURL)
                     
+                    if (downloadURL != "") {
+                        let url = URL(string: downloadURL)
+                        self.profilePicture.kf.indicatorType = .activity
+                        self.profilePicture.kf.setImage(with: url)
+                    } else {
+                        self.profilePicture.image = nil
+                        self.profilePicture.image = UIImage(named: "empty_profile")
+                    }
                     
                 })
             }
