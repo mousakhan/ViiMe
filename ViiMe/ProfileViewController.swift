@@ -16,19 +16,17 @@ import CoreLocation
 import DZNEmptyDataSet
 import MessageUI
 
-class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, MFMailComposeViewControllerDelegate {
+class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, MFMailComposeViewControllerDelegate {
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var profilePicture: UIImageView!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
-    @IBOutlet weak var genderTextField: UITextField!
     @IBOutlet weak var ageTextField: UITextField!
     @IBOutlet weak var rewardsTableView: UITableView!
     @IBOutlet weak var usernameTextField: UITextField!
     
     var user: UserInfo!
-    let genders = ["", "Male", "Female"]
     var imagePicker: UIImagePickerController!
     let locationManager = CLLocationManager()
     var currentLocation = CLLocationCoordinate2D()
@@ -53,7 +51,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         self.nameTextField.text = user.name
         self.emailTextField.text = user.email
         self.ageTextField.text = user.age
-        self.genderTextField.text = user.gender
+
         if (user.profile != "") {
             let url = URL(string: user.profile)
             self.profilePicture.kf.indicatorType = .activity
@@ -67,7 +65,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         setupTextField(textfield: nameTextField)
         setupTextField(textfield: emailTextField)
         setupTextField(textfield: ageTextField)
-        setupTextField(textfield: genderTextField)
+
         
         // Tableview set up
         setupTableview(tableView: rewardsTableView)
@@ -84,7 +82,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
         
         // Ask for Authorisation from the User.
-        self.locationManager.requestAlwaysAuthorization()
+        self.locationManager.requestWhenInUseAuthorization()
         
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
@@ -296,17 +294,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
                 datePicker.setDate(getDateFromString(date: self.ageTextField.text!), animated: true)
             }
             datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
-        } else if (textField === self.genderTextField) {
-            let picker = UIPickerView()
-            picker.delegate = self
-            picker.dataSource = self
-            textField.inputView = picker
-            if (self.genderTextField.text != nil) {
-                let index = genders.index(of: self.genderTextField.text!)
-                if (index != nil) {
-                    picker.selectRow(index!, inComponent:0, animated:true)
-                }
-            }
         }
     }
     
@@ -316,8 +303,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             emailTextField.becomeFirstResponder()
         } else if (textField == emailTextField) {
             ageTextField.becomeFirstResponder()
-        } else if (textField == ageTextField) {
-            genderTextField.becomeFirstResponder()
         }
         // Do not add a line break
         return false
@@ -327,12 +312,13 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         let name =  nameTextField.text ?? ""
         let age = ageTextField.text ?? ""
         let email = emailTextField.text ?? ""
-        let gender = genderTextField.text ?? ""
         
-        Constants.refs.root.child("users").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
-            Constants.refs.root.child("users/\(Constants.getUserId())").setValue(["username": self.user.username, "name": name, "age": age, "email": email, "gender": gender, "id": Constants.getUserId(), "profile": self.user.profile, "personal-deals": self.user.personalDealIds, "friends": self.user.friendIds, "notifications": self.user.notifications])
-        })
-        
+        if (Constants.getUserId() != "") {
+            Constants.refs.users.child("\(Constants.getUserId())/name").setValue(name)
+            Constants.refs.users.child("\(Constants.getUserId())/age").setValue(age)
+            Constants.refs.users.child("\(Constants.getUserId())/email").setValue(email)
+        }
+    
     }
     
     //MARK: Helper Functions
@@ -340,7 +326,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
         nameTextField.resignFirstResponder()
         ageTextField.resignFirstResponder()
         emailTextField.resignFirstResponder()
-        genderTextField.resignFirstResponder()
     }
     
     func datePickerChanged(sender: UIDatePicker) {
@@ -427,23 +412,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
             })
         }
         
-    }
-    
-    //MARK: Picker View Delegate & Data Source
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return genders.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return genders[row]
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        self.genderTextField.text = genders[row]
     }
     
     //MARK: IBActions
@@ -533,15 +501,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIPickerView
     }
     
     func showSendMailErrorAlert() {
-        let appearance = SCLAlertView.SCLAppearance(
-            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
-            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
-            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
-            showCloseButton: false,
-            showCircularIcon: false
-        )
-        
-        let alertView = SCLAlertView(appearance: appearance)
+        let alertView = SCLAlertView()
         alertView.showError("Failed to send email", subTitle: "Your device could not send e-mail.  Please check e-mail configuration and try again.")
         
     }

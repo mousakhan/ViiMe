@@ -24,10 +24,7 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     var groups : [Group] = []
     var invitedGroups : [Group] = []
     var user : UserInfo? = nil
-    // This boolean updates depending on which page you go to
-    // If you go to the invite or redeem page, it is set to no, since we don't want the deals to be deleted
-    // Otherwise, if you have an empty group, and navigate away from the page, delete it
-    var shouldDeleteGroups = true
+
     // This is to keep track of whether or not it's loading
     var groupsAreLoading = false
     // This is the contacts list icon with the badge for any new friend request
@@ -93,8 +90,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         } else {
             print("We don't have an FCM token yet")
         }
-        
-        
     }
     
     // This is when the collection view is swiped down to refresh
@@ -102,7 +97,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         self.groupsAreLoading = true
         self.getGroups { (isComplete) in
             if (isComplete) {
-                
                 self.groupsAreLoading = false
                 self.collectionView?.reloadData()
                 self.refreshControl.endRefreshing()
@@ -111,38 +105,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         }
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        // This is to deal with the case where someone creates a group, then leaves the page.
-        // The group should be deleted unless it's to redeem a deal, or to invite someone, and
-        // that's what the shouldDeleteGroups bool is keeping track of
-        if (shouldDeleteGroups) {
-            // Loop through all the groups
-            for (_, group) in self.groups.enumerated() {
-                // If there are no users, then remove the group from the back-end, which will trigger
-                // the group observor and update the array
-                if (group.users.count == 0 && self.groups.count > 0) {
-                    let id = group.id
-                    if (id != "") {
-                        if (self.groups.contains(where: { $0.id == id})) {
-                            let index = self.groups.index(where: {$0.id == id})
-                            if (index != nil) {
-                                self.groups.remove(at: index!)
-                            }
-                        }
-                        Constants.refs.groups.child(id).removeValue()
-                        Constants.refs.users.child("\(Constants.getUserId())/groups/\(id)").removeValue()
-                    }
-                }
-            }
-            
-            self.collectionView.reloadData()
-            
-            shouldDeleteGroups = true
-        }
-        
-        
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -380,9 +342,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 
                 
                 self.collectionView?.reloadData()
-                
-                
-                
                 // Only remove the entire group from back-end if you're the owner
                 if (Constants.getUserId() == ownerId) {
                     Constants.refs.groups.child("\(id)").removeValue()
@@ -464,8 +423,10 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
         if (self.invitedGroups.count > 0 && groupIndex < (self.invitedGroups.count + 1))  {
             let group = self.invitedGroups[groupIndex]
             let id = group.id
-            Constants.refs.root.child("users/\(Constants.getUserId())/groups/\(id)").removeValue()
-            Constants.refs.groups.child("\(id)/users/\(Constants.getUserId())").removeValue()
+            if (Constants.getUserId() != "") {
+                Constants.refs.users.child("\(Constants.getUserId())/groups/\(id)").removeValue()
+                Constants.refs.groups.child("\(id)/users/\(Constants.getUserId())").removeValue()
+            }
         } else {
             //Setup alert
             showError()
@@ -474,7 +435,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     
     func redeem(index: Int) {
         self.performSegue(withIdentifier: "RedemptionViewControllerSegue", sender: index)
-        shouldDeleteGroups = false
     }
     
     func getUsers(ids : Dictionary<String, Bool>, completionHandler: @escaping (_ isComplete: Bool, _ users: [UserInfo]) -> ()) {
@@ -644,13 +604,15 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                                                     }
                                                     
                                                
-                                                    self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
-                                                    self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
+                                              
+                                                    // Sort the groups by when they were created
+                                                    self.groups = self.groups.sorted { ($0 .created )  > ($1.created ) }
+                                                    self.invitedGroups = self.invitedGroups.sorted { ($0 .created )  > ($1.created ) }
                                                     
-                                                
                                                     
                                                     // It's complete when the count is equal
                                                     if (count == (self.groups.count + self.invitedGroups.count)) {
+                                                    
                                                         self.groups = self.groups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
                                                         self.invitedGroups = self.invitedGroups.filter({$0.ownerId == Constants.getUserId() || $0.userIds.keys.contains(Constants.getUserId())})
                                                         self.groupsAreLoading = false
@@ -686,8 +648,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
             Constants.refs.root.child("deal/\(id)").observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                 let deal = Deal(snapshot: snapshot)
                 completionHandler(true, deal)
-                
-                //TODO: If deal is invalid, then group probably should be removed
             })
         }
         
@@ -753,7 +713,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                 let userId = info[1] as? String ?? ""
                 destVC?.group = self.groups[index]
                 destVC?.userToDeleteId =  userId
-                shouldDeleteGroups = false
             }
         } else if (segue.identifier == "RedemptionViewControllerSegue") {
             let destVC = segue.destination as? RedemptionViewController

@@ -155,6 +155,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     //MARK: Helper Functions
     func getSearchResults(query: String) {
         if (query.characters.count > 2) {
+            
             if !query.trimmingCharacters(in: .whitespaces).isEmpty {
                 self.filteredContacts = []
                 _ = self.contacts.filter({ (dict) -> Bool in
@@ -166,30 +167,34 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                     return true
                 })
                 
-                
+     
                 //For why this works: https://stackoverflow.com/questions/38618953/how-to-do-a-simple-search-in-string-in-firebase-database
+                
+                
+                
                 Constants.refs.users
                     .queryOrdered(byChild: "username")
                     .queryStarting(atValue: query.lowercased())
-                    .queryEnding(atValue: query.lowercased()+"\u{f8ff}")
+                    .queryEnding(atValue: query.lowercased() + "\u{f8ff}")
                     .observe(DataEventType.value, with: { (snapshot) -> Void in
+                        
                         self.friends = []
                         let enumerator = snapshot.children
                         while let friend = enumerator.nextObject() as? DataSnapshot {
-                            let postDict = friend.value as? [String : AnyObject] ?? [:]
-                            let username = postDict["username"] as? String ?? ""
-                            let name = postDict["name"] as? String ?? ""
-                            let id = postDict["id"] as? String ?? ""
-                            let profile = postDict["profile"] as? String ?? ""
-                         
+                            
+                            let user = UserInfo(snapshot: friend)
+                            let id = user.id
+                            
                             var dict = [String: String]()
                             
-                            dict["name"] = name
-                            dict["username"] = username
-                            dict["id"] = id
+                            print(user.username)
                             
-                            if (profile != "") {
-                                dict["profile"] = profile
+                            dict["name"] = user.name
+                            dict["username"] = user.username
+                            dict["id"] = user.id
+                            
+                            if (user.profile != "") {
+                                dict["profile"] = user.profile
                             } else {
                                 dict["profile"] = ""
                             }
@@ -197,6 +202,8 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
                           
                             if (id != Constants.getUserId() && !self.userFriends.contains(where: { $0.id == id })
                                 ) {
+                                
+                                
                                 self.friends.append(dict)
                             }
                             
@@ -215,6 +222,11 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
         }
     }
     
+    
+    // Remove observors
+    deinit {
+        Constants.refs.users.removeAllObservers()
+    }
     
     
     

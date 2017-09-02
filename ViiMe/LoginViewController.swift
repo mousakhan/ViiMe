@@ -23,6 +23,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     
     var token = Messaging.messaging().fcmToken
     
+    // This is keeping track of active user. There is a problem with firebase addStateDidChangeListener
+    // where it's called twice. Firebase issue
+    var activeUser: User! = nil
+    
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,12 +35,15 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         TextFieldHelper.addIconToTextField(imageName: "email.png", textfield: usernameTextField)
         TextFieldHelper.addIconToTextField(imageName: "password.png", textfield: passwordTextField)
         createFacebookButton()
-        
-        
+      
         usernameTextField.delegate = self
         passwordTextField.delegate = self
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.activeUser = nil
+    }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // Check if user is logged in with Facebook
@@ -66,29 +73,32 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             }
         }
         
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    
         Auth.auth().addStateDidChangeListener { auth, user in
-            // Check if user is logged in, and if their email is actually verified
+            // Check if user is logged in, and if their email i s actually verified
             if user != nil && user!.isEmailVerified {
-                // Add their id to user defaults for future use
-                if let id = Auth.auth().currentUser?.uid {
-                    UserDefaults.standard.set(id, forKey: "uid")
-                    UserDefaults.standard.synchronize()
+                if (self.activeUser != user) {
+                    
+                    self.activeUser = user
+                    // Add their id to user defaults for future use
+                    if let id = Auth.auth().currentUser?.uid {
+                        UserDefaults.standard.set(id, forKey: "uid")
+                        UserDefaults.standard.synchronize()
+                    }
+                    // Add their FCM ID to the back-end for push notifications
+                    self.token = Messaging.messaging().fcmToken
+                    if (self.token != nil) {
+                        Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
+                    }
+                    self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
                 }
-                // Add their FCM ID to the back-end for push notifications
-                self.token = Messaging.messaging().fcmToken
-                if (self.token != nil) {
-                    Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
-                }
-                self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                
+                
             } else {
                 // No User is signed in. Show user the login screen
             }
         }
+        
+        
     }
     
     
@@ -97,47 +107,67 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         let email = usernameTextField.text!
         let password = passwordTextField.text!
         
-
+        
         // Check if the email is valid
         if ValidationHelper.validateEmail(textfield: usernameTextField) {
             // Sign in
             Auth.auth().signIn(withEmail: email, password: password) { (user, error) in
-                // Show error if there is one
-                if let error = error {
-                    BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
-
-                    return
-                }
-                // If they try to log in but their email is not verified, then show an alert asking them to verify
-                // and re-send if necessary
-                if !(user?.isEmailVerified)! {
-                    let appearance = SCLAlertView.SCLAppearance(
-                        kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
-                        kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
-                        kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
-                        showCloseButton: false,
-                        showCircularIcon: false
-                    )
-                    let alertView = SCLAlertView(appearance: appearance)
-                    alertView.addButton("Resend", backgroundColor: FlatPurple(), action: {
-                        user?.sendEmailVerification(completion: nil)
-                    })
-                    alertView.addButton("Cancel", backgroundColor: FlatRed(), action: {
-                    })
-                    alertView.showInfo("Error", subTitle: "Sorry. Your email address has not yet been verified. Do you want us to send another verification email to \(email)?")
-                } else {
-                    // All is well, go to the next view controller and add their FCM token to the back-end
-                    if (self.token != nil) {
-                        Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
+                
+                if (user == nil) {
+                    // Show error if there is one
+                    if let error = error {
+                        BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
+                        return
                     }
-                    
-                    // Add their id to user defaults for future use
-                    if let id = Auth.auth().currentUser?.uid {
-                        UserDefaults.standard.set(id, forKey: "uid")
-                        UserDefaults.standard.synchronize()
-                    }
-                    
                 }
+                
+                if (user != nil) {
+                    // Show error if there is one
+                    if let error = error {
+                        BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
+                        return
+                    }
+                    // If they try to log in but their email is not verified, then show an alert asking them to verify
+                    // and re-send if necessary
+                    if !(user!.isEmailVerified) {
+                        let appearance = SCLAlertView.SCLAppearance(
+                            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+                            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+                            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+                            showCloseButton: false,
+                            showCircularIcon: false
+                        )
+                        let alertView = SCLAlertView(appearance: appearance)
+                        alertView.addButton("Resend", backgroundColor: FlatPurple(), action: {
+                            user?.sendEmailVerification(completion: nil)
+                        })
+                        alertView.addButton("Cancel", backgroundColor: FlatRed(), action: {
+                        })
+                        alertView.showInfo("Error", subTitle: "Sorry. Your email address has not yet been verified. Do you want us to send another verification email to \(email)?")
+                    } else {
+                        
+                        // All is well, go to the next view controller and add their FCM token to the back-end
+                        self.token = Messaging.messaging().fcmToken
+                        if (self.token != nil) {
+                            Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
+                        }
+                        
+                        // Add their id to user defaults for future use
+                        if let id = Auth.auth().currentUser?.uid {
+                            UserDefaults.standard.set(id, forKey: "uid")
+                            UserDefaults.standard.synchronize()
+                        }
+                        
+                        // If it is nil, then it's a new user signing in for the first time
+                        if (self.activeUser == nil) {
+                            self.activeUser = user!
+                            self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                        }
+                    }
+                }
+                
+              
+               
             }
         }
         
@@ -202,7 +232,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
             Constants.refs.users.observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                 // Check if the user already exists in our database.
-                if !(snapshot.hasChild("\(user!.uid)")){
+                if !(snapshot.hasChild("\(user?.uid ?? "")")){
                     // If not, then show alert
                     alertView.addButton("Create Account") {
                         // Check to see if there are any username validation issues
@@ -210,13 +240,38 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         // If so, show them
                         if (userValidation != "") {
                             BannerHelper.showBanner(title: userValidation, type: .danger)
-                        } else {
-                            // If not, add the user to the database with the info
-                            Constants.refs.users.child("\(user!.uid)").setValue(["username": "\(usernameTextField.text!)", "name": user!.displayName ?? "", "age": "", "email": user!.email ?? "", "id": user!.uid, "profile": user!.photoURL?.absoluteString ?? "" ])
                             
+                            // Signing them out of Firebase
+                            let firebaseAuth = Auth.auth()
+                            do {
+                                try firebaseAuth.signOut()
+                            } catch let signOutError as NSError {
+                                print ("Error signing out: %@", signOutError)
+                            }
+                            
+                            // Sign them out of FB
+                            let loginManager = FBSDKLoginManager()
+                            loginManager.logOut()
+                        } else {
+                            if (usernameTextField.text != "" && usernameTextField.text != nil) {
+                                if (user?.uid != nil) {
+                                    // If not, add the user to the database with the info
+                                    Constants.refs.users.child("\(user!.uid)").setValue(["username": "\(usernameTextField.text!.lowercased())", "name": user?.displayName ?? "", "age": "", "email": user?.email ?? "", "id": user?.uid ?? "", "profile": user?.photoURL?.absoluteString ?? "" ])
+                                }
+                            }
+                            
+                            // Add their id to user defaults for future use
+                            if let id = Auth.auth().currentUser?.uid {
+                                UserDefaults.standard.set(id, forKey: "uid")
+                                UserDefaults.standard.synchronize()
+                            }
+                            
+                            self.token = Messaging.messaging().fcmToken
                             // Add their FCM token to the database as well for notifications
                             if (self.token != nil) {
-                                Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
+                                if (user?.uid != nil) {
+                                    Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
+                                }
                             }
                             // Segue
                             self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
@@ -241,7 +296,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     
                     // Show alert
                     DispatchQueue.main.async {
-                        alertView.showInfo("Username", subTitle: "Please enter a username to be used in the application. The username cannot start or end with -, _, . or a number, can contain no white spaces, emojis, or special characters and must be 3-15 characters long")
+                        alertView.showInfo("Username", subTitle: "Please enter a username to be used in the application. The username cannot start or end with -, _, . or a number, can contain no white spaces, emojis, or special characters, must be 3-15 characters long and all in lowercase")
                     }
                     
                     

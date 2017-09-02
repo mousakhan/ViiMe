@@ -207,9 +207,17 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             cell.profilePicture.layer.borderWidth = 1.0
             cell.profilePicture.layer.borderColor = FlatGray().cgColor
             
-            let bgColorView = UIView()
-            bgColorView.backgroundColor = FlatPurpleDark()
-            cell.selectedBackgroundView = bgColorView
+            
+            if (self.group != nil) {
+                let bgColorView = UIView()
+                bgColorView.backgroundColor = FlatPurple()
+                cell.selectedBackgroundView = bgColorView
+            } else {
+                let bgColorView = UIView()
+                bgColorView.backgroundColor = .clear
+                cell.selectedBackgroundView = bgColorView
+            }
+            
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ContactCell", for: indexPath)
@@ -287,8 +295,12 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             
             
             alertView.addButton("Accept", backgroundColor: FlatGreen())   {
-                Constants.refs.users.child("\(Constants.getUserId())/friends/\(invite!.id)").setValue(true)
-                Constants.refs.users.child("\(invite!.id)/friends/\(Constants.getUserId())").setValue(true)
+                
+                if (Constants.getUserId() != "" && (invite?.id ?? "") != "") {
+                    Constants.refs.users.child("\(Constants.getUserId())/friends/\(invite!.id)").setValue(true)
+                    Constants.refs.users.child("\(invite!.id)/friends/\(Constants.getUserId())").setValue(true)
+                }
+                
                 self.filteredInvites = []
                 self.searchBar.text = ""
                 self.tableView.reloadData()
@@ -435,7 +447,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     //MARK: MFMessageComposeViewControllerDelegate
     func sendSmsClick(recipient: String, vc: UITableViewController) {
         let messageVC = MFMessageComposeViewController()
-        messageVC.body = "Download ViiMe to join me on this exclusive offer! https://itunes.apple.com/ca/app/viime/id1144678737?mt=8";
+        messageVC.body = "Download ViiMe to join me on this exclusive offer! https://itunes.apple.com/ca/app/viime/id1267863034?mt=8";
         messageVC.recipients = [recipient]
         messageVC.messageComposeDelegate = self;
         vc.present(messageVC, animated: false, completion: nil)
@@ -462,46 +474,36 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     }
     
     //MARK: Search Controller
-    func willPresentSearchController(_ searchController: UISearchController) {
-        DispatchQueue.main.async {
-            self.searchController.searchResultsController?.view.isHidden = false
-        }
-    }
-    
-    func didPresentSearchController(_ searchController: UISearchController) {
-        self.searchController.searchResultsController?.view.isHidden = false
-    }
-    
     @IBAction func addFriendButtonClicked(_ sender: Any) {
         // Search Controller setup
         
-        let resultsController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddFriendTableViewController") as! AddFriendTableViewController
         
-        resultsController.delegate = self
+        if (self.searchController == nil) {
+            let resultsController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddFriendTableViewController") as! AddFriendTableViewController
+            
+            resultsController.delegate = self
+            
+            resultsController.searchController = self.searchController
+            
+            resultsController.userFriends = self.friends
+            resultsController.contacts = self.contacts
+            
+            self.searchController = UISearchController(searchResultsController: resultsController)
+            self.searchController.searchBar.tintColor = FlatPurpleDark()
+            self.searchController.searchBar.barTintColor = FlatPurpleDark()
+            self.searchController.searchBar.showsCancelButton = true
+            self.searchController.searchResultsUpdater = resultsController as UISearchResultsUpdating
+            self.searchController.delegate = self
+            self.searchController.searchBar.delegate = self
+            self.searchController.hidesNavigationBarDuringPresentation = false
+            self.searchController.dimsBackgroundDuringPresentation = true
+            self.searchController.searchBar.keyboardAppearance = .dark
+            self.searchController.searchBar.returnKeyType = .done
+            self.searchController.searchBar.tintColor = FlatPurpleDark()
+            self.searchController.searchBar.text = " "
+        }
         
-        resultsController.searchController = self.searchController
-        
-        resultsController.userFriends = self.friends
-        resultsController.contacts = self.contacts
-        
-        self.searchController = UISearchController(searchResultsController: resultsController)
-        
-        self.searchController.searchBar.tintColor = FlatPurpleDark()
-        self.searchController.searchBar.barTintColor = FlatPurpleDark()
-        self.searchController.searchBar.showsCancelButton = true
-        self.searchController.searchResultsUpdater = resultsController as UISearchResultsUpdating
-        self.searchController.delegate = self
-        self.searchController.searchBar.delegate = self
-        self.searchController.hidesNavigationBarDuringPresentation = false
-        self.searchController.dimsBackgroundDuringPresentation = false
-        self.searchController.searchBar.returnKeyType = .done
-        self.searchController.searchBar.enablesReturnKeyAutomatically = false
-        self.searchController.searchBar.keyboardAppearance = .dark
-        self.searchController.searchBar.tintColor = FlatPurpleDark()
-        self.searchController.searchBar.text = " "
-        
-        
-        present(self.searchController, animated: true) {
+        self.present(self.searchController, animated: true) { 
             
         }
         
@@ -548,7 +550,10 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             searchBar.text = ""
             tableView.reloadData()
         } else {
+            searchBar.endEditing(true)
+            searchBar.text = ""
             self.searchController = nil
+            tableView.reloadData()
         }
     }
     
@@ -561,9 +566,15 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.endEditing(true)
-        searchBar.text = ""
-        tableView.reloadData()
+        
+        if (searchBar == self.searchBar) {
+            
+        } else {
+            dismissSearchController()
+            self.searchController = nil
+            searchBar.endEditing(true)
+            tableView.reloadData()
+        }
         
     }
     //MARK: AddFriendTableViewControllerDelegate

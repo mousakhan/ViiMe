@@ -10,6 +10,7 @@ import UIKit
 import FirebaseAuth
 import NotificationBannerSwift
 import FirebaseDatabase
+import ChameleonFramework
 
 class SignUpViewController: UIViewController, UITextFieldDelegate {
     
@@ -17,7 +18,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var usernameTextField: UITextField!
-    @IBOutlet weak var ageTextField: UITextField!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
@@ -25,6 +25,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var cancelButton: UIButton!
     
 
+    @IBOutlet weak var termsOfCondtionsLabel: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -36,13 +37,12 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         
         TextFieldHelper.addIconToTextField(imageName: "username.png", textfield: self.usernameTextField)
         TextFieldHelper.addIconToTextField(imageName: "name.png", textfield: nameTextField)
-        TextFieldHelper.addIconToTextField(imageName: "age.png", textfield: ageTextField)
         TextFieldHelper.addIconToTextField(imageName: "email.png", textfield: emailTextField)
         TextFieldHelper.addIconToTextField(imageName: "password.png", textfield: passwordTextField)
         TextFieldHelper.addIconToTextField(imageName: "password.png", textfield: confirmPasswordTextField)
         
         nameTextField.delegate = self
-        ageTextField.delegate = self
+
         emailTextField.delegate = self
         passwordTextField.delegate = self
         usernameTextField.delegate = self
@@ -53,6 +53,15 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let tapGesture = UITapGestureRecognizer.init(target: self, action: #selector(hideKeyboard(sender:)))
         tapGesture.cancelsTouchesInView = false
         scrollView.addGestureRecognizer(tapGesture)
+        
+        let termsText = "By clicking on the sign up button, you agree to our terms of service and privacy policy"
+        let termsGesture = UITapGestureRecognizer(target: self, action: #selector(openTerms(sender:)))
+        termsOfCondtionsLabel.addGestureRecognizer(termsGesture)
+        
+        let attributedString = NSMutableAttributedString(string:termsText)
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: FlatSkyBlue() , range: NSRange(location: 52, length: 35) )
+        
+        termsOfCondtionsLabel.attributedText = attributedString
    
     }
     
@@ -63,8 +72,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         if (textField == usernameTextField) {
             nameTextField.becomeFirstResponder()
         } else if (textField == nameTextField) {
-            ageTextField.becomeFirstResponder()
-        } else if (textField == ageTextField) {
             emailTextField.becomeFirstResponder()
         } else if (textField == emailTextField) {
             passwordTextField.becomeFirstResponder()
@@ -76,24 +83,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         
         return false
     }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if (textField === self.ageTextField) {
-            let datePicker = UIDatePicker()
-            datePicker.datePickerMode = .date
-            textField.inputView = datePicker
-            
-            // Set max date`
-            var components = DateComponents()
-            components.year = -16
-            let maxDate = Calendar.current.date(byAdding: components, to: Date())
-            datePicker.maximumDate = maxDate
-            
-            
-            datePicker.addTarget(self, action: #selector(datePickerChanged(sender:)), for: .valueChanged)
-        }
-    }
-    
+
     // MARK: IBActions
     @IBAction func signUp(_ sender: Any) {
         let email = emailTextField.text!
@@ -136,7 +126,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                                         // Show success message, and then write to the database
                                         BannerHelper.showBanner(title: "Email Verification Sent", type: .success)
                                         let id = user?.uid ?? ""
-                                        Constants.refs.users.child(id).setValue(["username": self.usernameTextField.text?.lowercased(), "name": self.nameTextField.text!, "age": self.ageTextField.text!, "email": self.emailTextField.text!, "id": user?.uid])
+                                        Constants.refs.users.child(id).setValue(["username": self.usernameTextField.text?.lowercased(), "name": self.nameTextField.text!, "age": "", "email": self.emailTextField.text!, "id": user?.uid])
                                         self.dismiss(animated: true, completion: {})
                                     }
                                 }
@@ -158,16 +148,21 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     // MARK: Helper Functions
     func hideKeyboard(sender: AnyObject) {
         nameTextField.resignFirstResponder()
-        ageTextField.resignFirstResponder()
         emailTextField.resignFirstResponder()
         passwordTextField.resignFirstResponder()
         confirmPasswordTextField.resignFirstResponder()
     }
     
-    func datePickerChanged(sender: UIDatePicker) {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        ageTextField.text = formatter.string(from: sender.date)
+    func openTerms(sender: UITapGestureRecognizer) {
+        
+        
+        let url = URL(string: "http://www.viime.ca/privacy-policy")!
+        
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        } else {
+            UIApplication.shared.openURL(url)
+        }
     }
     
     // This function will go in the back-end, loop through every user and ensure that the name is unique
@@ -175,7 +170,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         
         let query =  Constants.refs.users.queryOrdered(byChild: "username").queryEqual(toValue: username)
         
-        query.observe(.value, with: { snapshot in
+        query.observeSingleEvent(of: .value, with: { snapshot in
                 // Username is unique, does not exist on back-end
                 if snapshot.value is NSNull {
                     completionHandler(true)
@@ -186,5 +181,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             })
     }
     
-     
+    
+    
+    
+    // Remove observors
+    deinit {
+        Constants.refs.users.removeAllObservers()
+    }
+
+    
 }

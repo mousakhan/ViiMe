@@ -32,7 +32,7 @@ class RedemptionViewController: UIViewController, UICollectionViewDelegate, UICo
         super.viewDidLoad()
         
         // Ask for Authorisation from the User.
-        self.locationManager.requestAlwaysAuthorization()
+        self.locationManager.requestWhenInUseAuthorization()
         
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self

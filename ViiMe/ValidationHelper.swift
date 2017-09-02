@@ -38,6 +38,9 @@ class ValidationHelper {
             return "Please enter a username"
         }
         
+        if (text.lowercased() != text) {
+            return "The username must be in all lowercase"
+        }
         
         // Make sure the first is not ., _, -
         let firstChar = text.characters.first!

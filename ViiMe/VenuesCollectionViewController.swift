@@ -33,7 +33,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         super.viewDidLoad()
         
         // Ask for Authorisation from the User.
-        self.locationManager.requestAlwaysAuthorization()
+        self.locationManager.requestWhenInUseAuthorization()
         
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
@@ -199,7 +199,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     // This will grab all the venues from the back-end
     func initVenues () {
         // Go to back-end 'venue' node and fetch every venue
-        Constants.refs.venues.observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
+        Constants.refs.venues.observe(DataEventType.value, with: { (snapshot) in
             let enumerator = snapshot.children
 
             //Iterate through the venues, keep track of an index
