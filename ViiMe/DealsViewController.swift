@@ -198,10 +198,18 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         // Adding tap gesture
         let phoneGesture = UITapGestureRecognizer(target: self, action: #selector(call(_:)))
         phoneLabel.addGestureRecognizer(phoneGesture)
+        let phoneIconGesture = UITapGestureRecognizer(target: self, action: #selector(call(_:)))
+        phoneIcon.addGestureRecognizer(phoneIconGesture)
+        
         let webGesture = UITapGestureRecognizer(target: self, action: #selector(openWebsite(_:)))
         websiteLabel.addGestureRecognizer(webGesture)
+        let webIconGesture = UITapGestureRecognizer(target: self, action: #selector(openWebsite(_:)))
+        websiteIcon.addGestureRecognizer(webIconGesture)
+        
         let addressGesture = UITapGestureRecognizer(target: self, action: #selector(openAddress(_:)))
         addressLabel.addGestureRecognizer(addressGesture)
+        let addressIconGesture = UITapGestureRecognizer(target: self, action: #selector(openAddress(_:)))
+        addressIcon.addGestureRecognizer(addressIconGesture)
         
         let url = URL(string: venue!.logo)
         venueLogo.kf.indicatorType = .activity
@@ -221,8 +229,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func call(_ sender : UITapGestureRecognizer) {
-        let text = (sender.view as! UILabel).text
-        
+        let text = phoneLabel.text
         let appearance = SCLAlertView.SCLAppearance(
             kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
             kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
@@ -249,7 +256,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func openWebsite(_ sender: UITapGestureRecognizer) {
-        let text = (sender.view as! UILabel).text
+        let text = websiteLabel.text
         let url = URL(string: "http://" + text!)!
         
         if #available(iOS 10.0, *) {
@@ -260,7 +267,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     func openAddress(_ sender: UITapGestureRecognizer) {
-        let text = (sender.view as! UILabel).text
+        let text = addressLabel.text
         let baseUrl: String = "http://maps.apple.com/?q="
         let encodedName = text?.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         let finalUrl = baseUrl + encodedName!

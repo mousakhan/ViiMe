@@ -851,7 +851,7 @@
                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="DDk-Au-nnQ">
                                                                         <rect key="frame" x="0.0" y="0.0" width="106.33333333333334" height="63"/>
                                                                         <subviews>
-                                                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="address" translatesAutoresizingMaskIntoConstraints="NO" id="V8W-Qs-fQl">
+                                                                            <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="address" translatesAutoresizingMaskIntoConstraints="NO" id="V8W-Qs-fQl">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="106.33333333333334" height="25"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="25" id="Q9K-k2-tYZ"/>
@@ -880,7 +880,7 @@
                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Bru-0D-9xj">
                                                                 <rect key="frame" x="121.33333333333333" y="0.0" width="111.33333333333336" height="63"/>
                                                                 <subviews>
-                                                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="address" translatesAutoresizingMaskIntoConstraints="NO" id="mjV-A7-992">
+                                                                    <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="address" translatesAutoresizingMaskIntoConstraints="NO" id="mjV-A7-992">
                                                                         <rect key="frame" x="0.0" y="0.0" width="111.33333333333334" height="25"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="height" constant="25" id="8ZF-Hh-i4X"/>
@@ -907,7 +907,7 @@
                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="H3z-RS-qN4">
                                                                         <rect key="frame" x="5" y="0.0" width="106.33333333333331" height="63"/>
                                                                         <subviews>
-                                                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="address" translatesAutoresizingMaskIntoConstraints="NO" id="Fsp-SA-ru4">
+                                                                            <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="address" translatesAutoresizingMaskIntoConstraints="NO" id="Fsp-SA-ru4">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="106.33333333333331" height="25"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="height" constant="25" id="OMP-mM-tkP"/>
