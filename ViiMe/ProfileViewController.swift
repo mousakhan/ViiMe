@@ -223,7 +223,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         })
         
         
-        alertView.showInfo("Choose Image", subTitle: "Change your profile picture by either taking a photo, or selecting one from your photo roll!")
+        alertView.showInfo("Change Profile Picture", subTitle: "Change your profile picture by either taking a photo, or selecting one from your photo roll!")
         
      
     }
@@ -452,7 +452,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
             Constants.refs.root.child("users/\(Constants.getUserId())/notifications/\(token!)").removeValue()
         }
         
-        
         let presentingViewController = self.presentingViewController
         self.dismiss(animated: false, completion: {
             presentingViewController!.dismiss(animated: true, completion: {})
@@ -491,7 +490,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         )
         
         let alertView = SCLAlertView(appearance: appearance)
-        alertView.addButton("Email", backgroundColor: FlatPurple(), action: {
+        alertView.addButton("Contact Us", backgroundColor: FlatPurple(), action: {
             let mailComposeViewController = self.configuredMailComposeViewController()
             if MFMailComposeViewController.canSendMail() {
                 self.present(mailComposeViewController, animated: true, completion: nil)
@@ -506,8 +505,30 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
             })
         })
         
+        alertView.addButton("Logout", backgroundColor: FlatRed(), action: {
+            try! Auth.auth().signOut()
+            
+            if ((FBSDKAccessToken.current()) != nil) {
+                let loginManager = FBSDKLoginManager()
+                loginManager.logOut()
+            }
+            
+            let token = Messaging.messaging().fcmToken
+            if (token != nil) {
+                Constants.refs.root.child("users/\(Constants.getUserId())/notifications/\(token!)").removeValue()
+            }
+            
+            
+            let presentingViewController = self.presentingViewController
+            self.dismiss(animated: false, completion: {
+                presentingViewController!.dismiss(animated: true, completion: {})
+            })
+        })
         
-        alertView.addButton("Maybe Later",  action: {
+        
+
+        
+        alertView.addButton("Exit",  action: {
         })
         
         

@@ -746,6 +746,7 @@
                                         <constraints>
                                             <constraint firstItem="0UZ-FB-LMa" firstAttribute="width" secondItem="DiF-SD-cGG" secondAttribute="width" id="J6m-97-zh6"/>
                                             <constraint firstItem="DiF-SD-cGG" firstAttribute="width" secondItem="VSh-GF-PK6" secondAttribute="width" id="Zfc-Ff-CE4"/>
+                                            <constraint firstAttribute="bottom" secondItem="uzv-oC-Iev" secondAttribute="bottom" id="eLX-GX-wSk"/>
                                             <constraint firstItem="uzv-oC-Iev" firstAttribute="width" secondItem="0UZ-FB-LMa" secondAttribute="width" id="uSX-lc-TcC"/>
                                         </constraints>
                                     </stackView>
@@ -755,7 +756,7 @@
                                     <constraint firstItem="VSh-GF-PK6" firstAttribute="leading" secondItem="duA-tZ-4U9" secondAttribute="leading" id="7tJ-UZ-iGO"/>
                                     <constraint firstItem="VSh-GF-PK6" firstAttribute="top" secondItem="duA-tZ-4U9" secondAttribute="top" constant="15" id="O5i-hr-kub"/>
                                     <constraint firstItem="VSh-GF-PK6" firstAttribute="centerX" secondItem="duA-tZ-4U9" secondAttribute="centerX" constant="-10" id="gQx-U0-0WF"/>
-                                    <constraint firstAttribute="bottom" secondItem="VSh-GF-PK6" secondAttribute="bottom" constant="3.3333333333333712" id="sHK-aw-1H0"/>
+                                    <constraint firstAttribute="bottom" secondItem="VSh-GF-PK6" secondAttribute="bottom" constant="15" id="sHK-aw-1H0"/>
                                 </constraints>
                             </scrollView>
                         </subviews>
@@ -770,13 +771,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Profile" id="Ko5-tr-Qhr">
                         <barButtonItem key="backBarButtonItem" title=" " id="Goa-sW-RJh"/>
-                        <barButtonItem key="leftBarButtonItem" systemItem="stop" id="taZ-aE-ghz">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            <connections>
-                                <action selector="dismissProfilePage:" destination="nMK-oK-2pX" id="kat-Aq-66s"/>
-                            </connections>
-                        </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Contact " style="done" id="VTF-FA-2sk">
+                        <barButtonItem key="rightBarButtonItem" image="info" style="done" id="VTF-FA-2sk">
                             <inset key="imageInsets" minX="12" minY="12" maxX="12" maxY="12"/>
                             <connections>
                                 <action selector="contactButtonClicked:" destination="nMK-oK-2pX" id="psf-JF-s5k"/>
@@ -1561,6 +1556,7 @@
         <image name="address" width="50" height="50"/>
         <image name="cancel" width="50" height="50"/>
         <image name="contacts" width="48" height="48"/>
+        <image name="info" width="16" height="16"/>
         <image name="profile" width="50" height="50"/>
     </resources>
 </document>

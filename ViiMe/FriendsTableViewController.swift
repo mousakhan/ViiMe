@@ -38,6 +38,8 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         searchBar.delegate = self
         searchBar.keyboardAppearance = .dark
         initContacts()
+        self.searchBar.placeholder = "Search friends and/or contacts"
+        self.searchBar.returnKeyType = .done
         
     }
     
@@ -248,12 +250,12 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
         if (section == 0) {
-            return "Invitations"
+            return "Friend Invitations"
         } else if (section == 1) {
             return "Friends"
         }
         
-        return "Contacts"
+        return "Invite Contacts"
     }
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
@@ -500,7 +502,10 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             self.searchController.searchBar.returnKeyType = .done
             self.searchController.searchBar.tintColor = FlatPurpleDark()
             self.searchController.searchBar.text = " "
+        } else {
+            self.searchController.searchBar.text = " "
         }
+        
         
         self.present(self.searchController, animated: true) { 
             
@@ -532,11 +537,16 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             })
             self.tableView.reloadData()
         } else {
-            let trimmedString = searchText.trimmingCharacters(in: .whitespaces)
-            searchBar.text = trimmedString
             
-            if searchText == ("") {
+            if (searchBar.text == "  ") {
                 searchBar.text = " "
+            } else {
+                let trimmedString = searchText.trimmingCharacters(in: .whitespaces)
+                searchBar.text = trimmedString
+   
+                if searchText == "" {
+                    searchBar.text = " "
+                }
             }
             
         }
@@ -545,8 +555,11 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         if (searchBar == self.searchBar) {
+            self.filteredInvites = []
+            self.filteredFriends = []
+            self.filteredContacts = []
             searchBar.endEditing(true)
-            searchBar.text = ""
+            self.searchBar.text = ""
             tableView.reloadData()
         } else {
             searchBar.endEditing(true)
@@ -567,7 +580,12 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
         if (searchBar == self.searchBar) {
-            
+            self.filteredInvites = []
+            self.filteredFriends = []
+            self.filteredContacts = []
+            searchBar.endEditing(true)
+            self.searchBar.text = ""
+            tableView.reloadData()
         } else {
             dismissSearchController()
             self.searchController = nil

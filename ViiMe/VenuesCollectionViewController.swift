@@ -66,6 +66,12 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         initVenues()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        if self.searchController.isActive == true {
+            searchController.isActive = false
+        }
+    }
+    
     
     // MARK: UICollectionViewDataSource
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -162,6 +168,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         self.navigationItem.titleView = nil
         self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
         self.navigationItem.setHidesBackButton(false, animated:true)
+
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -282,6 +289,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         
         
     }
+    
     
     
     // MARK: UICollectionViewDelegate
