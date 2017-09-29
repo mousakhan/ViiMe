@@ -38,21 +38,32 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
       
         usernameTextField.delegate = self
         passwordTextField.delegate = self
+        
+        enableSignInButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        enableSignInButton()
         self.activeUser = nil
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // Check if user is logged in with Facebook
         if ((FBSDKAccessToken.current()) != nil) {
+            // Change title text to let them know they're logging in
+            let titleText = NSAttributedString(string: "Logging in with Facebook...")
+            facebookSignInButton.setAttributedTitle(titleText, for: .normal)
+            
             // If so, log them into firebase with the credential
             let credential = FacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
+            UIApplication.shared.beginIgnoringInteractionEvents()
             Auth.auth().signIn(with: credential) { (user, error) in
                 if let error = error {
                     print(error)
+                    let titleText = NSAttributedString(string: "Log In with Facebook")
+                    self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
+                    UIApplication.shared.endIgnoringInteractionEvents()
                     return
                 }
                 
@@ -68,8 +79,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 if (self.token != nil) {
                     Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
                 }
+                
                 // User is logged in, go to the venues page
                 self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                let titleText = NSAttributedString(string: "Log In with Facebook")
+                self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
+                UIApplication.shared.endIgnoringInteractionEvents()
             }
         }
         
@@ -77,7 +92,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             // Check if user is logged in, and if their email i s actually verified
             if user != nil && user!.isEmailVerified {
                 if (self.activeUser != user) {
-                    
+                    UIApplication.shared.beginIgnoringInteractionEvents()
+                    self.signInButtonLoading()
                     self.activeUser = user
                     // Add their id to user defaults for future use
                     if let id = Auth.auth().currentUser?.uid {
@@ -90,9 +106,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
                     }
                     self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                    self.enableSignInButton()
+                    UIApplication.shared.endIgnoringInteractionEvents()
                 }
-                
-                
             } else {
                 // No User is signed in. Show user the login screen
             }
@@ -107,6 +123,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
         let email = usernameTextField.text!
         let password = passwordTextField.text!
         
+        signInButtonLoading()
         
         // Check if the email is valid
         if ValidationHelper.validateEmail(textfield: usernameTextField) {
@@ -117,6 +134,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     // Show error if there is one
                     if let error = error {
                         BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
+                        self.enableSignInButton()
                         return
                     }
                 }
@@ -125,6 +143,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     // Show error if there is one
                     if let error = error {
                         BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
+                        self.enableSignInButton()
                         return
                     }
                     // If they try to log in but their email is not verified, then show an alert asking them to verify
@@ -144,6 +163,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         alertView.addButton("Cancel", backgroundColor: FlatRed(), action: {
                         })
                         alertView.showInfo("Error", subTitle: "Sorry. Your email address has not yet been verified. Do you want us to send another verification email to \(email)?")
+                        self.enableSignInButton()
                     } else {
                         
                         // All is well, go to the next view controller and add their FCM token to the back-end
@@ -163,14 +183,29 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                             self.activeUser = user!
                             self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
                         }
+                        
+                        self.enableSignInButton()
                     }
                 }
                 
               
                
             }
+        } else {
+            self.enableSignInButton()
         }
         
+        
+    }
+    
+    func enableSignInButton() {
+        UIApplication.shared.endIgnoringInteractionEvents()
+        self.signInButton.setTitle("SIGN IN", for: .normal)
+    }
+    
+    func signInButtonLoading() {
+        UIApplication.shared.beginIgnoringInteractionEvents()
+        self.signInButton.setTitle("Signing in...", for: .normal)
     }
     
     //MARK: UITextFieldDelegate Functions
@@ -182,7 +217,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             passwordTextField.resignFirstResponder()
             login(self)
         }
-        // Do not add a line break
+        
         return false
     }
     
@@ -195,17 +230,26 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
     //MARK: FB Delegate Functions
     func loginButton(_ loginButton: FBSDKLoginButton!, didCompleteWith result: FBSDKLoginManagerLoginResult!, error: Error!) {
         
+        let titleText = NSAttributedString(string: "Logging in with Facebook...")
+        self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
+        
+        
         // If 'Done' button is clicked, then return
         if result.isCancelled {
+            let titleText = NSAttributedString(string: "Log in with Facebook")
+            self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
             return
         }
         
         if let error = error {
-            print(error.localizedDescription)
+            let titleText = NSAttributedString(string: "Log in with Facebook")
+            self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
+            print(error)
             return
         }
         
         
+
         let credential = FacebookAuthProvider.credential(withAccessToken: FBSDKAccessToken.current().tokenString)
         
         Auth.auth().signIn(with: credential) { (user, error) in
@@ -213,6 +257,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             // Show error if there is any and exit
             if error != nil {
                 BannerHelper.showBanner(title: error!.localizedDescription, type: .danger)
+                
+                let titleText = NSAttributedString(string: "Log in with Facebook")
+                self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
                 return
             }
             
@@ -232,7 +279,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
             
             Constants.refs.users.observeSingleEvent(of: DataEventType.value, with: { (snapshot) in
                 // Check if the user already exists in our database.
-                if !(snapshot.hasChild("\(user?.uid ?? "")")){
+                if !(snapshot.hasChild("\(user?.uid ?? "")") && user?.uid != ""){
                     // If not, then show alert
                     alertView.addButton("Create Account") {
                         // Check to see if there are any username validation issues
@@ -249,12 +296,16 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                                 print ("Error signing out: %@", signOutError)
                             }
                             
+                            let titleText = NSAttributedString(string: "Log in with Facebook")
+                            self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
+                            UIApplication.shared.endIgnoringInteractionEvents()
                             // Sign them out of FB
                             let loginManager = FBSDKLoginManager()
                             loginManager.logOut()
                         } else {
+                            
                             if (usernameTextField.text != "" && usernameTextField.text != nil) {
-                                if (user?.uid != nil) {
+                                if (user?.uid != nil && user?.uid != "") {
                                     // If not, add the user to the database with the info
                                     Constants.refs.users.child("\(user!.uid)").setValue(["username": "\(usernameTextField.text!.lowercased())", "name": user?.displayName ?? "", "age": "", "email": user?.email ?? "", "id": user?.uid ?? "", "profile": user?.photoURL?.absoluteString ?? "" ])
                                 }
@@ -275,6 +326,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                             }
                             // Segue
                             self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                            let titleText = NSAttributedString(string: "Log in with Facebook")
+                            self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
                         }
                     }
                     
@@ -292,12 +345,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         // Sign them out of FB
                         let loginManager = FBSDKLoginManager()
                         loginManager.logOut()
+                        
+                        let titleText = NSAttributedString(string: "Log in with Facebook")
+                        self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
                     }
                     
                     // Show alert
-                    DispatchQueue.main.async {
-                        alertView.showInfo("Username", subTitle: "Please enter a username to be used in the application. The username cannot start or end with -, _, . or a number, can contain no white spaces, emojis, or special characters, must be 3-15 characters long and all in lowercase")
-                    }
+                    alertView.showInfo("Username", subTitle: "Please enter a username to be used in the application. The username cannot start or end with -, _, . or a number, can contain no white spaces, emojis, or special characters, must be 3-15 characters long and all in lowercase")
+                    
                     
                     
                 } else {
@@ -315,6 +370,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     
                     // If the user exists, then just segue!
                     self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                    let titleText = NSAttributedString(string: "Log in with Facebook")
+                    self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
+                    UIApplication.shared.endIgnoringInteractionEvents()
                 }
                 
             })

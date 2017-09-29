@@ -134,7 +134,7 @@ class AddFriendTableViewController: UITableViewController, UISearchResultsUpdati
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
         if (section == 0) {
-            return "Add by Username"
+            return "Add Friends by Username"
         }
         
         return "Invite Contacts"

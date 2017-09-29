@@ -15,7 +15,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2</string>
+	<string>1.5</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -26,7 +26,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>4.3</string>
+	<string>4.7</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -61,7 +61,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>You can invite people from your contact list to download the application. Your contacts will not be saved on our servers. </string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app will use location to calculate the distance between you and each venue. This will not be saved on our servers. However, your location details will be sent to our server when you redeem a deal to ensure the redemption is valid. </string>
+	<string>Your location is needed when redeeming deals to ensure redemption validity.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>You can select photos to set as your profile picture. This photo will be uploaded to our server. </string>
 	<key>UILaunchStoryboardName</key>

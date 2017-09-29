@@ -22,6 +22,7 @@ struct Venue {
     var logo : String
     var website : String
     var number : String
+    var city : String
     var dealIds: Dictionary<String, Bool>
     var deals : [Deal]
     
@@ -39,6 +40,7 @@ struct Venue {
         website = value?["website"] as? String ?? " "
         number = value?["number"] as? String ?? " "
         logo = value?["logo"] as? String ?? ""
+        city = value?["city"] as? String ?? ""
         dealIds = value?["deals"] as? Dictionary<String, Bool> ?? [:]
         deals = []
     }

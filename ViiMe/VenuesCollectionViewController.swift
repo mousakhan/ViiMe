@@ -11,16 +11,13 @@ import ChameleonFramework
 import Firebase
 import FirebaseDatabase
 import Kingfisher
-import CoreLocation
 
-class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate, CLLocationManagerDelegate  {
+class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate  {
     
     @IBOutlet var searchBarButtonItem: UIBarButtonItem!
     
     var searchController : UISearchController!
     let reuseIdentifier = "VenueCell"
-    let locationManager = CLLocationManager()
-    var currCoordinate = CLLocation(latitude: 0.0, longitude: 0.0)
     var filteredVenues = [Venue]()
     var venues = [Venue]()
     
@@ -31,15 +28,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Ask for Authorisation from the User.
-        self.locationManager.requestWhenInUseAuthorization()
-        
-        if CLLocationManager.locationServicesEnabled() {
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.startUpdatingLocation()
-        }
         
         // Search Controller setup
         self.searchController = UISearchController(searchResultsController:  nil)
@@ -119,14 +107,8 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
         cell.numberOfDealsLabel.text = "\(venue?.deals.count ?? 0) Deals"
         cell.priceLabel.text = venue?.price ?? ""
         cell.cuisineLabel.text = venue?.cuisine ?? ""
-        
-        if (cell.distanceLabel.text == "") {
-            setDistance(address: venue?.address ?? "", completionHandler: { (isComplete, distance) in
-                if (isComplete) {
-                    cell.distanceLabel.text = distance
-                }
-            })
-        }
+        //TODO: Change the label name to city
+        cell.distanceLabel.text = venue?.city ?? ""
         cell.venueTypeLabel.text = venue?.type ?? ""
         
         
@@ -194,12 +176,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
             }
         }
     }
-    
-    //MARK: CLLocationManagerDelegate
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let locValue:CLLocationCoordinate2D = manager.location!.coordinate
-        self.currCoordinate = CLLocation(latitude: locValue.latitude, longitude: locValue.longitude)
-    }
+
     
     //MARK: Helpers
     
@@ -260,34 +237,6 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 })
             }
         }
-    }
-    
-    // This will take an addrse and calculate the distance between the two points, and will return the distance as a string
-    func setDistance(address : String, completionHandler: @escaping (_ isComplete: Bool, _ distance: String) -> ()) {
-        if (CLLocationManager.authorizationStatus() == .authorizedAlways || CLLocationManager.authorizationStatus() == .authorizedWhenInUse) {
-            let geocoder = CLGeocoder()
-            var coordinate : CLLocation? = nil
-            geocoder.geocodeAddressString(address) {
-                placemarks, error in
-                let placemark = placemarks?.first
-                let lat = placemark?.location?.coordinate.latitude
-                let lon = placemark?.location?.coordinate.longitude
-                var distance = ""
-                if (lat != nil && lon != nil) {
-                    coordinate = CLLocation(latitude: lat!, longitude: lon!)
-                    let distanceInMeters = Int(self.currCoordinate.distance(from: coordinate!))
-                    distance = "\(distanceInMeters/1000)km"
-                } else {
-                    distance = "?"
-                }
-                completionHandler(true, distance)
-            }
-        } else {
-            completionHandler(true, "?")
-        }
-        
-        
-        
     }
     
     

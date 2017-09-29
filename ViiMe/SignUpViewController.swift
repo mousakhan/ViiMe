@@ -24,6 +24,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var confirmPasswordTextField: UITextField!
     @IBOutlet weak var cancelButton: UIButton!
     
+    @IBOutlet weak var signupButton: UIButton!
 
     @IBOutlet weak var termsOfCondtionsLabel: UILabel!
     override func viewDidLoad() {
@@ -54,18 +55,50 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         tapGesture.cancelsTouchesInView = false
         scrollView.addGestureRecognizer(tapGesture)
         
-        let termsText = "By clicking on the sign up button, you agree to our terms of service and privacy policy"
+        let termsText = "By signing up, you agree to our terms of service and privacy policy"
         let termsGesture = UITapGestureRecognizer(target: self, action: #selector(openTerms(sender:)))
         termsOfCondtionsLabel.addGestureRecognizer(termsGesture)
         
         let attributedString = NSMutableAttributedString(string:termsText)
-        attributedString.addAttribute(NSForegroundColorAttributeName, value: FlatSkyBlue() , range: NSRange(location: 52, length: 35) )
-        
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: FlatSkyBlue() , range: NSRange(location: 31, length: 36) )
         termsOfCondtionsLabel.attributedText = attributedString
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
+        enableSignUpButton()
+        
    
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        enableSignUpButton()
+    }
+    
+    func keyboardWillShow(notification:NSNotification){
+        //give room at the bottom of the scroll view, so it doesn't cover up anything the user needs to tap
+        var userInfo = notification.userInfo!
+        var keyboardFrame:CGRect = (userInfo[UIKeyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+        
+        var contentInset:UIEdgeInsets = self.scrollView.contentInset
+        contentInset.bottom = keyboardFrame.size.height
+        scrollView.contentInset = contentInset
+    }
+    
+    func keyboardWillHide(notification:NSNotification){
+        let contentInset:UIEdgeInsets = UIEdgeInsets.zero
+        scrollView.contentInset = contentInset
+    }
+    
 
+    
     // MARK: UITextFieldDelegate Functions
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
@@ -79,6 +112,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             confirmPasswordTextField.becomeFirstResponder()
         } else if (textField == confirmPasswordTextField) {
             signUp(self)
+            confirmPasswordTextField.resignFirstResponder()
         }
         
         return false
@@ -89,14 +123,17 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         let email = emailTextField.text!
         let password = passwordTextField.text!
         let confirmation = confirmPasswordTextField.text!
+        signUpButtonLoading()
         
         if (password != confirmation) {
             BannerHelper.showBanner(title: "Passwords do not match. Please re-enter.", type: .danger)
+            enableSignUpButton()
             return
         }
         
         if (self.usernameTextField.text == "") {
             BannerHelper.showBanner(title: "Please enter a username", type: .danger)
+            enableSignUpButton()
             return
         }
       
@@ -107,6 +144,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                 if (userValidation != "") {
                     // Present them if there are
                     BannerHelper.showBanner(title: userValidation, type: .danger)
+                    self.enableSignUpButton()
                 } else {
                     // No username validation issues, now check email address for any issues
                     if ValidationHelper.validateEmail(textfield: self.emailTextField) {
@@ -115,6 +153,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                             if let error = error {
                                 // Show error if there is any
                                 BannerHelper.showBanner(title: error.localizedDescription, type: .danger)
+                                self.enableSignUpButton()
                                 return
                             } else {
                                 // Send the email verification
@@ -122,6 +161,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                                     if error != nil {
                                         // Show error if there is any
                                         BannerHelper.showBanner(title: error!.localizedDescription, type: .danger)
+                                        self.enableSignUpButton()
                                     } else {
                                         // Show success message, and then write to the database
                                         BannerHelper.showBanner(title: "Email Verification Sent", type: .success)
@@ -139,6 +179,16 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                 BannerHelper.showBanner(title: "The username is already in use. Please choose another", type: .danger)
             }
         }
+    }
+    
+    func enableSignUpButton() {
+        self.signupButton.isEnabled = true
+        self.signupButton.setTitle("SIGN UP", for: .normal)
+    }
+    
+    func signUpButtonLoading() {
+        self.signupButton.isEnabled = false
+        self.signupButton.setTitle("Signing up...", for: .normal)
     }
     
     @IBAction func cancelButtonPressed(_ sender: Any) {

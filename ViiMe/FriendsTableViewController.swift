@@ -12,15 +12,14 @@ import Contacts
 import MessageUI
 import Firebase
 import SCLAlertView
+import DZNEmptyDataSet
 
-class FriendsTableViewController: UITableViewController, MFMessageComposeViewControllerDelegate,  UISearchBarDelegate, UISearchControllerDelegate, AddFriendTableViewControllerDelegate, UISearchResultsUpdating {
+class FriendsTableViewController: UITableViewController, UISearchControllerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet weak var searchBar: UISearchBar!
     
     var user : User? = Auth.auth().currentUser
     var group : Group? = nil
-    var contacts = [Dictionary<String, Any>]()
-    var filteredContacts  = [Dictionary<String, Any>]()
     var searchController : UISearchController!
     var invites : Array<UserInfo> = []
     var filteredInvites : Array<UserInfo> = []
@@ -35,17 +34,14 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.navigationBar.tintColor = FlatWhite()
-        searchBar.delegate = self
-        searchBar.keyboardAppearance = .dark
-        initContacts()
-        self.searchBar.placeholder = "Search friends and/or contacts"
-        self.searchBar.returnKeyType = .done
+        self.tableView.emptyDataSetSource = self
+        self.tableView.emptyDataSetDelegate = self
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        let friendsRef = Constants.refs.users.child("\(user!.uid)/friends")
+        let friendsRef = Constants.refs.users.child("\(Constants.getUserId())/friends")
         friendsRef.observe(DataEventType.value, with: { (snapshot) in
             self.friends = []
             self.invites = []
@@ -79,60 +75,22 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         // Dispose of any resources that can be recreated.
     }
     
-    // MARK: - UISearchResultsUpdating Delegate
-    func updateSearchResults(for searchController: UISearchController) {
-        filterContentForSearchText(searchController.searchBar.text!)
-    }
-    
-    func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-        
-        filteredFriends = friends.filter({( friend : UserInfo) -> Bool in
-            return friend.name.lowercased().contains(searchText.lowercased())
-        })
-        
-        filteredInvites = invites.filter({( friend : UserInfo) -> Bool in
-            return friend.name.lowercased().contains(searchText.lowercased())
-        })
-        
-        filteredContacts = []
-        _ = self.contacts.filter({ (dict) -> Bool in
-            let number = dict["number"] as? String
-            let name = dict["name"] as? String
-            if (number!.contains(searchText.lowercased()) || (name!.lowercased().contains(searchText.lowercased()))) {
-                self.filteredContacts.append(dict)
-            }
-            return true
-        })
-        
-        print(filteredContacts)
-        tableView.reloadData()
-    }
-    
-    
+ 
     
     //MARK: UITableView Data Source
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 2
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (section == 0) {
-            if (isSearchActive()) {
-                return self.filteredInvites.count
-            }
+          
             return self.invites.count
-        } else if (section == 1) {
-            if (isSearchActive()) {
-                return self.filteredFriends.count
-            }
+        }
+        
             return self.friends.count
-        }
         
-        if (isSearchActive()) {
-            return self.filteredContacts.count
-        }
         
-        return self.contacts.count
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -147,11 +105,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             let cell = tableView.dequeueReusableCell(withIdentifier: "FriendCell", for: indexPath) as! FriendTableViewCell
             
             var invite: UserInfo? = nil
-            if isSearchActive(){
-                invite = filteredInvites[indexPath.row]
-            } else {
+        
                 invite = invites[indexPath.row]
-            }
+            
             
             cell.nameLabel?.text = invite?.username
             cell.backgroundColor = FlatBlack()
@@ -179,15 +135,13 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             cell.selectedBackgroundView = bgColorView
             
             return cell
-        } else if (indexPath.section == 1) {
+        }
             let cell = tableView.dequeueReusableCell(withIdentifier: "FriendCell", for: indexPath) as! FriendTableViewCell
             
             var friend: UserInfo? = nil
-            if isSearchActive(){
-                friend = filteredFriends[indexPath.row]
-            } else {
+        
                 friend = friends[indexPath.row]
-            }
+        
             
             cell.nameLabel?.text = friend?.username
             cell.backgroundColor = FlatBlack()
@@ -214,35 +168,11 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                 let bgColorView = UIView()
                 bgColorView.backgroundColor = FlatPurple()
                 cell.selectedBackgroundView = bgColorView
-                cell.isUserInteractionEnabled = true
             } else {
-                cell.isUserInteractionEnabled = false
+                cell.selectionStyle = UITableViewCellSelectionStyle.none
             }
             
             return cell
-        } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "ContactCell", for: indexPath)
-            
-            
-            var contact: Dictionary<String, Any>? = nil
-            if isSearchActive(){
-                contact = filteredContacts[indexPath.row]
-            } else {
-                contact = contacts[indexPath.row]
-            }
-            
-            cell.textLabel?.text = contact?["name"] as? String
-            cell.detailTextLabel?.text = contact?["number"] as? String
-            cell.backgroundColor = FlatBlack()
-            cell.textLabel?.textColor = FlatWhite()
-            cell.detailTextLabel?.textColor = FlatWhite()
-            
-            let bgColorView = UIView()
-            bgColorView.backgroundColor = FlatPurpleDark()
-            cell.selectedBackgroundView = bgColorView
-            
-            return cell
-        }
         
         
     }
@@ -251,11 +181,11 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String {
         if (section == 0) {
             return "Friend Invitations"
-        } else if (section == 1) {
-            return "Friends"
         }
         
-        return "Invite Contacts"
+            return "Friends"
+        
+        
     }
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
@@ -288,23 +218,22 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             let alertView = SCLAlertView(appearance: appearance)
             
             var invite : UserInfo? = nil
-            if (isSearchActive()) {
-                invite = self.filteredInvites[indexPath.row]
-            } else {
+          
                 invite = self.invites[indexPath.row]
-            }
+            
             
             
             alertView.addButton("Accept", backgroundColor: FlatGreen())   {
                 
-                if (Constants.getUserId() != "" && (invite?.id ?? "") != "") {
-                    Constants.refs.users.child("\(Constants.getUserId())/friends/\(invite!.id)").setValue(true)
-                    Constants.refs.users.child("\(invite!.id)/friends/\(Constants.getUserId())").setValue(true)
+        
+                if (Constants.getUserId() != "" && invite?.id != nil && (invite?.id ?? "") != "") {
+                    Constants.refs.users.child(Constants.getUserId()).child("friends").child(invite!.id).setValue(true)
+                    Constants.refs.users.child(invite!.id).child("friends").child(Constants.getUserId()).setValue(true)
+            
                 }
                 
-                self.filteredInvites = []
-                self.filteredFriends = []
-                self.filteredContacts = []
+             
+
                 self.searchBar.text = ""
                 self.tableView.reloadData()
             }
@@ -322,13 +251,12 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             alertView.showInfo("Accept Invitation", subTitle: "Add \(invite!.username) to your friend list")
             
             self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
+            
         } else if (indexPath.section == 1) {
             var friend : UserInfo? = nil
-            if (isSearchActive()) {
-                friend = self.filteredFriends[indexPath.row]
-            } else {
+           
                 friend = self.friends[indexPath.row]
-            }
+            
             
             if (self.group != nil) {
                 let dealID = self.group?.deal?.id ?? ""
@@ -362,15 +290,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                 
                 self.navigationController?.popViewController(animated: true)
             }
-        } else if (indexPath.section == 2) {
-            var contact : Dictionary<String, Any>? = nil
-            if (isSearchActive()) {
-                contact = self.filteredContacts[indexPath.row]
-            } else {
-                contact = self.contacts[indexPath.row]
-            }
-            
-            sendSmsClick(recipient: contact!["number"] as! String, vc: self)
         }
     }
     
@@ -385,12 +304,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         
         var friend : UserInfo? = nil
-        if (isSearchActive()) {
-            friend = self.filteredFriends[indexPath.row]
-        } else {
-            friend = self.friends[indexPath.row]
-        }
+        friend = self.friends[indexPath.row]
         
+    
         
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
             Constants.refs.users.child("\(Constants.getUserId())/friends/\(friend!.id)").removeValue()
@@ -405,76 +321,7 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         return [delete]
         
     }
-    //MARK: Helper Functions
-    
-    func initContacts() {
-        let store = CNContactStore()
-        
-        store.requestAccess(for: .contacts, completionHandler: {
-            granted, error in
-            
-            guard granted else {
-                return
-            }
-            
-            let keysToFetch = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName), CNContactPhoneNumbersKey] as [Any]
-            let request = CNContactFetchRequest(keysToFetch: keysToFetch as! [CNKeyDescriptor])
-            request.sortOrder = CNContactSortOrder.givenName
-            
-            
-            do {
-                try store.enumerateContacts(with: request){
-                    (contact, cursor) -> Void in
-                    
-                    for phoneNumber in contact.phoneNumbers {
-                        if let number = phoneNumber.value as? CNPhoneNumber {
-                            if (number.stringValue != "" && contact.givenName != "") {
-                                self.contacts.append(["name": contact.givenName + " " + contact.familyName, "number": number.stringValue])
-                            }
-                        }
-                        
-                    }
-                    
-                }
-            } catch let error {
-                NSLog("Fetch contact error: \(error)")
-            }
-            
-            
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        })
-    }
-    
-    //MARK: MFMessageComposeViewControllerDelegate
-    func sendSmsClick(recipient: String, vc: UITableViewController) {
-        let messageVC = MFMessageComposeViewController()
-        messageVC.body = "Download ViiMe to join me on this exclusive offer! https://itunes.apple.com/ca/app/viime/id1267863034?mt=8";
-        messageVC.recipients = [recipient]
-        messageVC.messageComposeDelegate = self;
-        vc.present(messageVC, animated: false, completion: nil)
-    }
-    
-    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
-        switch (result.rawValue) {
-        case MessageComposeResult.cancelled.rawValue:
-            print("Message was cancelled")
-            controller.dismiss(animated: true, completion: nil)
-        case MessageComposeResult.failed.rawValue:
-            print("Message failed")
-            controller.dismiss(animated: true, completion: nil)
-        case MessageComposeResult.sent.rawValue:
-            print("Message was sent")
-            controller.dismiss(animated: true, completion: nil)
-        default:
-            break;
-        }
-    }
-    
-    func isSearchActive() -> Bool {
-        return  self.searchBar.text != ""
-    }
+  
     
     //MARK: Search Controller
     @IBAction func addFriendButtonClicked(_ sender: Any) {
@@ -484,12 +331,9 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
         if (self.searchController == nil) {
             let resultsController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddFriendTableViewController") as! AddFriendTableViewController
             
-            resultsController.delegate = self
-            
             resultsController.searchController = self.searchController
             
             resultsController.userFriends = self.friends
-            resultsController.contacts = self.contacts
             
             self.searchController = UISearchController(searchResultsController: resultsController)
             self.searchController.searchBar.tintColor = FlatPurpleDark()
@@ -497,7 +341,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
             self.searchController.searchBar.showsCancelButton = true
             self.searchController.searchResultsUpdater = resultsController as UISearchResultsUpdating
             self.searchController.delegate = self
-            self.searchController.searchBar.delegate = self
             self.searchController.hidesNavigationBarDuringPresentation = false
             self.searchController.dimsBackgroundDuringPresentation = true
             self.searchController.searchBar.keyboardAppearance = .dark
@@ -518,28 +361,6 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
-        if (searchBar == self.searchBar) {
-            filteredFriends = friends.filter({( friend : UserInfo) -> Bool in
-                return friend.username.lowercased().contains(searchBar.text!.lowercased())
-            })
-            
-            filteredInvites = invites.filter({( friend : UserInfo) -> Bool in
-                return friend.username.lowercased().contains(searchBar.text!.lowercased())
-            })
-            
-            filteredContacts = []
-            _ = self.contacts.filter({ (dict) -> Bool in
-                let number = dict["number"] as? String
-                let name = dict["name"] as? String
-                if (number!.contains(searchBar.text!.lowercased()) || (name!.lowercased().contains(searchBar.text!.lowercased()))) {
-                    self.filteredContacts.append(dict)
-                }
-                return true
-            })
-            self.tableView.reloadData()
-        } else {
-            
             if (searchBar.text == "  ") {
                 searchBar.text = " "
             } else {
@@ -550,25 +371,16 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
                     searchBar.text = " "
                 }
             }
-            
-        }
         
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        if (searchBar == self.searchBar) {
-            self.filteredInvites = []
-            self.filteredFriends = []
-            self.filteredContacts = []
-            searchBar.endEditing(true)
-            self.searchBar.text = ""
-            tableView.reloadData()
-        } else {
+    
             searchBar.endEditing(true)
             searchBar.text = ""
             self.searchController = nil
             tableView.reloadData()
-        }
+        
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -581,25 +393,33 @@ class FriendsTableViewController: UITableViewController, MFMessageComposeViewCon
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
-        if (searchBar == self.searchBar) {
-            self.filteredInvites = []
-            self.filteredFriends = []
-            self.filteredContacts = []
-            searchBar.endEditing(true)
-            self.searchBar.text = ""
-            tableView.reloadData()
-        } else {
+      
             dismissSearchController()
             self.searchController = nil
             searchBar.endEditing(true)
             tableView.reloadData()
-        }
+        
         
     }
     //MARK: AddFriendTableViewControllerDelegate
     func dismissSearchController() {
         self.searchController.isActive = false
     }
+    
+    //MARK: Empty State
+    //Add title for empty dataset
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
+        var str = ""
+       str = "Add a friend by clicking on the top right button!"
+        
+        let attrs = [NSFontAttributeName: UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline), NSForegroundColorAttributeName: FlatWhite()]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+
+  
+
+    
     
     /*
      // Override to support editing the table view.

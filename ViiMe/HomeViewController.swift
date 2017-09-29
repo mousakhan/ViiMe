@@ -86,7 +86,9 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
     
     func tokenRefreshNotification () {
         if let updatedToken = Messaging.messaging().fcmToken {
-            Constants.refs.users.child("\(self.user!.id)/notifications").setValue([updatedToken: true])
+            if (self.user != nil) {
+                Constants.refs.users.child("\(self.user!.id)/notifications").setValue([updatedToken: true])
+            }
         } else {
             print("We don't have an FCM token yet")
         }

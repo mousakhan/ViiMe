@@ -35,21 +35,14 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
+        let infoButton = UIButton(type: .infoLight)
+        infoButton.addTarget(self, action: #selector(contactButtonPressed), for: .touchUpInside)
+        let barButton = UIBarButtonItem(customView: infoButton)
+        self.navigationItem.rightBarButtonItem = barButton
+        
         self.view.backgroundColor = FlatBlack()
         self.navigationController?.navigationBar.tintColor = FlatWhite()
-        
-        
-        // Create the info button
-        let infoButton = UIButton(type: .infoLight)
-        
-        // You will need to configure the target action for the button itself, not the bar button itemr
-        infoButton.addTarget(self, action: #selector(contactButtonClicked), for: .touchUpInside)
-        
-        // Create a bar button item using the info button as its custom view
-        let infoBarButtonItem = UIBarButtonItem(customView: infoButton)
-        
-        // Use it as required
-        navigationItem.rightBarButtonItem = infoBarButtonItem
         
         
         //Profile Image Setup
@@ -65,7 +58,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         self.nameTextField.text = user.name
         self.emailTextField.text = user.email
         self.ageTextField.text = user.age
-
+        
         if (user.profile != "") {
             let url = URL(string: user.profile)
             self.profilePicture.kf.indicatorType = .activity
@@ -79,12 +72,10 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         setupTextField(textfield: nameTextField)
         setupTextField(textfield: emailTextField)
         setupTextField(textfield: ageTextField)
-
+        
         
         // Tableview set up
         setupTableview(tableView: rewardsTableView)
-        
-        
         
         self.getPersonalDeals()
         
@@ -95,14 +86,19 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:NSNotification.Name.UIKeyboardWillShow, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name:NSNotification.Name.UIKeyboardWillHide, object: nil)
         
-        // Ask for Authorisation from the User.
-        self.locationManager.requestWhenInUseAuthorization()
-        
-        if CLLocationManager.locationServicesEnabled() {
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.startUpdatingLocation()
+        // If they have personal deals, ask for location authorization if we haven't already
+        if (self.user.personalDealIds.count > 0) {
+            // Ask for Authorisation from the User.
+            self.locationManager.requestWhenInUseAuthorization()
+            
+            if CLLocationManager.locationServicesEnabled() {
+                locationManager.delegate = self
+                locationManager.desiredAccuracy = kCLLocationAccuracyBest
+                locationManager.startUpdatingLocation()
+            }
         }
+        
+        
     }
     
     //MARK: CLLocationManagerDelegate
@@ -239,7 +235,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         
         alertView.showInfo("Change Profile Picture", subTitle: "Change your profile picture by either taking a photo, or selecting one from your photo roll!")
         
-     
+        
     }
     
     func openCamera() {
@@ -263,15 +259,18 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         imagePicker.dismiss(animated: true, completion: nil)
         var tmpImage : UIImage? = nil
+        BannerHelper.showBanner(title: "Profile picture updating. This may take a couple of seconds.", type: .info)
         
         if let image = info[UIImagePickerControllerEditedImage] as? UIImage {
             tmpImage = image
         } else if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
             tmpImage = image
+        } else {
+            print("Image loading")
         }
         
         if (tmpImage != nil) {
-        
+            
             let storageRef = Storage.storage().reference().child("profile/ " + Constants.getUserId()
                 + ".png")
             
@@ -291,19 +290,23 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
                         print(error!)
                         return
                     }
+                    
                     Constants.refs.users.child(Constants.getUserId()).updateChildValues(["profile": metadata?.downloadURL()?.absoluteString ?? ""])
-             
+                    
                     let downloadURL = metadata?.downloadURL()?.absoluteString ?? ""
-                    print("HERE")
-                    print(downloadURL)
                     
                     if (downloadURL != "") {
                         let url = URL(string: downloadURL)
-                        self.profilePicture.kf.indicatorType = .activity
                         self.profilePicture.kf.setImage(with: url)
+                        DispatchQueue.main.async {
+                            BannerHelper.showBanner(title: "Profile picture updated successfully", type: .success)
+                        }
                     } else {
                         self.profilePicture.image = nil
                         self.profilePicture.image = UIImage(named: "empty_profile")
+                        DispatchQueue.main.async {
+                            BannerHelper.showBanner(title: "Error. Something went wrong. Please try again.", type: .danger)
+                        }
                     }
                     
                 })
@@ -312,6 +315,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         }
         
     }
+    
     
     
     // MARK: TextField Delegate
@@ -342,11 +346,27 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         } else if (textField == emailTextField) {
             ageTextField.becomeFirstResponder()
         }
-
+        
         return false
     }
     
-
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if (textField == nameTextField  && Constants.getUserId() != "" && self.nameTextField.text != user.name) {
+            user.name = self.nameTextField.text!
+            Constants.refs.users.child("\(Constants.getUserId())/name").setValue(self.nameTextField.text)
+            BannerHelper.showBanner(title: "Name Updated", type: .success)
+            
+        } else if (textField == emailTextField && self.emailTextField.text != user.email && Constants.getUserId() != "") {
+            user.email = self.emailTextField.text!
+            Constants.refs.users.child("\(Constants.getUserId())/email").setValue(self.emailTextField.text)
+            BannerHelper.showBanner(title: "Email Updated", type: .success)
+        } else if (textField == ageTextField && self.ageTextField.text != user.age  && Constants.getUserId() != "") {
+            user.age = self.ageTextField.text!
+            Constants.refs.users.child("\(Constants.getUserId())/age").setValue(self.ageTextField.text)
+            BannerHelper.showBanner(title: "Age Updated", type: .success)
+        }
+    }
     
     //MARK: Helper Functions
     func hideKeyboard(sender: AnyObject) {
@@ -442,22 +462,27 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
     }
     
     //MARK: IBActions
-    @IBAction func save(_ sender: Any) {
-        let name =  nameTextField.text ?? ""
-        let age = ageTextField.text ?? ""
-        let email = emailTextField.text ?? ""
+    @IBAction func logout(_ sender: Any) {
+        try! Auth.auth().signOut()
         
-        if (Constants.getUserId() != "") {
-            Constants.refs.users.child("\(Constants.getUserId())/name").setValue(name)
-            Constants.refs.users.child("\(Constants.getUserId())/age").setValue(age)
-            Constants.refs.users.child("\(Constants.getUserId())/email").setValue(email)
-            BannerHelper.showBanner(title: "Profile Updated", type: .success)
-        } else {
-            BannerHelper.showBanner(title: "Error. Profile did not update.", type: .danger)
+        if ((FBSDKAccessToken.current()) != nil) {
+            let loginManager = FBSDKLoginManager()
+            loginManager.logOut()
         }
-    
+        
+        let token = Messaging.messaging().fcmToken
+        if (token != nil) {
+            Constants.refs.root.child("users/\(Constants.getUserId())/notifications/\(token!)").removeValue()
+        }
+        
+        
+        let presentingViewController = self.presentingViewController
+        self.dismiss(animated: false, completion: {
+            presentingViewController!.dismiss(animated: true, completion: {})
+        })
+        
     }
-
+    
     @IBAction func dismissProfilePage(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
@@ -478,8 +503,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         return NSAttributedString(string: str, attributes: attrs)
     }
     
-    func contactButtonClicked() {
-        
+    func contactButtonPressed(_ sender: Any) {
         let appearance = SCLAlertView.SCLAppearance(
             kTitleFont: UIFont.systemFont(ofSize: 18, weight: UIFontWeightRegular),
             kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
@@ -503,29 +527,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
                 
             })
         })
-        
-        alertView.addButton("Logout", backgroundColor: FlatRed(), action: {
-            try! Auth.auth().signOut()
-            
-            if ((FBSDKAccessToken.current()) != nil) {
-                let loginManager = FBSDKLoginManager()
-                loginManager.logOut()
-            }
-            
-            let token = Messaging.messaging().fcmToken
-            if (token != nil) {
-                Constants.refs.root.child("users/\(Constants.getUserId())/notifications/\(token!)").removeValue()
-            }
-            
-            
-            let presentingViewController = self.presentingViewController
-            self.dismiss(animated: false, completion: {
-                presentingViewController!.dismiss(animated: true, completion: {})
-            })
-        })
-        
-        
-
         
         alertView.addButton("Exit",  action: {
         })

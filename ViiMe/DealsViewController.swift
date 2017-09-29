@@ -10,8 +10,9 @@ import UIKit
 import ChameleonFramework
 import SCLAlertView
 import Firebase
+import UserNotifications
 
-class DealsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class DealsViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UNUserNotificationCenterDelegate {
     
     let reuseIdentifier = "UITableViewCell"
     var venue : Venue?
@@ -74,7 +75,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 75.0
+        return 85.0
     }
     
     //MARK: UITableView Delegate
@@ -160,6 +161,60 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
             Constants.refs.groups.child("\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": Constants.getUserId(), "venue-id": self.venue!.id])
             Constants.refs.users.child("\(Constants.getUserId())/groups/\(id.key)").setValue(true)
             self.navigationController?.popToRootViewController(animated: true)
+            
+            let current = UNUserNotificationCenter.current()
+            
+            current.getNotificationSettings(completionHandler: { (settings) in
+                if settings.authorizationStatus == .notDetermined {
+                    DispatchQueue.main.async(){
+                        // Notification permission has not been asked yet, go for it!
+                        let appearance = SCLAlertView.SCLAppearance(
+                            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+                            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+                            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+                            showCloseButton: false
+                        )
+                        
+                        let alert = SCLAlertView(appearance: appearance)
+                        
+                        alert.addButton("OK", action: {
+                            
+                            let application = UIApplication.shared
+                            if #available(iOS 10.0, *) {
+                                // For iOS 10 display notification (sent via APNS)
+                                let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+                                UNUserNotificationCenter.current().requestAuthorization(
+                                    options: authOptions,
+                                    completionHandler: {_, _ in })
+                            } else {
+                                let settings: UIUserNotificationSettings =
+                                    UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+                                application.registerUserNotificationSettings(settings)
+                            }
+                            
+                            application.registerForRemoteNotifications()
+                        })
+                        
+              
+                        
+                        alert.showInfo("Push Notifications", subTitle: "The next dialog will ask for permission to send you push notifications. \n\n We'll notify you when you get a new deal invitation, a new friend invitation and when a friend accepts one of your invitations!")
+                    }
+                    
+
+                
+                }
+                
+                if settings.authorizationStatus == .denied {
+                    // Notification permission was previously denied, go to settings & privacy to re-enable
+                }
+                
+                if settings.authorizationStatus == .authorized {
+                    // Notification permission was already granted
+                }
+            })
+            
+
+    
             
         }
         
@@ -282,6 +337,35 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     }
     
     
+    
+    // The callback to handle data message received via FCM for devices running iOS 10 or above.
+    func applicationReceivedRemoteMessage(_ remoteMessage: MessagingRemoteMessage) {
+        print(remoteMessage.appData)
+    }
+    
+    @available(iOS 10.0, *)
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler(UNNotificationPresentationOptions.alert)
+    }
+    
+    
+    @available(iOS 10.0, *)
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
+        print((userInfo["aps"] as! [AnyHashable : Any])["alert"]!)
+        Messaging.messaging().appDidReceiveMessage(userInfo)
+    }
+    
+    
+    func application(_ application: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        
+        // Remember to change this depending on build or push notifications won't work
+        //       Messaging.messaging().setAPNSToken(deviceToken as Data, type: .sandbox)
+        Messaging.messaging().setAPNSToken(deviceToken as Data, type: .prod)
+    }
     
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
