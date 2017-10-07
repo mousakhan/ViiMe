@@ -8,10 +8,10 @@ PODS:
   - ChameleonFramework/Default (2.1.0)
   - ChameleonFramework/Swift (2.1.0):
     - ChameleonFramework/Default
-  - Crashlytics (3.8.5):
+  - Crashlytics (3.8.6):
     - Fabric (~> 1.6.3)
   - DZNEmptyDataSet (1.8.1)
-  - Fabric (1.6.12)
+  - Fabric (1.6.13)
   - FacebookCore (0.2.0):
     - Bolts (~> 1.8)
     - FBSDKCoreKit (~> 4.15)
@@ -20,50 +20,49 @@ PODS:
     - FacebookCore (~> 0.2)
     - FBSDKCoreKit (~> 4.15)
     - FBSDKLoginKit (~> 4.15)
-  - FBSDKCoreKit (4.25.0):
+  - FBSDKCoreKit (4.27.0):
     - Bolts (~> 1.7)
-  - FBSDKLoginKit (4.25.0):
+  - FBSDKLoginKit (4.27.0):
     - FBSDKCoreKit
-  - Firebase/Auth (4.1.0):
+  - Firebase/Auth (4.2.0):
     - Firebase/Core
-    - FirebaseAuth (= 4.1.0)
-  - Firebase/Core (4.1.0):
+    - FirebaseAuth (= 4.2.0)
+  - Firebase/Core (4.2.0):
     - FirebaseAnalytics (= 4.0.3)
-    - FirebaseCore (= 4.0.5)
-  - Firebase/Database (4.1.0):
+    - FirebaseCore (= 4.0.7)
+  - Firebase/Database (4.2.0):
     - Firebase/Core
-    - FirebaseDatabase (= 4.0.1)
-  - Firebase/Messaging (4.1.0):
+    - FirebaseDatabase (= 4.0.3)
+  - Firebase/Messaging (4.2.0):
     - Firebase/Core
-    - FirebaseMessaging (= 2.0.1)
-  - Firebase/Storage (4.1.0):
+    - FirebaseMessaging (= 2.0.3)
+  - Firebase/Storage (4.2.0):
     - Firebase/Core
-    - FirebaseStorage (= 2.0.1)
+    - FirebaseStorage (= 2.0.2)
   - FirebaseAnalytics (4.0.3):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
     - nanopb (~> 0.3)
-  - FirebaseAuth (4.1.0):
+  - FirebaseAuth (4.2.0):
     - FirebaseAnalytics (~> 4.0)
     - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseCore (4.0.5):
+  - FirebaseCore (4.0.7):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
     - nanopb (~> 0.3)
-  - FirebaseDatabase (4.0.1):
+  - FirebaseDatabase (4.0.3):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - leveldb-library (~> 1.18)
-  - FirebaseInstanceID (2.0.0):
-    - FirebaseCore (~> 4.0)
-  - FirebaseMessaging (2.0.1):
+  - FirebaseInstanceID (2.0.3)
+  - FirebaseMessaging (2.0.3):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
     - Protobuf (~> 3.1)
-  - FirebaseStorage (2.0.1):
+  - FirebaseStorage (2.0.2):
     - FirebaseAnalytics (~> 4.0)
     - FirebaseCore (~> 4.0)
     - GTMSessionFetcher/Core (~> 1.1)
@@ -79,21 +78,22 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.1.1)
     - GoogleToolboxForMac/NSString+URLArguments (= 2.1.1)
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
-  - GTMSessionFetcher/Core (1.1.11)
+  - GTMSessionFetcher/Core (1.1.12)
   - ImagePicker (2.1.1)
-  - Kingfisher (3.10.4)
+  - Kingfisher (3.13.1)
   - leveldb-library (1.18.3)
-  - MarqueeLabel/Swift (3.1.2)
+  - MarqueeLabel/Swift (3.1.3)
   - MIBadgeButton-Swift (0.5)
   - nanopb (0.3.8):
     - nanopb/decode (= 0.3.8)
     - nanopb/encode (= 0.3.8)
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
-  - NotificationBannerSwift (1.4.2):
+  - NotificationBannerSwift (1.4.5):
     - MarqueeLabel/Swift
     - SnapKit (~> 3.2)
-  - Protobuf (3.3.0)
+  - Onboard (2.3.1)
+  - Protobuf (3.4.0)
   - SCLAlertView (0.7.0)
   - SnapKit (3.2.0)
 
@@ -113,7 +113,9 @@ DEPENDENCIES:
   - Kingfisher (~> 3.0)
   - MIBadgeButton-Swift (from `https://github.com/mustafaibrahim989/MIBadgeButton-Swift.git`, branch `master`)
   - NotificationBannerSwift
+  - Onboard
   - SCLAlertView
+  - SnapKit (~> 3.2.0)
 
 EXTERNAL SOURCES:
   ChameleonFramework:
@@ -133,34 +135,35 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   ChameleonFramework: d21a3cc247abfe5e37609a283a8238b03575cf64
-  Crashlytics: dfbae35ef22ca189240d230ad501feea4ee85d2d
+  Crashlytics: 95d05f4e4c19a771250c4bd9ce344d996de32bbf
   DZNEmptyDataSet: 9525833b9e68ac21c30253e1d3d7076cc828eaa7
-  Fabric: f050464eac45a2ce5a8e6e6a07e977c0df32fe28
+  Fabric: 2fb5676bc811af011a04513451f463dac6803206
   FacebookCore: 2cb3f0fbff218e9d3119cec84bae983b232412de
   FacebookLogin: c9d606504735780a9e3002465a615512e0a691a5
-  FBSDKCoreKit: 53e3f4bfb64e80c5f229dd30ae33ff57fbbbd2d1
-  FBSDKLoginKit: f628c09684dae9c17f071cf90b014e886f5093ea
-  Firebase: ebebf41db7f10e0c7668b6eaaa857fbe599aa478
+  FBSDKCoreKit: ebc6c5f5b3f0e72396041050e2266781a38ac587
+  FBSDKLoginKit: 887be4b7452e1c5a3cc4485ce152529965a0c41e
+  Firebase: 9548cae14d69718add12d75a5b312893f7ef89c7
   FirebaseAnalytics: 76f754d37ca5b04f36856729b6af3ca0152d1069
-  FirebaseAuth: 8d1d2389cf82f891048d6d50d27d044f55ae09a6
-  FirebaseCore: 7d876ea97a830cbe62ba7fbbe7670c833a324ba0
-  FirebaseDatabase: 94c38c783d23dc6679441050772d42e801d06e9e
-  FirebaseInstanceID: 9fbf536668f4d3f0880e7438456dabd1376e294b
-  FirebaseMessaging: b45ff9ef5d932600d3f78ff43168e7c5707aa7dc
-  FirebaseStorage: 661fc1f8d4131891d256b62e82a45ace8b3f0c3b
+  FirebaseAuth: 22f8a5170f31d1f111141950590f071f35df3229
+  FirebaseCore: 9a6cc1e3eaf75905390f9220596ad4fd8f92faee
+  FirebaseDatabase: 03940adcac54ce30db06f1fc2136f8581734ce2c
+  FirebaseInstanceID: a4fc702b5a026f7322964376047f1a3f1f7cc6ff
+  FirebaseMessaging: eaf1bfff0193170c04ea3ba3bfe983f68f893118
+  FirebaseStorage: 0cca42d9b889a0227c3a50121f45a4469fc9eb27
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
-  GTMSessionFetcher: 5ad62e8200fa00ed011fe5e08d27fef72c5b1429
+  GTMSessionFetcher: ebaa1f79a5366922c1735f1566901f50beba23b7
   ImagePicker: fe4c699abb56ff03994fa98d8b02e3883ee118be
-  Kingfisher: dc3a4983e86d2dfa89513664983a82340c11a289
+  Kingfisher: ed9707a409cc47fddafbcd12a43a9757e3600af5
   leveldb-library: 10fb39c39e243db4af1828441162405bbcec1404
-  MarqueeLabel: fcd7057a779422d86589be759036f1510b08c6a0
+  MarqueeLabel: baa5753dcbd36dca080e1f5c589a665aa5c906f1
   MIBadgeButton-Swift: 9e57309b00b168d75ca8fecb45bc75124a8ffddf
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
-  NotificationBannerSwift: 23be55635199b78cd34ea63f980718f85011ad73
-  Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
+  NotificationBannerSwift: 8e0d142c34406800e5a98d1535fbfca43da49f17
+  Onboard: b6871f25ac753175b2ab9a362fb2feb26a81a311
+  Protobuf: 03eef2ee0b674770735cf79d9c4d3659cf6908e8
   SCLAlertView: 8a14ffc40590c619e183eed2298b854385f30be1
   SnapKit: 1ca44df72cfa543218d177cb8aab029d10d86ea7
 
-PODFILE CHECKSUM: 38d565289e265cb7461352a6a36e82bc1e240fda
+PODFILE CHECKSUM: 17f8fff2a986a18eb710bf3075d063374a4c5042
 
 COCOAPODS: 1.2.1

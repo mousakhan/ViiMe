@@ -54,6 +54,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
         profilePicture.addGestureRecognizer(photoTapGesture)
         
         
+        
         self.usernameTextField.text = user.username
         self.nameTextField.text = user.name
         self.emailTextField.text = user.email
@@ -463,7 +464,14 @@ class ProfileViewController: UIViewController, UITextFieldDelegate, UIImagePicke
     
     //MARK: IBActions
     @IBAction func logout(_ sender: Any) {
-        try! Auth.auth().signOut()
+        do
+        {
+            try Auth.auth().signOut()
+        }
+        catch let error as NSError
+        {
+            print (error.localizedDescription)
+        }
         
         if ((FBSDKAccessToken.current()) != nil) {
             let loginManager = FBSDKLoginManager()

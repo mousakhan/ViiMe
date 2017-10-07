@@ -7,8 +7,6 @@
 //
 
 import UIKit
-
-import UIKit
 import ChameleonFramework
 import Firebase
 import SCLAlertView
@@ -691,10 +689,6 @@ class HomeViewController: UIViewController, UICollectionViewDelegateFlowLayout, 
                     DispatchQueue.main.async {
                         self.collectionView?.reloadData()
                     }
-                    
-
-
-                    
                     
                 }
             })

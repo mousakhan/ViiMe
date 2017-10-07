@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "339"
-            endingLineNumber = "339"
+            startingLineNumber = "337"
+            endingLineNumber = "337"
             landmarkName = "removeGroup(sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "342"
-            endingLineNumber = "342"
+            startingLineNumber = "340"
+            endingLineNumber = "340"
             landmarkName = "removeGroup(sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "345"
-            endingLineNumber = "345"
+            startingLineNumber = "343"
+            endingLineNumber = "343"
             landmarkName = "removeGroup(sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "349"
-            endingLineNumber = "349"
+            startingLineNumber = "347"
+            endingLineNumber = "347"
             landmarkName = "removeGroup(sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "356"
-            endingLineNumber = "356"
+            startingLineNumber = "354"
+            endingLineNumber = "354"
             landmarkName = "removeGroup(sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "563"
-            endingLineNumber = "563"
+            startingLineNumber = "561"
+            endingLineNumber = "561"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -106,11 +106,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "104"
-            endingLineNumber = "104"
+            startingLineNumber = "102"
+            endingLineNumber = "102"
             landmarkName = "refresh(sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -122,11 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "721"
-            endingLineNumber = "721"
+            startingLineNumber = "715"
+            endingLineNumber = "715"
             landmarkName = "prepare(for:sender:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -138,11 +138,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "698"
-            endingLineNumber = "698"
+            startingLineNumber = "692"
+            endingLineNumber = "692"
             landmarkName = "getCurrentUser()"
             landmarkType = "7">
          </BreakpointContent>
@@ -154,11 +154,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "544"
-            endingLineNumber = "544"
+            startingLineNumber = "542"
+            endingLineNumber = "542"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -170,11 +170,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "550"
-            endingLineNumber = "550"
+            startingLineNumber = "548"
+            endingLineNumber = "548"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -186,11 +186,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "557"
-            endingLineNumber = "557"
+            startingLineNumber = "555"
+            endingLineNumber = "555"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -202,11 +202,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "582"
-            endingLineNumber = "582"
+            startingLineNumber = "580"
+            endingLineNumber = "580"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -218,11 +218,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "616"
-            endingLineNumber = "616"
+            startingLineNumber = "614"
+            endingLineNumber = "614"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -234,11 +234,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "640"
-            endingLineNumber = "640"
+            startingLineNumber = "638"
+            endingLineNumber = "638"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
             <Locations>
@@ -312,11 +312,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "596"
-            endingLineNumber = "596"
+            startingLineNumber = "594"
+            endingLineNumber = "594"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -328,11 +328,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "599"
-            endingLineNumber = "599"
+            startingLineNumber = "597"
+            endingLineNumber = "597"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -344,11 +344,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "602"
-            endingLineNumber = "602"
+            startingLineNumber = "600"
+            endingLineNumber = "600"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -360,11 +360,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526105575.99002"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "605"
-            endingLineNumber = "605"
+            startingLineNumber = "603"
+            endingLineNumber = "603"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -376,11 +376,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/VenuesCollectionViewController.swift"
-            timestampString = "526316602.169445"
+            timestampString = "528941143.961436"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "192"
-            endingLineNumber = "192"
+            startingLineNumber = "220"
+            endingLineNumber = "220"
             landmarkName = "initVenues()"
             landmarkType = "7">
          </BreakpointContent>
@@ -408,12 +408,12 @@
                   moduleName = "ViiMe"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/mousakhan/Downloads/ViiMe/iOS/ViiMe/LoginViewController.swift"
-                  timestampString = "526245963.73023"
+                  timestampString = "528953888.46171"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "78"
                   endingLineNumber = "78"
-                  offsetFromSymbolStart = "712">
+                  offsetFromSymbolStart = "649">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -423,12 +423,12 @@
                   moduleName = "ViiMe"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/mousakhan/Downloads/ViiMe/iOS/ViiMe/LoginViewController.swift"
-                  timestampString = "526245963.733271"
+                  timestampString = "528953888.464813"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "78"
                   endingLineNumber = "78"
-                  offsetFromSymbolStart = "724">
+                  offsetFromSymbolStart = "661">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -440,11 +440,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/LoginViewController.swift"
-            timestampString = "526102653.102825"
+            timestampString = "528515286.246699"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
+            startingLineNumber = "94"
+            endingLineNumber = "94"
             landmarkName = "viewDidAppear(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -452,15 +452,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/LoginViewController.swift"
-            timestampString = "526247020.89114"
+            timestampString = "528991772.314927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "192"
-            endingLineNumber = "192"
+            startingLineNumber = "198"
+            endingLineNumber = "198"
             landmarkName = "login(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -472,11 +472,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/LoginViewController.swift"
-            timestampString = "526103328.140335"
+            timestampString = "528991772.314927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "129"
-            endingLineNumber = "129"
+            startingLineNumber = "133"
+            endingLineNumber = "133"
             landmarkName = "login(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -488,27 +488,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/LoginViewController.swift"
-            timestampString = "526103328.140335"
+            timestampString = "528991772.314927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "134"
-            endingLineNumber = "134"
-            landmarkName = "login(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "ViiMe/LoginViewController.swift"
-            timestampString = "526103328.140335"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "146"
-            endingLineNumber = "146"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
             landmarkName = "login(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -552,11 +536,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/LoginViewController.swift"
-            timestampString = "527457414.530603"
+            timestampString = "528991772.314927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "313"
-            endingLineNumber = "313"
+            startingLineNumber = "319"
+            endingLineNumber = "319"
             landmarkName = "loginButton(_:didCompleteWith:error:)"
             landmarkType = "7">
             <Locations>
@@ -568,12 +552,12 @@
                   moduleName = "ViiMe"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/mousakhan/Downloads/ViiMe/iOS/ViiMe/LoginViewController.swift"
-                  timestampString = "526245963.770591"
+                  timestampString = "528953888.515324"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "317"
-                  endingLineNumber = "317"
-                  offsetFromSymbolStart = "2488">
+                  startingLineNumber = "322"
+                  endingLineNumber = "322"
+                  offsetFromSymbolStart = "3145">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -583,12 +567,12 @@
                   moduleName = "ViiMe"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/mousakhan/Downloads/ViiMe/iOS/ViiMe/LoginViewController.swift"
-                  timestampString = "526245963.772716"
+                  timestampString = "528953888.519264"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "317"
-                  endingLineNumber = "317"
-                  offsetFromSymbolStart = "2500">
+                  startingLineNumber = "322"
+                  endingLineNumber = "322"
+                  offsetFromSymbolStart = "3157">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -600,11 +584,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ViiMe/HomeViewController.swift"
-            timestampString = "526245636.417128"
+            timestampString = "528516626.57526"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "639"
-            endingLineNumber = "639"
+            startingLineNumber = "637"
+            endingLineNumber = "637"
             landmarkName = "getGroups(completionHandler:)"
             landmarkType = "7">
             <Locations>
@@ -669,6 +653,54 @@
                   offsetFromSymbolStart = "5472">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ViiMe/VenuesCollectionViewController.swift"
+            timestampString = "528941143.961436"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "175"
+            endingLineNumber = "175"
+            landmarkName = "searchBarCancelButtonClicked(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ViiMe/LoginViewController.swift"
+            timestampString = "528991772.314927"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "189"
+            endingLineNumber = "189"
+            landmarkName = "login(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ViiMe/LoginViewController.swift"
+            timestampString = "528991772.314927"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "188"
+            endingLineNumber = "188"
+            landmarkName = "login(_:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

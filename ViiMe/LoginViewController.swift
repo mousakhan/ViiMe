@@ -81,7 +81,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                 }
                 
                 // User is logged in, go to the venues page
-                self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                //  self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                self.performSegue(withIdentifier: "VenueCollectionViewController", sender: nil)
+                
                 let titleText = NSAttributedString(string: "Log In with Facebook")
                 self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
                 UIApplication.shared.endIgnoringInteractionEvents()
@@ -105,7 +107,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     if (self.token != nil) {
                         Constants.refs.users.child("\(user!.uid)/notifications").setValue([self.token!: true])
                     }
-                    self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+//                    self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                    self.performSegue(withIdentifier: "VenueCollectionViewController", sender: nil)
+                
                     self.enableSignInButton()
                     UIApplication.shared.endIgnoringInteractionEvents()
                 }
@@ -181,7 +185,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                         // If it is nil, then it's a new user signing in for the first time
                         if (self.activeUser == nil) {
                             self.activeUser = user!
-                            self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                            //                    self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                            self.performSegue(withIdentifier: "VenueCollectionViewController", sender: nil)
+                            
                         }
                         
                         self.enableSignInButton()
@@ -325,7 +331,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                                 }
                             }
                             // Segue
-                            self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                            //                    self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                            self.performSegue(withIdentifier: "VenueCollectionViewController", sender: nil)
+                            
                             let titleText = NSAttributedString(string: "Log in with Facebook")
                             self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
                         }
@@ -369,7 +377,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate, FBSDKLoginButt
                     }
                     
                     // If the user exists, then just segue!
-                    self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                    //                    self.performSegue(withIdentifier: "HomeViewControllerSegue", sender: nil)
+                    self.performSegue(withIdentifier: "VenueCollectionViewController", sender: nil)
+                    
                     let titleText = NSAttributedString(string: "Log in with Facebook")
                     self.facebookSignInButton.setAttributedTitle(titleText, for: .normal)
                     UIApplication.shared.endIgnoringInteractionEvents()

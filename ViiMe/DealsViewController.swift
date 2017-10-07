@@ -115,7 +115,7 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
                     // If it exists and the value is true, that means the person was a group owner
                     if (dealExists) {
                         let alertView = SCLAlertView()
-                        alertView.showError("Error", subTitle: "You can only redeem the deal once as a group owner")
+                        alertView.showError("Error", subTitle: "You can only redeem the deal once")
                         self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
                         return
                     }
@@ -143,97 +143,101 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
         
         
         
-        // Create custom alert view
-        let appearance = SCLAlertView.SCLAppearance(
-            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
-            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
-            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
-            showCloseButton: false,
-            showCircularIcon: false
-        )
         
-        let alertView = SCLAlertView(appearance: appearance)
+//        // Create custom alert view
+//        let appearance = SCLAlertView.SCLAppearance(
+//            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+//            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+//            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+//            showCloseButton: false,
+//            showCircularIcon: false
+//        )
+//        
+//        let alertView = SCLAlertView(appearance: appearance)
+//        
+//        // When the 'Create' button is pressed, we write to the backend to create the group
+//        alertView.addButton("Create", backgroundColor: FlatPurple())    {
+//            let id = Constants.refs.groups.childByAutoId()
+//            
+//            Constants.refs.groups.child("\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": Constants.getUserId(), "venue-id": self.venue!.id])
+//            Constants.refs.users.child("\(Constants.getUserId())/groups/\(id.key)").setValue(true)
+//            self.navigationController?.popToRootViewController(animated: true)
+//            
+//            let current = UNUserNotificationCenter.current()
+//            
+//            current.getNotificationSettings(completionHandler: { (settings) in
+//                if settings.authorizationStatus == .notDetermined {
+//                    DispatchQueue.main.async(){
+//                        // Notification permission has not been asked yet, go for it!
+//                        let appearance = SCLAlertView.SCLAppearance(
+//                            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+//                            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+//                            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
+//                            showCloseButton: false
+//                        )
+//                        
+//                        let alert = SCLAlertView(appearance: appearance)
+//                        
+//                        alert.addButton("OK", action: {
+//                            
+//                            let application = UIApplication.shared
+//                            if #available(iOS 10.0, *) {
+//                                // For iOS 10 display notification (sent via APNS)
+//                                let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+//                                UNUserNotificationCenter.current().requestAuthorization(
+//                                    options: authOptions,
+//                                    completionHandler: {_, _ in })
+//                            } else {
+//                                let settings: UIUserNotificationSettings =
+//                                    UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+//                                application.registerUserNotificationSettings(settings)
+//                            }
+//                            
+//                            application.registerForRemoteNotifications()
+//                        })
+//                        
+//              
+//                        
+//                        alert.showInfo("Push Notifications", subTitle: "The next dialog will ask for permission to send you push notifications. \n\n We'll notify you when you get a new deal invitation, a new friend invitation and when a friend accepts one of your invitations!")
+//                    }
+//                    
+//
+//                
+//                }
+//                
+//                if settings.authorizationStatus == .denied {
+//                    // Notification permission was previously denied, go to settings & privacy to re-enable
+//                }
+//                
+//                if settings.authorizationStatus == .authorized {
+//                    // Notification permission was already granted
+//                }
+//            })
+//            
+//
+//    
+//            
+//        }
+//        
+//        alertView.addButton("Cancel", backgroundColor: FlatRed())   {}
+//        
+//        
+//        // Create the message to show
+//        let title = venue!.deals[indexPath.row].title
+//        var subTitle = "\(venue!.deals[indexPath.row].shortDescription) \n\n Valid from \(DateHelper.parseDate(date: venue!.deals[indexPath.row].validFrom)) to \(DateHelper.parseDate(date: venue!.deals[indexPath.row].validTo))"
+//        
+//        let recurringTo = DateHelper.parseTime(time: venue!.deals[indexPath.row].recurringTo)
+//        let recurringFrom = DateHelper.parseTime(time: venue!.deals[indexPath.row].recurringFrom)
+//        
+//        // If it's a deal that only recurs from certain times, show it
+//        if (recurringTo != "" && recurringFrom != "") {
+//            subTitle = subTitle + "\n\nOnly available from \(recurringFrom) to \(recurringTo) during these dates"
+//        }
+//        
+//        alertView.showInfo(title, subTitle: subTitle)
         
-        // When the 'Create' button is pressed, we write to the backend to create the group
-        alertView.addButton("Create", backgroundColor: FlatPurple())    {
-            let id = Constants.refs.groups.childByAutoId()
-            
-            Constants.refs.groups.child("\(id.key)").setValue(["created": ServerValue.timestamp(), "id": id.key, "deal-id": self.venue!.deals[indexPath.row].id, "owner": Constants.getUserId(), "venue-id": self.venue!.id])
-            Constants.refs.users.child("\(Constants.getUserId())/groups/\(id.key)").setValue(true)
-            self.navigationController?.popToRootViewController(animated: true)
-            
-            let current = UNUserNotificationCenter.current()
-            
-            current.getNotificationSettings(completionHandler: { (settings) in
-                if settings.authorizationStatus == .notDetermined {
-                    DispatchQueue.main.async(){
-                        // Notification permission has not been asked yet, go for it!
-                        let appearance = SCLAlertView.SCLAppearance(
-                            kTitleFont: UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
-                            kTextFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
-                            kButtonFont: UIFont.systemFont(ofSize: 14, weight: UIFontWeightRegular),
-                            showCloseButton: false
-                        )
-                        
-                        let alert = SCLAlertView(appearance: appearance)
-                        
-                        alert.addButton("OK", action: {
-                            
-                            let application = UIApplication.shared
-                            if #available(iOS 10.0, *) {
-                                // For iOS 10 display notification (sent via APNS)
-                                let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-                                UNUserNotificationCenter.current().requestAuthorization(
-                                    options: authOptions,
-                                    completionHandler: {_, _ in })
-                            } else {
-                                let settings: UIUserNotificationSettings =
-                                    UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
-                                application.registerUserNotificationSettings(settings)
-                            }
-                            
-                            application.registerForRemoteNotifications()
-                        })
-                        
-              
-                        
-                        alert.showInfo("Push Notifications", subTitle: "The next dialog will ask for permission to send you push notifications. \n\n We'll notify you when you get a new deal invitation, a new friend invitation and when a friend accepts one of your invitations!")
-                    }
-                    
-
-                
-                }
-                
-                if settings.authorizationStatus == .denied {
-                    // Notification permission was previously denied, go to settings & privacy to re-enable
-                }
-                
-                if settings.authorizationStatus == .authorized {
-                    // Notification permission was already granted
-                }
-            })
-            
-
-    
-            
-        }
-        
-        alertView.addButton("Cancel", backgroundColor: FlatRed())   {}
-        
-        
-        // Create the message to show
-        let title = venue!.deals[indexPath.row].title
-        var subTitle = "\(venue!.deals[indexPath.row].shortDescription) \n\n Valid from \(DateHelper.parseDate(date: venue!.deals[indexPath.row].validFrom)) to \(DateHelper.parseDate(date: venue!.deals[indexPath.row].validTo))"
-        
-        let recurringTo = DateHelper.parseTime(time: venue!.deals[indexPath.row].recurringTo)
-        let recurringFrom = DateHelper.parseTime(time: venue!.deals[indexPath.row].recurringFrom)
-        
-        // If it's a deal that only recurs from certain times, show it
-        if (recurringTo != "" && recurringFrom != "") {
-            subTitle = subTitle + "\n\nOnly available from \(recurringFrom) to \(recurringTo) during these dates"
-        }
-        
-        alertView.showInfo(title, subTitle: subTitle)
+        self.performSegue(withIdentifier: "RedemptionViewControllerSegue", sender: self.venue?.deals[indexPath.row])
+  
         self.tableView.deselectRow(at: self.tableView.indexPathForSelectedRow!, animated: true)
         
     }
@@ -370,6 +374,13 @@ class DealsViewController: UIViewController, UITableViewDataSource, UITableViewD
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "RedemptionViewControllerSegue") {
+            let destVC = segue.destination as! RedemptionViewController
+            print(sender ?? "")
+            destVC.deal = sender as? Deal
+            destVC.user = self.user
+            destVC.venue = self.venue
+        }
     }
     
     

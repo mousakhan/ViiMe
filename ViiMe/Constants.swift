@@ -17,6 +17,7 @@ struct Constants
         static let groups = root.child("groups")
         static let venues = root.child("venue")
         static let deals = root.child("deal")
+        static let redemptions = root.child("redemptions")
     }
     
     static func getUserId() -> String {

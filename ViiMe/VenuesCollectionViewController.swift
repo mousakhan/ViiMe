@@ -11,15 +11,20 @@ import ChameleonFramework
 import Firebase
 import FirebaseDatabase
 import Kingfisher
+import MIBadgeButton_Swift
 
 class VenuesCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UISearchControllerDelegate, UISearchResultsUpdating, UISearchBarDelegate  {
     
     @IBOutlet var searchBarButtonItem: UIBarButtonItem!
     
+    // This is the profile icon with the badge for personal delas
+    let rewardsBadgeButton : MIBadgeButton = MIBadgeButton(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+    var profileBarButton : UIBarButtonItem?
     var searchController : UISearchController!
     let reuseIdentifier = "VenueCell"
     var filteredVenues = [Venue]()
     var venues = [Venue]()
+
     
     // This is passed in from the home page, and then passed  to the deals view controller.
     // It is not used in this view controller.
@@ -28,6 +33,24 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     //MARK: View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+    
+//        let onboarding = OnboardingViewController()
+//        self.present(onboarding, animated: true) {
+//        }
+        
+        // Connect the badge button to the bar button item
+        let profileOrigImage = UIImage(named: "profile");
+        let profileTintedImage = profileOrigImage?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+        rewardsBadgeButton.tintColor = FlatWhite()
+        rewardsBadgeButton.setImage(profileTintedImage, for: .normal)
+        rewardsBadgeButton.badgeString = ""
+        profileBarButton = UIBarButtonItem(customView: rewardsBadgeButton)
+        self.navigationItem.leftBarButtonItem = profileBarButton
+            rewardsBadgeButton.addTarget(self, action: #selector(segueToProfileTableViewController(sender:)), for: .touchUpInside)
+        
+        // Getting current user for profile and to check if there are any personal deals
+        initCurrentUser()
         
         // Search Controller setup
         self.searchController = UISearchController(searchResultsController:  nil)
@@ -148,6 +171,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.navigationItem.titleView = nil
+        self.navigationItem.leftBarButtonItem = self.profileBarButton
         self.navigationItem.rightBarButtonItem = self.searchBarButtonItem
         self.navigationItem.setHidesBackButton(false, animated:true)
 
@@ -160,6 +184,7 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     //MARK: IBActions
     @IBAction func searchBarButtonClicked(_ sender: Any) {
         self.navigationItem.rightBarButtonItem = nil
+        self.navigationItem.leftBarButtonItem = nil
         self.navigationItem.setHidesBackButton(true, animated:true)
         self.navigationItem.titleView = searchController.searchBar
         self.searchController.searchBar.becomeFirstResponder()
@@ -174,6 +199,9 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
                 destVC.venue = venues[indexPath]
                 destVC.user = self.user
             }
+        } else if (segue.identifier == "ProfileViewControllerSegue") {
+            let destVC = segue.destination as! ProfileViewController
+            destVC.user = self.user
         }
     }
 
@@ -240,6 +268,35 @@ class VenuesCollectionViewController: UICollectionViewController, UICollectionVi
     }
     
     
+    // This function will be called when the contacts list bar button item is clicked
+    func segueToProfileTableViewController(sender : UIButton) {
+        self.performSegue(withIdentifier: "ProfileViewControllerSegue", sender: nil)
+    }
+    
+    func initCurrentUser() {
+        // Check back end to see if user exists
+        let productRef = Constants.refs.users.child(Constants.getUserId())
+        productRef.observe(DataEventType.value, with: { (snapshot) in
+            
+            let user = UserInfo(snapshot: snapshot)
+            self.user = user
+            // Check for invites and update badge accordingly if it is greater than 0
+            var count = 0
+            for (_, val) in user.friendIds {
+                if (!val) {
+                    count = count + 1
+                }
+            }
+            
+            if (user.personalDealIds.count > 0) {
+                self.rewardsBadgeButton.badgeString = "\(user.personalDealIds.count)"
+            } else {
+                self.rewardsBadgeButton.badgeString = ""
+            }
+        })
+    }
+        
+        
     
     // MARK: UICollectionViewDelegate
     

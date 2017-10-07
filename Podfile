@@ -20,6 +20,15 @@ target 'ViiMe' do
   pod 'Firebase/Database'
   pod 'ChameleonFramework/Swift', :git => 'https://github.com/ViccAlexander/Chameleon.git'
   pod 'Kingfisher', '~> 3.0'	
-  pod 'SCLAlertView'
-  pod 'DZNEmptyDataSet'
+  pod 'SCLAlertView’
+  pod 'DZNEmptyDataSet’
+  pod 'SnapKit', '~> 3.2.0’
+  pod 'Onboard'
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+            config.build_settings['SWIFT_VERSION'] = '3.2'
+        end
+    end
+end
 end
